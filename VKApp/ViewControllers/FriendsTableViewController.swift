@@ -49,22 +49,6 @@ class FriendsTableViewController: UITableViewController {
         } catch {
             print(error)
         }
-            
-        
-//        do {
-//            let updateInterval: TimeInterval = 60 * 60
-//            if let updateInfo = try RealmService.load(typeOf: RealmAppInfo.self).first,
-//               let friendsUpdateDate = updateInfo.friendsUpdateDate,
-//               friendsUpdateDate >= Date(timeIntervalSinceNow: -updateInterval) {
-//                let realmFriends: Results<RealmUser> = try RealmService.load(typeOf: RealmUser.self)
-//                self.realmFriendResults = realmFriends
-//                updateFriends(realmFriends.map { $0 })
-//            } else {
-//                fetchFriendsByJSON()
-//            }
-//        } catch {
-//            print(error)
-//        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -105,61 +89,6 @@ class FriendsTableViewController: UITableViewController {
     @IBAction func dismiss() {
         dismiss(animated: true)
     }
-    
-//    // MARK: - Private methods
-//    private func fetchFriendsByJSON() {
-//        friendsService.path = "/method/friends.get"
-//        friendsService.queryItems = [
-//            URLQueryItem(name: "user_id", value: String(SessionStorage.shared.userId)),
-//            URLQueryItem(name: "order", value: "name"),
-//            URLQueryItem(name: "fields", value: "photo_50"),
-//            URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
-//            URLQueryItem(name: "v", value: "5.131")
-//        ]
-//        friendsService.fetch { [weak self] friendsDTOObjects in
-//            switch friendsDTOObjects {
-//            case .failure(let error):
-//                print(error)
-//            case .success(let friendsDTO):
-//                DispatchQueue.main.async {
-//                    let color = CGColor.generateLightColor()
-//                    var realmFriends = friendsDTO.map { RealmUser(user: $0, color: color) }
-//                    realmFriends = realmFriends.filter { $0.deactivated == nil }
-//                    self?.saveFriendsToRealm(realmFriends)
-//                }
-//            }
-//        }
-//    }
-//
-//    private func updateFriends(_ realmFriends: [RealmUser]) {
-//        friends = realmFriends.map({ realmFriend in
-//            User(
-//                id: realmFriend.id,
-//                firstName: realmFriend.firstName,
-//                secondName: realmFriend.secondName,
-//                userPhotoURLString: realmFriend.userPhotoURLString
-//            )
-//        })
-//        DispatchQueue.main.async {
-//            self.tableView.reloadData()
-//        }
-//    }
-//
-//    private func saveFriendsToRealm(_ realmFriends: [RealmUser]) {
-//        do {
-//            try RealmService.save(items: realmFriends)
-//            AppDataInfo.shared.friendsUpdateDate = Date()
-//            let realmUpdateDate = RealmAppInfo(
-//                groupsUpdateDate: AppDataInfo.shared.groupsUpdateDate,
-//                friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate,
-//                feedUpdateDate: AppDataInfo.shared.feedUpdateDate
-//            )
-//            try RealmService.save(items: [realmUpdateDate])
-//            updateFriends(realmFriends)
-//        } catch {
-//            print(error)
-//        }
-//    }
 
     // MARK: - Секции и вывод строк
     override func numberOfSections(in tableView: UITableView) -> Int {

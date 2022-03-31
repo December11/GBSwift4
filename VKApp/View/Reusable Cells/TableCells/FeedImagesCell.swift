@@ -23,8 +23,10 @@ final class FeedImagesCell: UITableViewCell {
     
     private func loadPhotos(of feed: Feed) {
         
-        imgScrollView.contentSize = CGSize(width: (UIScreen.main.bounds.width - 32) * CGFloat(feed.photos.count),
-                                          height: UIScreen.main.bounds.width - 32)
+        imgScrollView.contentSize = CGSize(
+            width: (UIScreen.main.bounds.width - 32) * CGFloat(feed.photos.count),
+            height: UIScreen.main.bounds.width - 32
+        )
         imgScrollView.subviews.forEach {
             $0.removeFromSuperview()
         }
@@ -40,7 +42,8 @@ final class FeedImagesCell: UITableViewCell {
             feedImageViews[i].frame = CGRect(x: (UIScreen.main.bounds.width - 32) * CGFloat(i),
                                              y: 0,
                                              width: UIScreen.main.bounds.width - 32,
-                                             height: UIScreen.main.bounds.width - 32)
+                                             height: UIScreen.main.bounds.width - 32
+            )
             feedImageViews[i].contentMode = .scaleAspectFit
             imgScrollView.cornerRadius = 8
             imgScrollView.addSubview(feedImageViews[i])

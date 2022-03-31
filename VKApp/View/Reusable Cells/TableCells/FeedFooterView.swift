@@ -61,14 +61,6 @@ class FeedFooterView: UITableViewHeaderFooterView {
         }
     }
     
-//    private func tapAtImageAnimate() {
-//        UIView.animate(withDuration: 2.0, delay: 0.0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseInOut) { [self] in
-//            userPhoto.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
-//        } completion: { isCompletion in
-//            print("tapped on image")
-//        }
-//    }
-    
     //MARK: - IBActions
     @IBAction func like(_ sender: UIButton) {
         sender.isSelected.toggle()
