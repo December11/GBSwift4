@@ -188,7 +188,7 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
                             user: user,
                             messageText: feed.text,
                             photos: photosURLs,
-                            date: feed.date,
+                            date: Date(timeIntervalSince1970: feed.date),
                             likesCount: feed.likes.count,
                             commentsCount: feed.comments.count,
                             viewsCount: feed.views?.count ?? 0)
@@ -198,7 +198,7 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
                                 group: group,
                                 messageText: feed.text,
                                 photos: photosURLs,
-                                date: feed.date,
+                                date: Date(timeIntervalSince1970: feed.date),
                                 likesCount: feed.likes.count,
                                 commentsCount: feed.comments.count,
                                 viewsCount: feed.views?.count ?? 0)
@@ -208,7 +208,7 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
                         user: User(id: 0, firstName: "No", secondName: "username", userPhotoURLString: nil),
                         messageText: feed.text,
                         photos: photosURLs,
-                        date: feed.date,
+                        date: Date(timeIntervalSince1970: feed.date),
                         likesCount: feed.likes.count,
                         commentsCount: feed.comments.count,
                         viewsCount: feed.views?.count ?? 0

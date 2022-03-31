@@ -11,7 +11,7 @@ import Foundation
 
 struct FeedDTO {
     let sourceID: Int
-    let date: Date
+    let date: Double
     let text: String?
     var photosURLs: [PhotoAttachmentDTO]?
     var comments: CommentsDTO
