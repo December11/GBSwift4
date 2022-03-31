@@ -82,23 +82,32 @@
                             <userDefinedRuntimeAttribute type="boolean" keyPath="clipToBounds" value="NO"/>
                         </userDefinedRuntimeAttributes>
                     </view>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xaT-BF-szG">
-                        <rect key="frame" x="80" y="16" width="224" height="32"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <nil key="textColor"/>
-                        <color key="highlightedColor" name="mainText"/>
-                    </label>
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="id2-lf-aSd">
+                        <rect key="frame" x="80" y="13" width="224" height="38.5"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xaT-BF-szG">
+                                <rect key="frame" x="0.0" y="0.0" width="41.5" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <color key="highlightedColor" name="mainText"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Subtext" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UXu-0P-MJA">
+                                <rect key="frame" x="0.0" y="20.5" width="53" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" name="secondaryText"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                    </stackView>
                 </subviews>
                 <color key="tintColor" name="accent"/>
                 <constraints>
-                    <constraint firstItem="xaT-BF-szG" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="16" id="2NK-3T-gvh"/>
                     <constraint firstItem="tU1-kI-sup" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="4Bk-Lc-6xh"/>
-                    <constraint firstAttribute="bottom" secondItem="xaT-BF-szG" secondAttribute="bottom" constant="16" id="Bdh-0A-yko"/>
-                    <constraint firstItem="xaT-BF-szG" firstAttribute="leading" secondItem="tU1-kI-sup" secondAttribute="trailing" constant="16" id="Cfb-hN-RCa"/>
-                    <constraint firstAttribute="trailing" secondItem="xaT-BF-szG" secondAttribute="trailing" constant="16" id="DE8-lg-q89"/>
+                    <constraint firstAttribute="trailing" secondItem="id2-lf-aSd" secondAttribute="trailing" constant="16" id="DbX-HB-CbO"/>
                     <constraint firstItem="tU1-kI-sup" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="QEY-Es-Xai"/>
                     <constraint firstAttribute="bottom" secondItem="tU1-kI-sup" secondAttribute="bottom" constant="8" id="eXD-bn-J1T"/>
-                    <constraint firstAttribute="trailing" secondItem="xaT-BF-szG" secondAttribute="trailing" constant="16" id="wzV-az-2ci"/>
+                    <constraint firstItem="id2-lf-aSd" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="vMc-nh-Pnl"/>
+                    <constraint firstItem="id2-lf-aSd" firstAttribute="leading" secondItem="tU1-kI-sup" secondAttribute="trailing" constant="16" id="ys8-ax-Zhb"/>
                 </constraints>
                 <userDefinedRuntimeAttributes>
                     <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -122,6 +131,7 @@
                 <outlet property="abbreviationLabel" destination="Q9c-7f-f4u" id="7f5-TU-rWI"/>
                 <outlet property="label" destination="xaT-BF-szG" id="Z2k-h5-ot4"/>
                 <outlet property="photo" destination="NNh-Ja-vgw" id="hve-JH-GiH"/>
+                <outlet property="subTextLabel" destination="UXu-0P-MJA" id="3Za-n7-V5Q"/>
                 <outlet property="userPicView" destination="tU1-kI-sup" id="Ynh-gt-AGq"/>
             </connections>
             <point key="canvasLocation" x="137.68115942028987" y="91.741071428571431"/>
@@ -139,6 +149,9 @@
         </namedColor>
         <namedColor name="mainText">
             <color red="0.18823529411764706" green="0.18823529411764706" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+        </namedColor>
+        <namedColor name="secondaryText">
+            <color red="0.63137254901960782" green="0.63137254901960782" blue="0.63137254901960782" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>
