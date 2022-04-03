@@ -32,38 +32,129 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
         } catch {
             print(error)
         }
+        
+        tableView.sectionHeaderTopPadding = 16.0
+        
+        tableView.register(
+            UINib(nibName: "FeedFooterView", bundle: nil),
+            forHeaderFooterViewReuseIdentifier: "feedFooterView"
+        )
 
         fetchFeedsByJSON()
     }
     
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let isMessageEmpty = feedNews[section].messageText?.isEmpty
+        let isPhotosEmpty = feedNews[section].photos.isEmpty
+        switch (isMessageEmpty, isPhotosEmpty) {
+        case (true, false), (false, true):
+            return 1
+        case (false, false):
+            return 2
+        default:
+            return 1
+        }
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
         feedNews.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let currentFeed = feedNews[indexPath.row]
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UITableViewHeaderFooterView()
+        let headerView: ImageCell = UIView.fromNib()
+        view.addSubview(headerView)
         
+        NSLayoutConstraint.activate([
+            headerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            headerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let currentFeed = feedNews[section]
+        if let user = currentFeed.user {
+            headerView.configureFeedCell(
+                label: user.userName,
+                pictureURL: user.userPhotoURLString,
+                color: user.codeColor,
+                date: currentFeed.date
+            )
+        } else {
+            headerView.configureFeedCell(
+                label: currentFeed.group?.title,
+                pictureURL: currentFeed.group?.groupPictureURL,
+                color: currentFeed.group?.codeColor,
+                date: currentFeed.date
+            )
+        }
+        return view
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: "feedCell", for: indexPath) as? FeedCell
-        else { return UITableViewCell() }
+            let footer = tableView.dequeueReusableHeaderFooterView(withIdentifier: "feedFooterView") as? FeedFooterView
+        else { return UIView() }
         
-        let isLast = indexPath.row == feedNews.count-1
-        cell.configureFeedCell(feed: currentFeed, isLast: isLast) {
+        footer.configurateFooter(feed: feedNews[section]) {
             var sharedItem = [Any]()
             var array = [String]()
-            if let message = currentFeed.messageText {
+            if let message = self.feedNews[section].messageText {
                 array.append(message)
             }
-            sharedItem = !currentFeed.photos.isEmpty
-            ? currentFeed.photos.compactMap(\.imageURLString)
+            sharedItem = !self.feedNews[section].photos.isEmpty
+            ? self.feedNews[section].photos.compactMap(\.imageURLString)
             : array
             
             let activityView = UIActivityViewController(activityItems: sharedItem, applicationActivities: nil)
             self.present(activityView, animated: true, completion: nil)
         }
-        return cell
+            
+        
+        return footer
     }
     
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 64
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 44
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let currentFeed = feedNews[indexPath.section]
+        
+        switch (indexPath.row) {
+        case 0:
+            guard
+                let cell = tableView.dequeueReusableCell(
+                    withIdentifier: "feedCell",
+                    for: indexPath
+                ) as? FeedCell
+            else { return UITableViewCell() }
+            
+            cell.configureFeedCell(feed: currentFeed)
+            return cell
+            
+        case 1:
+            guard
+                let cell = tableView.dequeueReusableCell(
+                    withIdentifier: "feedImagesCell",
+                    for: indexPath
+                ) as? FeedImagesCell
+            else { return UITableViewCell() }
+            
+            cell.configureFeedCell(feed: currentFeed)
+            return cell
+            
+        default:
+            return UITableViewCell()
+        }
+        
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
@@ -97,7 +188,7 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
                             user: user,
                             messageText: feed.text,
                             photos: photosURLs,
-                            date: feed.date,
+                            date: Date(timeIntervalSince1970: feed.date),
                             likesCount: feed.likes.count,
                             commentsCount: feed.comments.count,
                             viewsCount: feed.views?.count ?? 0)
@@ -107,7 +198,7 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
                                 group: group,
                                 messageText: feed.text,
                                 photos: photosURLs,
-                                date: feed.date,
+                                date: Date(timeIntervalSince1970: feed.date),
                                 likesCount: feed.likes.count,
                                 commentsCount: feed.comments.count,
                                 viewsCount: feed.views?.count ?? 0)
@@ -117,7 +208,7 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
                         user: User(id: 0, firstName: "No", secondName: "username", userPhotoURLString: nil),
                         messageText: feed.text,
                         photos: photosURLs,
-                        date: feed.date,
+                        date: Date(timeIntervalSince1970: feed.date),
                         likesCount: feed.likes.count,
                         commentsCount: feed.comments.count,
                         viewsCount: feed.views?.count ?? 0

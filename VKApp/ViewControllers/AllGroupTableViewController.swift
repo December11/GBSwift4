@@ -11,10 +11,9 @@ import RealmSwift
 class AllGroupTableViewController: UITableViewController {
 
     @IBOutlet weak var searchBar: UISearchBar!
-    
-    private let groupsService = NetworkService<GroupDTO>()
+
+    private let groupsDataService = GroupsService.instance
     var groups = [Group]()
-    private var realmGroupResults: Results<RealmGroup>?
     private var groupToken: NotificationToken?
     var filteredGroups = [Group]()
     var completion: ((Group) -> Void)?
@@ -30,25 +29,17 @@ class AllGroupTableViewController: UITableViewController {
             forCellReuseIdentifier: "imageCell")
         
         do {
-            let updateInterval: TimeInterval = 60 * 60
-            if let updateInfo = try RealmService.load(typeOf: RealmAppInfo.self).first,
-               let groupsUpdateDate = updateInfo.groupsUpdateDate,
-               groupsUpdateDate >= Date(timeIntervalSinceNow: -updateInterval)  {
-                let realmGroupResults: Results<RealmGroup> = try RealmService.load(typeOf: RealmGroup.self)
-                self.realmGroupResults = realmGroupResults
-                updateGroups(realmGroupResults.map { $0 })
-            } else {
-                fetchGroupsFromJSON()
+            if let fetchedData = try groupsDataService.getData() {
+                groups = fetchedData
             }
         } catch {
             print(error)
         }
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        groupToken = realmGroupResults?.observe({ [weak self] groupChanges in
+        groupToken = groupsDataService.realmGroupResults?.observe({ [weak self] groupChanges in
             guard let self = self else { return }
             switch groupChanges {
             case .initial(_):
@@ -100,54 +91,4 @@ class AllGroupTableViewController: UITableViewController {
         completion?(currentGroup)
         navigationController?.popViewController(animated: true)
     }
-    
-    
-    // MARK: - Private methods
-    private func updateGroups(_ realmGroups: [RealmGroup]) {
-        groups = realmGroups.map({ realmGroup in
-            Group(id: realmGroup.id, title: realmGroup.title, imageURL: realmGroup.groupPhotoURL)
-        })
-        self.tableView.reloadData()
-    }
-    
-    private func saveGroupsToRealm(_ realmGroups: [RealmGroup]) {
-        do {
-            try RealmService.save(items: realmGroups)
-            AppDataInfo.shared.groupsUpdateDate = Date()
-            let realmUpdateDate = RealmAppInfo(
-                groupsUpdateDate: AppDataInfo.shared.groupsUpdateDate,
-                friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate,
-                feedUpdateDate: AppDataInfo.shared.feedUpdateDate
-            )
-            try RealmService.save(items: [realmUpdateDate])
-            updateGroups(realmGroups)
-        } catch {
-            print(error)
-        }
-    }
-    
-    private func fetchGroupsFromJSON() {
-        //получаем список групп
-        groupsService.path = "/method/groups.get"
-        groupsService.queryItems = [
-            URLQueryItem(name: "user_id", value: String(SessionStorage.shared.userId)),
-            URLQueryItem(name: "extended", value: "1"),
-            URLQueryItem(name: "fields", value: "description"),
-            URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
-            URLQueryItem(name: "v", value: "5.131")
-        ]
-        groupsService.fetch { [weak self] groupsDTOObject in
-            switch groupsDTOObject {
-            case .failure(let error):
-                print(error)
-            case .success(let groupsDTO):
-                DispatchQueue.main.async {
-                    let color = CGColor.generateLightColor()
-                    let realmGroups = groupsDTO.map({ RealmGroup(group: $0, color: color) })
-                    self?.saveGroupsToRealm(realmGroups)
-                }
-            }
-        }
-    }
-    
 }
