@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UserDTO{
+struct UserDTO {
     let id: Int
     var firstName: String
     var secondName: String
@@ -22,6 +22,5 @@ extension UserDTO: Decodable {
         case secondName = "last_name"
         case photoURLString = "photo_50"
         case deactivated
-        
     }
 }

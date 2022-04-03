@@ -15,7 +15,7 @@ class LoginViewController: UIViewController {
     @IBAction func loginButton(_ sender: UIButton) {
     }
     
-    //MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -50,12 +50,12 @@ class LoginViewController: UIViewController {
             object: nil)
     }
     
-    //MARK: - Keyboard (hide)
+    // MARK: - Keyboard (hide)
     @IBAction func hideKeyboard() {
         self.view.endEditing(true)
     }
     
-    //MARK: - Private methods
+    // MARK: - Private methods
     private func checkUser(correctUsername: String = "admin", correctPassword: String = "12345") -> Bool {
         loginTextField.text == correctUsername && passwordTextField.text == correctPassword
     }
@@ -87,7 +87,4 @@ class LoginViewController: UIViewController {
         loginTextField.text = ""
         passwordTextField.text = ""
     }
-
-
 }
-

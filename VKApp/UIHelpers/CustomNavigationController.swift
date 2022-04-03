@@ -44,7 +44,7 @@ final class CustomNavigationController: UINavigationController, UINavigationCont
             
             let translation = recognizer.translation(in: view)
             let relativeTranslation = translation.x / width
-            let progress = max (0, min(relativeTranslation, 1))
+            let progress = max(0, min(relativeTranslation, 1))
             interactiveTransition.update(progress)
             interactiveTransition.shouldFinish = progress > 0.35
 

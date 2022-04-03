@@ -5,8 +5,8 @@
 //  Created by Alla Shkolnik on 25.12.2021.
 //
 
-import UIKit
 import Kingfisher
+import UIKit
 
 class ImageCell: UITableViewCell {
 
@@ -19,7 +19,6 @@ class ImageCell: UITableViewCell {
     func configureCell(label: String, additionalLabel: String?, pictureURL: String?, color: CGColor?) {
         
         self.subTextLabel.isHidden = true
-        // имя или название
         let attributedString = NSMutableAttributedString(string: label)
         if let secondName = additionalLabel {
             attributedString.append(NSMutableAttributedString(string: " "))
@@ -27,16 +26,17 @@ class ImageCell: UITableViewCell {
         }
         self.label.attributedText = attributedString
         
-        // акроним
         let picture = pictureURL == "https://vk.com/images/camera_50.png" || pictureURL == "https://vk.com/images/community_50.png"
         ? nil
         : pictureURL
         abbreviationLabel.isHidden = picture != nil
-        let name = additionalLabel == nil ? label : label + " " + additionalLabel!
+        var name = label
+        if let additionalLabel = additionalLabel {
+            name += " " + additionalLabel
+        }
         abbreviationLabel.text = picture == nil ? name.acronym : nil
         userPicView.layer.backgroundColor = color ?? UIColor.yellow.cgColor
         
-        // фотка
         photo.isHidden = pictureURL == nil
         if let imageURL = picture {
             let url = URL(string: imageURL)
@@ -74,13 +74,7 @@ class ImageCell: UITableViewCell {
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        
     }
-    
-//    override func awakeFromNib() {
-//        //let gesture = UITapGestureRecognizer(target: self, action: #selector(userPhotoTapped(_:)))
-//        //userPicView.addGestureRecognizer(gesture)
-//    }
     
     @objc func userPhotoTapped(_ sender: Any) {
         UIView.animate(withDuration: 0.1) {
@@ -92,4 +86,3 @@ class ImageCell: UITableViewCell {
         }
     }
 }
-

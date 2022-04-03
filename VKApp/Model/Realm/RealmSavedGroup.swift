@@ -5,8 +5,8 @@
 //  Created by Alla Shkolnik on 08.03.2022.
 //
 
-import UIKit
 import RealmSwift
+import UIKit
 
 class RealmSavedGroup: Object {
     @Persisted(primaryKey: true) var id: Int = 0

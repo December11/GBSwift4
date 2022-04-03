@@ -41,5 +41,3 @@ final class UserHelper {
         return array.sorted()
     }
 }
-
-

@@ -21,8 +21,7 @@ final class PushAnimation: NSObject, UIViewControllerAnimatedTransitioning {
             let source = transitionContext.viewController(forKey: .from)
         else { return }
         
-
-        destination.view.layer.anchorPoint = CGPoint(x: 1 , y: 0)
+        destination.view.layer.anchorPoint = CGPoint(x: 1, y: 0)
         destination.view.layer.transform = CATransform3DTranslate(
             CATransform3DIdentity,
             destination.view.bounds.width / 2,
@@ -44,15 +43,12 @@ final class PushAnimation: NSObject, UIViewControllerAnimatedTransitioning {
             transitionContext.containerView.transform = .identity
             source.view.transform = .identity
             
-            if (transitionContext.transitionWasCancelled) {
+            if transitionContext.transitionWasCancelled {
                 destination.view.removeFromSuperview()
             } else {
                 source.view.removeFromSuperview()
             }
             transitionContext.completeTransition(isFinished)
         }
-        
     }
-    
-    
 }

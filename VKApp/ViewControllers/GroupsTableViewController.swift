@@ -5,13 +5,13 @@
 //  Created by Alla Shkolnik on 18.12.2021.
 //
 
-import UIKit
 import RealmSwift
+import UIKit
 
 class GroupsTableViewController: UITableViewController {
     
-    var groups = [Group]()
-    var realmGroupResults: Results<RealmSavedGroup>?
+    private let groupsDataService = GroupsService.instance
+    private var groups = [Group]()
     private var groupToken: NotificationToken?
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -22,33 +22,30 @@ class GroupsTableViewController: UITableViewController {
         allGroupsViewController.completion = { [weak self] group in
             guard let self = self else { return }
             if !self.groups.contains(group) {
-                let realmSavedGroup = RealmSavedGroup(group: group)
-                self.saveGroupsToRealm([realmSavedGroup])
+                let realmGroup = RealmGroup(group: group)
+                self.groupsDataService.saveGroupsToRealm([realmGroup])
             }
-            //self.tableView.reloadData()
         }
     }
     
-    //MARK: - Lifecycle
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tableView.register(
-            UINib(nibName: "ImageCell", bundle: nil),
-            forCellReuseIdentifier: "imageCell")
+        tableView.register(for: ImageCell.self)
         
         do {
-            self.realmGroupResults = try RealmService.load(typeOf: RealmSavedGroup.self)
-            guard let realmGroups = self.realmGroupResults else { return }
-            groups = realmGroups.map { Group(id: $0.id, title: $0.title, imageURL: $0.groupPhotoURL) }
+            if let fetchedData = try groupsDataService.getData() {
+                groups = fetchedData
+            }
         } catch {
             print(error)
         }
         
-        groupToken = realmGroupResults?.observe({ [weak self] groupChanges in
+        groupToken = groupsDataService.realmGroupResults?.observe({ [weak self] groupChanges in
             guard let self = self else { return }
             switch groupChanges {
-            case .initial(_):
+            case .initial:
                 self.tableView.reloadData()
             case .update(_, deletions: let deletions, insertions: let insertions, modifications: let modifications):
                 print(deletions, insertions, modifications)
@@ -69,30 +66,6 @@ class GroupsTableViewController: UITableViewController {
     deinit {
         groupToken?.invalidate()
     }
-    
-    // MARK: - Private methods
-    
-    private func saveGroupsToRealm(_ realmGroups: [RealmSavedGroup]) {
-        do {
-            try RealmService.save(items: realmGroups)
-            let newGroups = realmGroups.map { Group($0) }
-            groups.append(contentsOf: newGroups)
-        } catch {
-            print(error)
-        }
-    }
-    
-    private func deleteGroupFromRealm(_ realmGroup: RealmSavedGroup) {
-        do {
-            let group = Group(id: realmGroup.id, title: realmGroup.title, imageURL: realmGroup.groupPhotoURL)
-            if let index = groups.firstIndex(of: group) {
-                groups.remove(at: index)
-            }
-            try RealmService.delete(object: realmGroup)
-        } catch {
-            print(error)
-        }
-    }
 
     // MARK: - Table view data source
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -100,15 +73,11 @@ class GroupsTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //guard let realmGroups = realmGroupResults else { return groups.count }
-        //return realmGroups.count
         return groups.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell", for: indexPath) as? ImageCell
-        else { return UITableViewCell() }
+        let cell: ImageCell = tableView.dequeueReusableCell(for: indexPath)
         
         let currentGroup = groups[indexPath.row]
         cell.configureCell(
@@ -116,7 +85,6 @@ class GroupsTableViewController: UITableViewController {
             additionalLabel: nil,
             pictureURL: currentGroup.groupPictureURL,
             color: currentGroup.codeColor)
-        
         return cell
     }
 
@@ -126,8 +94,10 @@ class GroupsTableViewController: UITableViewController {
         forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let group = groups[indexPath.row]
-            guard let realmGroup = realmGroupResults?.first(where: { $0.id == group.id }) else { return }
-            deleteGroupFromRealm(realmGroup)
+            guard
+                let realmGroups = groupsDataService.realmGroupResults,
+                let realmGroup = realmGroups.first(where: { $0.id == group.id }) else { return }
+            groupsDataService.deleteGroupFromRealm(realmGroup)
         }    
     }
     

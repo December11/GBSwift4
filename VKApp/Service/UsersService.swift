@@ -5,8 +5,8 @@
 //  Created by Alla Shkolnik on 29.03.2022.
 //
 
-import UIKit
 import RealmSwift
+import UIKit
 
 final class UsersService {
     
@@ -75,32 +75,22 @@ final class UsersService {
     
     private func fetchFriendsByRealm(_ realmFriends: [RealmUser]) -> [User] {
         let friends = realmFriends.map({ realmFriend in
-            User(
-                id: realmFriend.id,
-                firstName: realmFriend.firstName,
-                secondName: realmFriend.secondName,
-                userPhotoURLString: realmFriend.userPhotoURLString
-            )
+            User(user: realmFriend)
         })
         return friends
     }
     
     private func saveFriendsToRealm(_ realmFriends: [RealmUser]) {
         do {
-            print("1")
             try RealmService.save(items: realmFriends)
-            print("2")
             AppDataInfo.shared.friendsUpdateDate = Date()
             let realmUpdateDate = RealmAppInfo(
                 groupsUpdateDate: AppDataInfo.shared.groupsUpdateDate,
-                friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate,
-                feedUpdateDate: AppDataInfo.shared.feedUpdateDate
+                friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate
             )
             try RealmService.save(items: [realmUpdateDate])
-            print("3")
         } catch {
             print(error)
         }
     }
-    
 }

@@ -10,4 +10,3 @@ import Foundation
 struct ResponseDTO<ItemsType: Decodable>: Decodable {
     let response: ItemsDTO<ItemsType>
 }
-

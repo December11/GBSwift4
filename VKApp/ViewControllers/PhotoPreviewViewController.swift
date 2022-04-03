@@ -5,8 +5,8 @@
 //  Created by Alla Shkolnik on 26.01.2022.
 //
 
-import UIKit
 import Kingfisher
+import UIKit
 
 class PhotoPreviewViewController: UIViewController {
     
@@ -39,7 +39,6 @@ class PhotoPreviewViewController: UIViewController {
         
         newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
         newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
-        
 
         guard let imageURL = currentActivePhoto?.imageURLString else { return }
         let url = URL(string: imageURL)
@@ -61,10 +60,11 @@ class PhotoPreviewViewController: UIViewController {
             activePhotoIndex != nil,
             let photos = self.photos
         else { return }
-        switch(gesture.direction) {
+        switch gesture.direction {
         case .left:
             guard
-                let index = getNewIndex(from: self.activePhotoIndex!, isNext: true),
+                let photoIndex = self.activePhotoIndex,
+                let index = getNewIndex(from: photoIndex, isNext: true),
                 let imageURL = photos[index].imageURLString
             else { return }
             let url = URL(string: imageURL)
@@ -91,7 +91,8 @@ class PhotoPreviewViewController: UIViewController {
             
         case .right:
             guard
-                let index = getNewIndex(from: self.activePhotoIndex!, isNext: false),
+                let photoIndex = self.activePhotoIndex,
+                let index = getNewIndex(from: photoIndex, isNext: false),
                 let imageURL = photos[index].imageURLString
             else { return }
             let url = URL(string: imageURL)

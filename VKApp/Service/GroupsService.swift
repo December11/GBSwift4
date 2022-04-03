@@ -5,14 +5,14 @@
 //  Created by Alla Shkolnik on 29.03.2022.
 //
 
-import UIKit
 import RealmSwift
+import UIKit
 
 final class GroupsService {
     
     static let instance = GroupsService()
     
-    var groups = [Group]()
+    var myGroups = [Group]()
     var realmGroupResults: Results<RealmGroup>?
     
     private init() {}
@@ -22,12 +22,12 @@ final class GroupsService {
             let updateInterval: TimeInterval = 60 * 1
             if let updateInfo = try RealmService.load(typeOf: RealmAppInfo.self).first,
                let groupsUpdateDate = updateInfo.groupsUpdateDate,
-               groupsUpdateDate >= Date(timeIntervalSinceNow: -updateInterval)  {
+               groupsUpdateDate >= Date(timeIntervalSinceNow: -updateInterval) {
                 let realmGroupResults: Results<RealmGroup> = try RealmService.load(typeOf: RealmGroup.self)
                 self.realmGroupResults = realmGroupResults
                 updateGroups(realmGroupResults.map { $0 })
             } else {
-                fetchGroupsFromJSON()
+                fetchMyGroupsFromJSON()
             }
         } catch {
             print(error)
@@ -46,21 +46,14 @@ final class GroupsService {
         return nil
     }
     
-    // MARK: - Private methods
-    private func updateGroups(_ realmGroups: [RealmGroup]) {
-        groups = realmGroups.map({ realmGroup in
-            Group(id: realmGroup.id, title: realmGroup.title, imageURL: realmGroup.groupPhotoURL)
-        })
-    }
-
-    private func saveGroupsToRealm(_ realmGroups: [RealmGroup]) {
+    // MARK: - Methods
+    func saveGroupsToRealm(_ realmGroups: [RealmGroup]) {
         do {
             try RealmService.save(items: realmGroups)
             AppDataInfo.shared.groupsUpdateDate = Date()
             let realmUpdateDate = RealmAppInfo(
                 groupsUpdateDate: AppDataInfo.shared.groupsUpdateDate,
-                friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate,
-                feedUpdateDate: AppDataInfo.shared.feedUpdateDate
+                friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate
             )
             try RealmService.save(items: [realmUpdateDate])
             updateGroups(realmGroups)
@@ -69,15 +62,28 @@ final class GroupsService {
         }
     }
     
+    func deleteGroupFromRealm(_ realmGroup: RealmGroup) {
+        do {
+            let group = Group(group: realmGroup)
+            if let index = myGroups.firstIndex(of: group) {
+                myGroups.remove(at: index)
+            }
+            try RealmService.delete(object: realmGroup)
+        } catch {
+            print(error)
+        }
+    }
+    
+    // MARK: - Private methods
+    private func updateGroups(_ realmGroups: [RealmGroup]) {
+        myGroups = realmGroups.map { Group(group: $0) }
+    }
+    
     private func fetchGroupsFromRealm(_ realmGroups: [RealmGroup]) -> [Group] {
-        let groups = realmGroups.map({ realmGroup in
-            Group(id: realmGroup.id, title: realmGroup.title, imageURL: realmGroup.groupPhotoURL)
-        })
-        return groups
+        realmGroups.map { Group(group: $0) }
     }
 
-    private func fetchGroupsFromJSON() {
-        //получаем список групп
+    private func fetchMyGroupsFromJSON() {
         let groupsService = NetworkService<GroupDTO>()
         groupsService.path = "/method/groups.get"
         groupsService.queryItems = [
@@ -87,14 +93,19 @@ final class GroupsService {
             URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
             URLQueryItem(name: "v", value: "5.131")
         ]
-        groupsService.fetch { [weak self] groupsDTOObject in
-            switch groupsDTOObject {
+        groupsService.fetch { [weak self] groupsDTO in
+            switch groupsDTO {
             case .failure(let error):
                 print(error)
             case .success(let groupsDTO):
                 DispatchQueue.main.async {
                     let color = CGColor.generateLightColor()
-                    let realmGroups = groupsDTO.map({ RealmGroup(group: $0, color: color) })
+                    let realmGroups = groupsDTO.compactMap({ groupDTO -> RealmGroup? in
+                        if groupDTO.isMember == 1 {
+                            return RealmGroup(group: groupDTO, color: color)
+                        }
+                        return nil
+                    })
                     self?.saveGroupsToRealm(realmGroups)
                 }
             }

@@ -29,7 +29,6 @@ final class PopAnimation: NSObject, UIViewControllerAnimatedTransitioning {
         source.view.alpha = 1
         transitionContext.containerView.addSubview(destination.view)
         
-        
         UIView.animate(withDuration: animationTime, delay: 0.0, options: .curveEaseInOut) {
             source.view.alpha = 0
             source.view.layer.transform = CATransform3DMakeRotation(-.pi/2, 0, 0, 1)

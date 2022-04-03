@@ -5,8 +5,8 @@
 //  Created by Alla Shkolnik on 18.12.2021.
 //
 
-import UIKit
 import RealmSwift
+import UIKit
 
 class FriendsTableViewController: UITableViewController {
     
@@ -38,9 +38,7 @@ class FriendsTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.register(
-            UINib(nibName: "ImageCell", bundle: nil),
-            forCellReuseIdentifier: "imageCell")
+        tableView.register(for: ImageCell.self)
         
         do {
             if let fetchedData = try userService.getData() {
@@ -56,7 +54,7 @@ class FriendsTableViewController: UITableViewController {
         friendsToken = userService.realmFriendResults?.observe({ [weak self] friendChanges in
             guard let self = self else { return }
             switch friendChanges {
-            case .initial(_):
+            case .initial:
                 self.tableView.reloadData()
             case .update(_, deletions: let deletions, insertions: let insertions, modifications: let modifications):
                 print(deletions, insertions, modifications)
@@ -105,9 +103,7 @@ class FriendsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell", for: indexPath) as? ImageCell
-        else { return UITableViewCell() }
+        let cell: ImageCell = tableView.dequeueReusableCell(for: indexPath)
         
         // все чтобы получить нужного друга в нужной секции
         let currentSectionNumber = indexPath.section

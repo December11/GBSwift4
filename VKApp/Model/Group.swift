@@ -20,10 +20,27 @@ struct Group {
         codeColor = CGColor.generateLightColor()
     }
     
+    init(group: RealmGroup) {
+        self.id = group.id
+        self.title = group.title
+        self.groupPictureURL = group.groupPhotoURL ?? nil
+        self.codeColor = group.codeColor
+    }
+    
     init (_ object: RealmSavedGroup) {
         self.id = object.id
         self.groupPictureURL = object.groupPhotoURL
         self.title = object.title
         self.codeColor = object.codeColor
+    }
+}
+
+extension Group: Comparable {
+    static func == (lhs: Group, rhs: Group) -> Bool {
+        lhs.title == rhs.title
+    }
+    
+    static func < (lhs: Group, rhs: Group) -> Bool {
+        lhs.title < rhs.title
     }
 }

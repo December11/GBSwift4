@@ -12,7 +12,6 @@ class VKWVLoginViewController: UIViewController {
 
     @IBOutlet weak var webView: WKWebView! {
         didSet {
-            // для отслеживания навигации
             webView.navigationDelegate = self
         }
     }
@@ -25,7 +24,6 @@ class VKWVLoginViewController: UIViewController {
                 
         webView.load(request)
     }
-    
     
     var urlComponents: URLComponents {
         var components = URLComponents()

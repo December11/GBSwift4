@@ -13,7 +13,6 @@ final class SwipeInteractionController: UIPercentDrivenInteractiveTransition {
     
     @objc func handleGesture(_ gestureRecognizer: UIScreenEdgePanGestureRecognizer) {
         
-        
     }
     
 }

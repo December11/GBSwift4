@@ -20,7 +20,6 @@ class FriendCollectionViewController: UICollectionViewController {
         super.viewDidLoad()
         guard let userID = friend?.id else { return }
         
-        //получаем мои фотки
         photosService.path = "/method/photos.get"
         photosService.queryItems = [
             URLQueryItem(name: "owner_id", value: String(userID)),
@@ -45,7 +44,10 @@ class FriendCollectionViewController: UICollectionViewController {
                 }
             }
         }
-        collectionView.register(UINib(nibName: "ImageCollectionCell", bundle: nil), forCellWithReuseIdentifier: "imageCollectionCell")
+        collectionView.register(
+            UINib(nibName: "ImageCollectionCell", bundle: nil),
+            forCellWithReuseIdentifier: "imageCollectionCell"
+        )
     }
 
     // MARK: Navigation
@@ -67,7 +69,10 @@ class FriendCollectionViewController: UICollectionViewController {
         return friendPhotos.count
     }
 
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
         guard
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: "imageCollectionCell",
@@ -84,7 +89,11 @@ class FriendCollectionViewController: UICollectionViewController {
 }
 
 extension FriendCollectionViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
         CGSize(width: collectionView.bounds.width, height: collectionView.bounds.width)
     }
 }

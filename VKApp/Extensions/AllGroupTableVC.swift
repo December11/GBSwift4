@@ -9,37 +9,33 @@ import UIKit
 
 extension AllGroupTableViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.filteredGroups.removeAll()
         
-        let searchGroupsService = NetworkService<GroupDTO>()
-        var searchedGroups = [Group]()
+        let queryInterval = 1.0
+        Timer.scheduledTimer(withTimeInterval: queryInterval, repeats: false) { [weak self] _ in
+            guard let self = self else { return }
+            self.fetchSearchedGroupsFromJSON(by: searchText)
+        }
+    }
         
-        //search groups
-        searchGroupsService.path = "/method/groups.search"
-        searchGroupsService.queryItems = [
-            URLQueryItem(name: "user_id", value: String(SessionStorage.shared.userId)),
+    func fetchSearchedGroupsFromJSON(by searchText: String) {
+        let groupsService = NetworkService<GroupDTO>()
+        groupsService.path = "/method/groups.search"
+        groupsService.queryItems = [
             URLQueryItem(name: "q", value: searchText),
+            URLQueryItem(name: "type", value: "group"),
             URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
             URLQueryItem(name: "v", value: "5.131")
         ]
-        
-        searchGroupsService.fetch { groupsDTOObject in
-            switch groupsDTOObject {
+        groupsService.fetch { [weak self] searchedGroupsDTO in
+            switch searchedGroupsDTO {
             case .failure(let error):
                 print(error)
-            case .success(let groupsDTO):
-                groupsDTO.forEach { groupDTO in
-                    searchedGroups.append(Group(id: groupDTO.id, title: groupDTO.title, imageURL: groupDTO.groupPhotoURL))
-                }
-                
-                self.filteredGroups = searchText.isEmpty
-                ? self.groups
-                : self.filteredGroups.filter(
-                    {(searchedGroup: Group) -> Bool in
-                        return searchedGroup.title.range(of: searchText, options: .caseInsensitive) != nil
-                    })
-                
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
+            case .success(let searchedGroupsDTO):
+                self?.filteredGroups = searchedGroupsDTO.map {
+                    print("## group title is \($0.title)")
+                    return Group(id: $0.id, title: $0.title, imageURL: $0.groupPhotoURL)
+
                 }
             }
         }

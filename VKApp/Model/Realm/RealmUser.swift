@@ -5,8 +5,8 @@
 //  Created by Alla Shkolnik on 26.02.2022.
 //
 
-import UIKit
 import RealmSwift
+import UIKit
 
 class RealmUser: Object {
     @Persisted(primaryKey: true) var id: Int = 0
@@ -18,15 +18,7 @@ class RealmUser: Object {
     
 }
 
-extension RealmUser {
-//    convenience init(id: Int, firstName: String, secondName: String, userPhotoURLString: String, ) {
-//        self.init()
-//        self.id = id
-//        self.firstName = firstName
-//        self.secondName = secondName
-//        self.userPhotoURLString = userPhotoURLString
-//    }
-    
+extension RealmUser {    
     convenience init(user: User) {
         self.init()
         self.id = user.id
