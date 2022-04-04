@@ -27,7 +27,6 @@ class AllGroupTableViewController: UITableViewController {
         super.viewDidLoad()
         searchBar.delegate = self
         searchBar.placeholder = "Search some group"
-        
         tableView.register(for: ImageCell.self)
     }
     

@@ -37,9 +37,9 @@ final class GroupsService {
     func getData() throws -> [Group]? {
         do {
             try updateData()
-            let realmGroups: Results<RealmGroup> = try RealmService.load(typeOf: RealmGroup.self)
-            let groups = fetchGroupsFromRealm(realmGroups.map { $0 })
-            return groups
+            if let realmGroups = realmGroupResults {
+                return fetchGroupsFromRealm(realmGroups.map { $0 })
+            }
         } catch {
             print(error)
         }

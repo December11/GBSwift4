@@ -2,7 +2,7 @@
 //  UITableView.swift
 //  VKApp
 //
-//  Created by 👩🏻‍🎨 📱 december11 on 08.03.2022.
+//  Created by Alla Shkolnik on 08.03.2022.
 //
 
 import Foundation

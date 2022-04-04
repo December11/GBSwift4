@@ -17,29 +17,31 @@ final class NetworkService<ItemsType: Decodable> {
     
     // MARK: - Public methods
     func fetch(completion: @escaping (Result<[ItemsType], Error>) -> Void) {
-        var urlComponents: URLComponents {
-            var components = URLComponents()
-            components.scheme = scheme
-            components.host = host
-            components.path = path
-            components.queryItems = queryItems
-            return components
-        }
-        guard let url = urlComponents.url else { return }
-        
-        let task = session.dataTask(with: url) { data, response, error in
-            guard
-                error == nil,
-                let data = data
-            else { return }
-            do {
-                let json = try JSONDecoder().decode(ResponseDTO<ItemsType>.self, from: data)
-                completion(.success(json.response.items))
-            } catch {
-                print(error)
-                completion(.failure(error))
+        DispatchQueue.global(qos: .userInitiated).async {
+            var urlComponents: URLComponents {
+                var components = URLComponents()
+                components.scheme = self.scheme
+                components.host = self.host
+                components.path = self.path
+                components.queryItems = self.queryItems
+                return components
             }
+            guard let url = urlComponents.url else { return }
+            
+            let task = self.session.dataTask(with: url) { data, response, error in
+                guard
+                    error == nil,
+                    let data = data
+                else { return }
+                do {
+                    let json = try JSONDecoder().decode(ResponseDTO<ItemsType>.self, from: data)
+                    completion(.success(json.response.items))
+                } catch {
+                    print(error)
+                    completion(.failure(error))
+                }
+            }
+            task.resume()
         }
-        task.resume()
     }
 }

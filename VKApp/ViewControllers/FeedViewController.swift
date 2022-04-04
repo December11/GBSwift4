@@ -43,7 +43,6 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     // MARK: Datasource and Delegates
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let isMessageEmpty = feedNews[section].messageText?.isEmpty
         let isPhotosEmpty = feedNews[section].photos.isEmpty

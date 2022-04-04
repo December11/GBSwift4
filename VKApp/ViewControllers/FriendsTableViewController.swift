@@ -11,11 +11,8 @@ import UIKit
 class FriendsTableViewController: UITableViewController {
     
     private let helper = UserHelper()
-    private let friendsService = NetworkService<UserDTO>()
     private let userService = UsersService.instance
-    
     private var friendsToken: NotificationToken?
-    private var realmFriendResults: Results<RealmUser>?
     var friends = [User]()
     
     // MARK: - Данные для экрана Фото
@@ -39,7 +36,7 @@ class FriendsTableViewController: UITableViewController {
         super.viewDidLoad()
         
         tableView.register(for: ImageCell.self)
-        
+
         do {
             if let fetchedData = try userService.getData() {
                 friends = fetchedData
@@ -47,10 +44,19 @@ class FriendsTableViewController: UITableViewController {
         } catch {
             print(error)
         }
+        realmNotify()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    deinit {
+        friendsToken?.invalidate()
+    }
+    
+    @IBAction func dismiss() {
+        dismiss(animated: true)
+    }
+    
+    // MARK: - Private methods
+    func realmNotify() {
         friendsToken = userService.realmFriendResults?.observe({ [weak self] friendChanges in
             guard let self = self else { return }
             switch friendChanges {
@@ -59,7 +65,6 @@ class FriendsTableViewController: UITableViewController {
             case .update(_, deletions: let deletions, insertions: let insertions, modifications: let modifications):
                 print(deletions, insertions, modifications)
                 self.tableView.beginUpdates()
-                
                 let deletionIndexPath = deletions.map {
                     IndexPath(row: $0, section: self.tableView.sectionOf(row: $0) ?? 0)
                 }
@@ -79,13 +84,11 @@ class FriendsTableViewController: UITableViewController {
         })
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        friendsToken?.invalidate()
-    }
-    
-    @IBAction func dismiss() {
-        dismiss(animated: true)
+    private func getCurrentUser(for indexPath: IndexPath) -> User {
+        let currentSectionNumber = indexPath.section
+        let currentKeys = helper.getSortedKeyArray(for: friends)[currentSectionNumber]
+        let friendsForCurrentKey = helper.getArrayForKey(from: friends, for: currentKeys)
+        return friendsForCurrentKey[indexPath.row]
     }
 
     // MARK: - Секции и вывод строк
@@ -104,13 +107,8 @@ class FriendsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: ImageCell = tableView.dequeueReusableCell(for: indexPath)
-        
-        // все чтобы получить нужного друга в нужной секции
-        let currentSectionNumber = indexPath.section
-        let currentKeys = helper.getSortedKeyArray(for: friends)[currentSectionNumber]
-        let friendsForCurrentKey = helper.getArrayForKey(from: friends, for: currentKeys)
-        let currentFriend = friendsForCurrentKey[indexPath.row]
-        
+        let currentFriend = getCurrentUser(for: indexPath)
+    
         cell.configureCell(
             label: currentFriend.firstName,
             additionalLabel: currentFriend.secondName,

@@ -11,7 +11,7 @@ import UIKit
 final class UsersService {
     
     static let instance = UsersService()
-    
+    var friends = [User]()
     var realmFriendResults: Results<RealmUser>?
     
     private init() {}
@@ -19,13 +19,10 @@ final class UsersService {
     func updateData() throws {
         do {
             let updateInterval: TimeInterval = 60 * 1
-            print("4")
             if let updateInfo = try RealmService.load(typeOf: RealmAppInfo.self).first,
                let friendsUpdateDate = updateInfo.friendsUpdateDate,
                friendsUpdateDate >= Date(timeIntervalSinceNow: -updateInterval) {
-                print("5")
                 let realmFriends: Results<RealmUser> = try RealmService.load(typeOf: RealmUser.self)
-                print("6")
                 self.realmFriendResults = realmFriends
             } else {
                 fetchFriendsByJSON()
@@ -38,9 +35,9 @@ final class UsersService {
     func getData() throws -> [User]? {
         do {
             try updateData()
-            let realmFriends: Results<RealmUser> = try RealmService.load(typeOf: RealmUser.self)
-            let friends = fetchFriendsByRealm(realmFriends.map { $0 })
-            return friends
+            if let realmFriends = self.realmFriendResults {
+                return fetchFriendsFromRealm(realmFriends.map { $0 })
+            }
         } catch {
             print(error)
         }
@@ -48,6 +45,14 @@ final class UsersService {
     }
     
     // MARK: - Private methods
+    private func updateFriendss(_ realmUsers: [RealmUser]) {
+        friends = realmUsers.map { User(user: $0)}
+    }
+    
+    private func fetchFriendsFromRealm(_ realmUsers: [RealmUser]) -> [User] {
+        realmUsers.map { User(user: $0) }
+    }
+    
     private func fetchFriendsByJSON() {
         let friendsService = NetworkService<UserDTO>()
         friendsService.path = "/method/friends.get"
@@ -71,13 +76,6 @@ final class UsersService {
                 }
             }
         }
-    }
-    
-    private func fetchFriendsByRealm(_ realmFriends: [RealmUser]) -> [User] {
-        let friends = realmFriends.map({ realmFriend in
-            User(user: realmFriend)
-        })
-        return friends
     }
     
     private func saveFriendsToRealm(_ realmFriends: [RealmUser]) {
