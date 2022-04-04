@@ -11,6 +11,10 @@ import WebKit
 
 final class FeedViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
    
+    enum CellType: Int {
+        case messageText = 0, images
+    }
+    
     private let loadDuration = 2.0
     private let shortDuration = 0.5
     var feedNews = [Feed]()
@@ -37,6 +41,8 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
 
         fetchFeedsByJSON()
     }
+    
+    // MARK: Datasource and Delegates
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let isMessageEmpty = feedNews[section].messageText?.isEmpty
@@ -75,11 +81,11 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
                 color: user.codeColor,
                 date: currentFeed.date
             )
-        } else {
+        } else if let group = currentFeed.group {
             headerView.configureFeedCell(
-                label: currentFeed.group?.title,
-                pictureURL: currentFeed.group?.groupPictureURL,
-                color: currentFeed.group?.codeColor,
+                label: group.title,
+                pictureURL: group.groupPictureURL,
+                color: group.codeColor,
                 date: currentFeed.date
             )
         }
@@ -115,11 +121,11 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let currentFeed = feedNews[indexPath.section]
         switch indexPath.row {
-        case 0:
+        case CellType.messageText.rawValue:
             let cell: FeedCell = tableView.dequeueReusableCell(for: indexPath)
             cell.configureFeedCell(feed: currentFeed)
             return cell
-        case 1:
+        case CellType.images.rawValue:
             let cell: FeedImagesCell = tableView.dequeueReusableCell(for: indexPath)
             cell.configureFeedCell(feed: currentFeed)
             return cell
@@ -133,6 +139,7 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     // MARK: - Private methods
+    
     private func fetchFeedsByJSON() {
         
         let feedService = NetworkService<FeedDTO>()
