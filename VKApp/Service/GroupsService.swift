@@ -47,6 +47,15 @@ final class GroupsService {
     }
     
     // MARK: - Methods
+    func getGroupByID(_ id: Int) -> Group? {
+        let realmGroups = realmGroupResults.map { $0 }
+        guard
+            let realmGroups = realmGroups,
+            let realmGroup = realmGroups.filter({ $0.id == -id }).first
+        else { return nil }
+        return Group(group: realmGroup)
+    }
+    
     func saveGroupsToRealm(_ realmGroups: [RealmGroup]) {
         do {
             try RealmService.save(items: realmGroups)

@@ -17,6 +17,9 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
     
     private let loadDuration = 2.0
     private let shortDuration = 0.5
+    
+    private var groupService = GroupsService.instance
+    private var userService = UsersService.instance
     var feedNews = [Feed]()
 
     @IBOutlet weak var tableView: UITableView!
@@ -30,8 +33,8 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
         self.animatedView.isHidden = false
         loadingDotes()
         do {
-            try UsersService.instance.updateData()
-            try GroupsService.instance.updateData()
+            try userService.updateData()
+            try groupService.updateData()
         } catch {
             print(error)
         }
@@ -159,9 +162,9 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
                     self.feedNews = feedsDTO.map { feed in
                         let photosURLs = self.loadPhotosFromFeed(feed)
                         if feed.sourceID > 0,
-                           let user = self.loadUserByID(feed.sourceID) {
+                           let user = self.userService.getUserByID(feed.sourceID) {
                             return Feed(user: user, group: nil, photos: photosURLs, feed: feed)
-                        } else if let group = self.loadGroupByID(feed.sourceID) {
+                        } else if let group = self.groupService.getGroupByID(feed.sourceID) {
                             return Feed(user: nil, group: group, photos: photosURLs, feed: feed)
                         }
                         return Feed(
@@ -175,34 +178,6 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
                     self.animatedView.isHidden = true
                 }
             }
-        }
-    }
-    
-    private func loadUserByID(_ id: Int) -> User? {
-        do {
-            let realmUsers: [RealmUser] = try RealmService.load(typeOf: RealmUser.self)
-            if let realmUser = realmUsers.filter({ $0.id == id }).first {
-                return User(user: realmUser)
-            } else {
-                return nil
-            }
-        } catch {
-            print(error)
-            return nil
-        }
-    }
-    
-    private func loadGroupByID(_ id: Int) -> Group? {
-        do {
-            let realmGroups: [RealmGroup] = try RealmService.load(typeOf: RealmGroup.self)
-            if let realmGroup = realmGroups.filter({ $0.id == -id }).first {
-                return Group(group: realmGroup)
-            } else {
-                return nil
-            }
-        } catch {
-            print(error)
-            return nil
         }
     }
     

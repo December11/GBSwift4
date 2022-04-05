@@ -12,7 +12,7 @@ final class UsersService {
     
     static let instance = UsersService()
     var friends = [User]()
-    var realmFriendResults: Results<RealmUser>?
+    var realmUserResults: Results<RealmUser>?
     
     private init() {}
     
@@ -23,7 +23,7 @@ final class UsersService {
                let friendsUpdateDate = updateInfo.friendsUpdateDate,
                friendsUpdateDate >= Date(timeIntervalSinceNow: -updateInterval) {
                 let realmFriends: Results<RealmUser> = try RealmService.load(typeOf: RealmUser.self)
-                self.realmFriendResults = realmFriends
+                self.realmUserResults = realmFriends
             } else {
                 fetchFriendsByJSON()
             }
@@ -35,7 +35,7 @@ final class UsersService {
     func getData() throws -> [User]? {
         do {
             try updateData()
-            if let realmFriends = self.realmFriendResults {
+            if let realmFriends = self.realmUserResults {
                 return fetchFriendsFromRealm(realmFriends.map { $0 })
             }
         } catch {
@@ -44,8 +44,17 @@ final class UsersService {
         return nil
     }
     
+    func getUserByID(_ id: Int) -> User? {
+        let realmUsers = realmUserResults.map { $0 }
+        guard
+            let realmUsers = realmUsers,
+            let realmUser = realmUsers.filter({ $0.id == -id }).first
+        else { return nil }
+        return User(user: realmUser)
+    }
+    
     // MARK: - Private methods
-    private func updateFriendss(_ realmUsers: [RealmUser]) {
+    private func updateFriends(_ realmUsers: [RealmUser]) {
         friends = realmUsers.map { User(user: $0)}
     }
     
