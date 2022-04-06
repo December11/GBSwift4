@@ -13,7 +13,7 @@ final class GroupsService {
     static let instance = GroupsService()
     
     var groups = [Group]()
-    var realmGroupResults: Results<RealmGroup>?
+    var realmResults: Results<RealmGroup>?
     
     private var realmUpdateDate = Date(timeIntervalSince1970: 0)
     
@@ -27,30 +27,30 @@ final class GroupsService {
     }
     
     func loadDataIfNeeded() {
-        // DispatchQueue.main.async {
+        DispatchQueue.main.async {
             do {
                 let updateInterval: TimeInterval = 60 * 60
                 if self.realmUpdateDate >= Date(timeIntervalSinceNow: -updateInterval) {
-                    self.realmGroupResults = try RealmService.load(typeOf: RealmGroup.self)
+                    self.realmResults = try RealmService.load(typeOf: RealmGroup.self)
                 } else {
-                    self.fetchMyGroupsFromJSON()
+                    self.fetchFromJSON()
                 }
             } catch {
                 print(error)
             }
-        // }
+        }
     }
     
     func getGroups() throws -> [Group]? {
         loadDataIfNeeded()
-        if let realmGroups = self.realmGroupResults {
-            return fetchGroupsFromRealm(realmGroups.map { $0 })
+        if let realmGroups = self.realmResults {
+            return fetchFromRealm(realmGroups.map { $0 })
         }
         return nil
     }
     
     // MARK: - Methods
-    func saveGroupsToRealm(_ realmGroups: [RealmGroup]) {
+    func saveToRealm(_ realmGroups: [RealmGroup]) {
         DispatchQueue.main.async {
             do {
                 try RealmService.save(items: realmGroups)
@@ -59,7 +59,7 @@ final class GroupsService {
                     friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate
                 )
                 try RealmService.save(items: [realmUpdateDate])
-                self.realmGroupResults = try RealmService.load(typeOf: RealmGroup.self)
+                self.realmResults = try RealmService.load(typeOf: RealmGroup.self)
                 self.updateGroups(realmGroups)
             } catch {
                 print(error)
@@ -67,7 +67,7 @@ final class GroupsService {
         }
     }
     
-    func deleteGroupFromRealm(_ realmGroup: RealmGroup) {
+    func deleteFromRealm(_ realmGroup: RealmGroup) {
         DispatchQueue.main.async {
             do {
                 let group = Group(group: realmGroup)
@@ -81,25 +81,24 @@ final class GroupsService {
         }
     }
     
-    func getGroupByID(_ id: Int) -> Group? {
+    func getByID(_ id: Int) -> Group? {
         var result: Group?
-        let groupFromRealm = loadObjectFromRealmByID(id)
+        let groupFromRealm = loadFromRealmByID(id)
         if let group = groupFromRealm {
             result = group
         }
         if result == nil {
-            print(print("### a. getGroupByID is nil"))
+            print("### a. getGroupByID is nil")
         }
         return result
     }
     
     // MARK: - Private methods
-    private func loadObjectFromRealmByID(_ id: Int) -> Group? {
+    private func loadFromRealmByID(_ id: Int) -> Group? {
         guard
-            let realmGroups = self.realmGroupResults?.filter({ $0.id == -id })
+            let realmGroups = self.realmResults?.filter({ $0.id == -id })
         else {
-            
-            print(print("### a. loadObjectFromRealmByID is nil"))
+            print("### a. loadObjectFromRealmByID is nil, realmResults.count = \(self.realmResults?.count)")
             return nil
         }
         return realmGroups.map { Group(group: $0) }.first
@@ -110,11 +109,11 @@ final class GroupsService {
         groups = realmGroups.map { Group(group: $0) }
     }
     
-    private func fetchGroupsFromRealm(_ realmGroups: [RealmGroup]) -> [Group] {
+    private func fetchFromRealm(_ realmGroups: [RealmGroup]) -> [Group] {
         realmGroups.map { Group(group: $0) }
     }
 
-    private func fetchMyGroupsFromJSON() {
+    private func fetchFromJSON() {
         let groupsService = NetworkService<GroupDTO>()
         groupsService.path = "/method/groups.get"
         groupsService.queryItems = [
@@ -136,7 +135,7 @@ final class GroupsService {
                     }
                     return nil
                 })
-                self?.saveGroupsToRealm(realmGroups)
+                self?.saveToRealm(realmGroups)
             }
         }
     }

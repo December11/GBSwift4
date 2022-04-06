@@ -21,14 +21,14 @@ final class FeedsService {
         
     // MARK: - Methods
     func getFeeds(completion: @escaping () -> Void) {
-        fetchFeedsByJSON { feeds in
+        fetchFromJSON { feeds in
             self.feedNews = feeds.filter { $0.messageText != "" }
             completion()
         }
     }
     
     // MARK: - Private methods
-    private func fetchFeedsByJSON(completion: @escaping ([Feed]) -> Void) {
+    private func fetchFromJSON(completion: @escaping ([Feed]) -> Void) {
         let feedService = NetworkService<FeedDTO>()
         userService.loadDataIfNeeded()
         groupService.loadDataIfNeeded()
@@ -39,8 +39,8 @@ final class FeedsService {
             URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
             URLQueryItem(name: "v", value: "5.131")
         ]
-        feedService.fetch { [weak self] feedDTOObjects in
-            switch feedDTOObjects {
+        feedService.fetch { [weak self] feedsDTO in
+            switch feedsDTO {
             case .failure(let error):
                 print(error)
             case .success(let feedsDTO):
@@ -49,13 +49,13 @@ final class FeedsService {
                     let photosURLs = self.loadPhotosFromFeed(feed)
                     if feed.sourceID >= 0 {
                         var feedUser = User(id: 0, firstName: "Unknown", secondName: "", userPhotoURLString: nil)
-                        if let user = self.userService.getUserByID(feed.sourceID) {
+                        if let user = self.userService.getByID(feed.sourceID) {
                             feedUser = user
                         }
                         return Feed(user: feedUser, photos: photosURLs, feed: feed)
                     } else {
                         var feedGroup = Group(id: 0, title: "Unknown", imageURL: nil)
-                        if let group = self.groupService.getGroupByID(feed.sourceID) {
+                        if let group = self.groupService.getByID(feed.sourceID) {
                             feedGroup = group
                         }
                         return Feed(group: feedGroup, photos: photosURLs, feed: feed)

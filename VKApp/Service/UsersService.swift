@@ -13,7 +13,7 @@ final class UsersService {
     static let instance = UsersService()
     
     var users = [User]()
-    var realmUserResults: Results<RealmUser>?
+    var realmResults: Results<RealmUser>?
     
     private var realmUpdateDate = Date(timeIntervalSince1970: 0)
     
@@ -27,32 +27,32 @@ final class UsersService {
     }
     
     func loadDataIfNeeded() {
-        // DispatchQueue.main.async {
+        DispatchQueue.main.async {
             do {
                 let updateInterval: TimeInterval = 60 * 60
                 if self.realmUpdateDate >= Date(timeIntervalSinceNow: -updateInterval) {
-                    self.realmUserResults = try RealmService.load(typeOf: RealmUser.self)
+                    self.realmResults = try RealmService.load(typeOf: RealmUser.self)
                 } else {
-                    self.fetchUsersByJSON()
+                    self.fetchFromJSON()
                 }
             } catch {
                 print(error)
             }
-        // }
+        }
     }
     
     func getUsers() -> [User]? {
         loadDataIfNeeded()
-        if let realmFriends = self.realmUserResults {
-            let users = fetchUsersFromRealm(realmFriends.map { $0 })
+        if let realmFriends = self.realmResults {
+            let users = fetchFromRealm(realmFriends.map { $0 })
             return users
         }
         return nil
     }
     
-    func getUserByID(_ id: Int) -> User? {
+    func getByID(_ id: Int) -> User? {
         var result: User?
-        let userFromRealm = loadObjectFromRealmByID(id)
+        let userFromRealm = loadFromRealmByID(id)
         if let user = userFromRealm {
             result = user
         }
@@ -60,9 +60,9 @@ final class UsersService {
     }
     
     // MARK: - Private methods
-    private func loadObjectFromRealmByID(_ id: Int) -> User? {
+    private func loadFromRealmByID(_ id: Int) -> User? {
         guard
-            let realmUsers = self.realmUserResults?.filter({ $0.id == id })
+            let realmUsers = self.realmResults?.filter({ $0.id == id })
         else {
             return nil
         }
@@ -73,12 +73,12 @@ final class UsersService {
         users = realmUsers.map { User(user: $0)}
     }
     
-    private func fetchUsersFromRealm(_ realmUsers: [RealmUser]) -> [User] {
+    private func fetchFromRealm(_ realmUsers: [RealmUser]) -> [User] {
         let res = realmUsers.map { User(user: $0) }
         return res
     }
     
-    private func fetchUsersByJSON() {
+    private func fetchFromJSON() {
         let usersService = NetworkService<UserDTO>()
         usersService.path = "/method/friends.get"
         usersService.queryItems = [
@@ -97,13 +97,13 @@ final class UsersService {
                     let color = CGColor.generateLightColor()
                     var realmUsers = usersDTO.map { RealmUser(user: $0, color: color) }
                     realmUsers = realmUsers.filter { $0.deactivated == nil }
-                    self?.saveUsersToRealm(realmUsers)
+                    self?.saveToRealm(realmUsers)
                 }
             }
         }
     }
     
-    private func saveUsersToRealm(_ realmUsers: [RealmUser]) {
+    private func saveToRealm(_ realmUsers: [RealmUser]) {
         DispatchQueue.main.async {
             do {
                 try RealmService.save(items: realmUsers)
@@ -112,7 +112,7 @@ final class UsersService {
                     friendsUpdateDate: Date()
                 )
                 try RealmService.save(items: [realmUpdateDate])
-                self.realmUserResults = try RealmService.load(typeOf: RealmUser.self)
+                self.realmResults = try RealmService.load(typeOf: RealmUser.self)
                 self.updateUsers(realmUsers)
             } catch {
                 print(error)

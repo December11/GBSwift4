@@ -23,7 +23,7 @@ class GroupsTableViewController: UITableViewController {
             guard let self = self else { return }
             if !self.groups.contains(group) {
                 let realmGroup = RealmGroup(group: group)
-                self.groupsDataService.saveGroupsToRealm([realmGroup])
+                self.groupsDataService.saveToRealm([realmGroup])
             }
         }
     }
@@ -42,7 +42,7 @@ class GroupsTableViewController: UITableViewController {
             print(error)
         }
         
-        groupToken = groupsDataService.realmGroupResults?.observe({ [weak self] groupChanges in
+        groupToken = groupsDataService.realmResults?.observe({ [weak self] groupChanges in
             guard let self = self else { return }
             switch groupChanges {
             case .initial:
@@ -95,9 +95,9 @@ class GroupsTableViewController: UITableViewController {
         if editingStyle == .delete {
             let group = groups[indexPath.row]
             guard
-                let realmGroups = groupsDataService.realmGroupResults,
+                let realmGroups = groupsDataService.realmResults,
                 let realmGroup = realmGroups.first(where: { $0.id == group.id }) else { return }
-            groupsDataService.deleteGroupFromRealm(realmGroup)
+            groupsDataService.deleteFromRealm(realmGroup)
         }    
     }
     

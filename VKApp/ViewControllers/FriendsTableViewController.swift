@@ -48,7 +48,7 @@ class FriendsTableViewController: UITableViewController {
     
     // MARK: - Private methods
     private func realmNotify() {
-        friendsToken = userService.realmUserResults?.observe({ [weak self] friendChanges in
+        friendsToken = userService.realmResults?.observe({ [weak self] friendChanges in
             guard let self = self else { return }
             switch friendChanges {
             case .initial:
