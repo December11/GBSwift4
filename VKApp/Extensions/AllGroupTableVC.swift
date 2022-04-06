@@ -34,7 +34,6 @@ extension AllGroupTableViewController: UISearchBarDelegate {
                     print(error)
                 case .success(let searchedGroupsDTO):
                     self?.filteredGroups = searchedGroupsDTO.map {
-                        print("## group title is \($0.title)")
                         return Group(id: $0.id, title: $0.title, imageURL: $0.groupPhotoURL)
                     }
                 }

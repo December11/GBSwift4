@@ -69,14 +69,24 @@ final class Feed {
         self.viewsCount = viewsCount
     }
     
-    init(user: User?, group: Group?, photos: [Photo]?, feed: FeedDTO) {
-        self.user = user
+    init(group: Group?, photos: [Photo]?, feed: FeedDTO) {
+        self.user = nil
         self.group = group
         self.date = Date(timeIntervalSince1970: feed.date)
         self.messageText = feed.text
         self.photos = photos ?? [Photo]()
-        self.commentsCount = feed.comments.count
-        self.likesCount = feed.likes.count
+        self.commentsCount = feed.comments?.count ?? 0
+        self.likesCount = feed.likes?.count ?? 0
+        self.viewsCount = feed.views?.count ?? 0
+    }
+    init(user: User?, photos: [Photo]?, feed: FeedDTO) {
+        self.user = user
+        self.group = nil
+        self.date = Date(timeIntervalSince1970: feed.date)
+        self.messageText = feed.text
+        self.photos = photos ?? [Photo]()
+        self.commentsCount = feed.comments?.count ?? 0
+        self.likesCount = feed.likes?.count ?? 0
         self.viewsCount = feed.views?.count ?? 0
     }
 }

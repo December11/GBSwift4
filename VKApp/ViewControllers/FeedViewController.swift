@@ -5,7 +5,6 @@
 //  Created by Alla Shkolnik on 15.01.2022.
 //
 
-import RealmSwift
 import UIKit
 import WebKit
 
@@ -18,9 +17,8 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
     private let loadDuration = 2.0
     private let shortDuration = 0.5
     
-    private var groupService = GroupsService.instance
-    private var userService = UsersService.instance
-    var feedNews = [Feed]()
+    private let feedService = FeedsService.instance
+    var feedNews = [Feed]() 
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet var loadingViews: [UIView]!
@@ -29,20 +27,19 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.animatedView.isHidden = false
-        loadingDotes()
-        do {
-            try userService.updateData()
-            try groupService.updateData()
-        } catch {
-            print(error)
-        }
         
         tableView.sectionHeaderTopPadding = 16.0
         tableView.register(for: FeedFooterView.self)
-
-        fetchFeedsByJSON()
+        loadingDotes()
+        
+        feedService.getFeeds {
+            self.feedNews = self.feedService.feedNews
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+                self.animatedView.isHidden = true
+            }
+        }
     }
     
     // MARK: Datasource and Delegates
@@ -50,8 +47,6 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
         let isMessageEmpty = feedNews[section].messageText?.isEmpty
         let isPhotosEmpty = feedNews[section].photos.isEmpty
         switch (isMessageEmpty, isPhotosEmpty) {
-        case (true, false), (false, true):
-            return 1
         case (false, false):
             return 2
         default:
@@ -138,55 +133,6 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-    }
-    
-    // MARK: - Private methods
-    
-    private func fetchFeedsByJSON() {
-        
-        let feedService = NetworkService<FeedDTO>()
-        
-        feedService.path = "/method/newsfeed.get"
-        feedService.queryItems = [
-            URLQueryItem(name: "filters", value: "post"),
-            URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
-            URLQueryItem(name: "v", value: "5.131")
-        ]
-        feedService.fetch { [weak self] feedDTOObjects in
-            switch feedDTOObjects {
-            case .failure(let error):
-                print(error)
-            case .success(let feedsDTO):
-                guard let self = self else { return }
-                DispatchQueue.main.async {
-                    self.feedNews = feedsDTO.map { feed in
-                        let photosURLs = self.loadPhotosFromFeed(feed)
-                        if feed.sourceID > 0,
-                           let user = self.userService.getUserByID(feed.sourceID) {
-                            return Feed(user: user, group: nil, photos: photosURLs, feed: feed)
-                        } else if let group = self.groupService.getGroupByID(feed.sourceID) {
-                            return Feed(user: nil, group: group, photos: photosURLs, feed: feed)
-                        }
-                        return Feed(
-                            user: User(id: 0, firstName: "No", secondName: "username", userPhotoURLString: nil),
-                            group: nil,
-                            photos: photosURLs,
-                            feed: feed)
-                    }
-                    self.feedNews = self.feedNews.filter { $0.messageText != "" }
-                    self.tableView.reloadData()
-                    self.animatedView.isHidden = true
-                }
-            }
-        }
-    }
-    
-    // MARK: - Private Realm methods
-    private func loadPhotosFromFeed(_ feed: FeedDTO) -> [Photo]? {
-        guard let images = feed.photosURLs else { return nil }
-        let photos = images.compactMap { $0.photo }
-        let photoSizes = photos.map { $0.photos }
-        return photoSizes.map { Photo(imageURLString: $0.last?.url) }
     }
     
     // MARK: - Animation

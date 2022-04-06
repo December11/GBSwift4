@@ -35,7 +35,7 @@ class GroupsTableViewController: UITableViewController {
         tableView.register(for: ImageCell.self)
         
         do {
-            if let fetchedData = try groupsDataService.getData() {
+            if let fetchedData = try groupsDataService.getGroups() {
                 groups = fetchedData
             }
         } catch {

@@ -38,6 +38,7 @@
 		BA7B7A51276E4194000506F2 /* AllGroupTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7B7A50276E4194000506F2 /* AllGroupTableViewController.swift */; };
 		BA7BB1B7276BCA2800E12B03 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BABCEB2F276A699700C0ED3E /* Main.storyboard */; };
 		BA91B4BF27FB47D4009CBE53 /* UICollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA91B4BE27FB47D4009CBE53 /* UICollectionView.swift */; };
+		BA91B4C127FC7814009CBE53 /* FeedService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA91B4C027FC7814009CBE53 /* FeedService.swift */; };
 		BA9A85BC27F4EB120019423C /* FeedImagesCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9A85BB27F4EB120019423C /* FeedImagesCell.swift */; };
 		BAA1ED1827CA4CA1002666F9 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = BAA1ED1727CA4CA1002666F9 /* Realm */; };
 		BAA1ED1A27CA4CA1002666F9 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BAA1ED1927CA4CA1002666F9 /* RealmSwift */; };
@@ -49,7 +50,6 @@
 		BAA1ED2627CA64AF002666F9 /* RealmService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA1ED2527CA64AF002666F9 /* RealmService.swift */; };
 		BAA1ED2927CA68AD002666F9 /* RealmUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA1ED2827CA68AD002666F9 /* RealmUser.swift */; };
 		BAA3CE0527D7BEB400AB6888 /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA3CE0427D7BEB400AB6888 /* UITableView.swift */; };
-		BAA3CE0727D7C10100AB6888 /* RealmSavedGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA3CE0627D7C10100AB6888 /* RealmSavedGroup.swift */; };
 		BAA3CE0927D807A300AB6888 /* CGColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA3CE0827D807A300AB6888 /* CGColor.swift */; };
 		BAB0258E27F3967C0022C4DF /* UsersService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0258D27F3967C0022C4DF /* UsersService.swift */; };
 		BAB0259027F39E800022C4DF /* GroupsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0258F27F39E800022C4DF /* GroupsService.swift */; };
@@ -101,6 +101,7 @@
 		BA7B7A4E276E4074000506F2 /* FriendCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendCollectionViewController.swift; sourceTree = "<group>"; };
 		BA7B7A50276E4194000506F2 /* AllGroupTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllGroupTableViewController.swift; sourceTree = "<group>"; };
 		BA91B4BE27FB47D4009CBE53 /* UICollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionView.swift; sourceTree = "<group>"; };
+		BA91B4C027FC7814009CBE53 /* FeedService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedService.swift; sourceTree = "<group>"; };
 		BA9A85BB27F4EB120019423C /* FeedImagesCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImagesCell.swift; sourceTree = "<group>"; };
 		BAA1ED1B27CA54A2002666F9 /* FeedDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDTO.swift; sourceTree = "<group>"; };
 		BAA1ED1D27CA5768002666F9 /* CommentsDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsDTO.swift; sourceTree = "<group>"; };
@@ -110,7 +111,6 @@
 		BAA1ED2527CA64AF002666F9 /* RealmService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmService.swift; sourceTree = "<group>"; };
 		BAA1ED2827CA68AD002666F9 /* RealmUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmUser.swift; sourceTree = "<group>"; };
 		BAA3CE0427D7BEB400AB6888 /* UITableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableView.swift; sourceTree = "<group>"; };
-		BAA3CE0627D7C10100AB6888 /* RealmSavedGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmSavedGroup.swift; sourceTree = "<group>"; };
 		BAA3CE0827D807A300AB6888 /* CGColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGColor.swift; sourceTree = "<group>"; };
 		BAB0258D27F3967C0022C4DF /* UsersService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersService.swift; sourceTree = "<group>"; };
 		BAB0258F27F39E800022C4DF /* GroupsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsService.swift; sourceTree = "<group>"; };
@@ -252,6 +252,7 @@
 				BAA1ED2527CA64AF002666F9 /* RealmService.swift */,
 				BAB0258D27F3967C0022C4DF /* UsersService.swift */,
 				BAB0258F27F39E800022C4DF /* GroupsService.swift */,
+				BA91B4C027FC7814009CBE53 /* FeedService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -261,7 +262,6 @@
 			children = (
 				BAA1ED2827CA68AD002666F9 /* RealmUser.swift */,
 				BA39E59E27CA9ADE008B9F27 /* RealmGroup.swift */,
-				BAA3CE0627D7C10100AB6888 /* RealmSavedGroup.swift */,
 				BA39E5A027CAC04E008B9F27 /* RealmAppInfo.swift */,
 			);
 			path = Realm;
@@ -448,7 +448,7 @@
 			files = (
 				BA6CA9E927B7B13C0049BC1B /* VKWVLoginViewController.swift in Sources */,
 				BA097DCD27BC1BE800252A0C /* GroupDTO.swift in Sources */,
-				BAA3CE0727D7C10100AB6888 /* RealmSavedGroup.swift in Sources */,
+				BA91B4C127FC7814009CBE53 /* FeedService.swift in Sources */,
 				BAA1ED2027CA5844002666F9 /* LikesDTO.swift in Sources */,
 				BAA3CE0927D807A300AB6888 /* CGColor.swift in Sources */,
 				BAA1ED2927CA68AD002666F9 /* RealmUser.swift in Sources */,

@@ -26,13 +26,6 @@ struct Group {
         self.groupPictureURL = group.groupPhotoURL ?? nil
         self.codeColor = group.codeColor
     }
-    
-    init (_ object: RealmSavedGroup) {
-        self.id = object.id
-        self.groupPictureURL = object.groupPhotoURL
-        self.title = object.title
-        self.codeColor = object.codeColor
-    }
 }
 
 extension Group: Comparable {

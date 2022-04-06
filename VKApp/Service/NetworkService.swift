@@ -35,10 +35,14 @@ final class NetworkService<ItemsType: Decodable> {
                 else { return }
                 do {
                     let json = try JSONDecoder().decode(ResponseDTO<ItemsType>.self, from: data)
-                    completion(.success(json.response.items))
+                    DispatchQueue.main.async {
+                        completion(.success(json.response.items))
+                    }
                 } catch {
                     print(error)
-                    completion(.failure(error))
+                    DispatchQueue.main.async {
+                        completion(.failure(error))
+                    }
                 }
             }
             task.resume()

@@ -23,10 +23,7 @@ class FriendsTableViewController: UITableViewController {
                     as? FriendCollectionViewController,
                 let indexPath = sender as? IndexPath
             else { return }
-            let currentSectionNumber = indexPath.section
-            let currentKeys = helper.getSortedKeyArray(for: friends)[currentSectionNumber]
-            let friendsForCurrentKey = helper.getArrayForKey(from: friends, for: currentKeys)
-            let currentFriend = friendsForCurrentKey[indexPath.row]
+            let currentFriend = getCurrentUser(for: indexPath)
             photosController.friend = currentFriend
         }
     }
@@ -34,15 +31,9 @@ class FriendsTableViewController: UITableViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         tableView.register(for: ImageCell.self)
-
-        do {
-            if let fetchedData = try userService.getData() {
-                friends = fetchedData
-            }
-        } catch {
-            print(error)
+        if let fetchedData = userService.getUsers() {
+            friends = fetchedData
         }
         realmNotify()
     }
@@ -56,7 +47,7 @@ class FriendsTableViewController: UITableViewController {
     }
     
     // MARK: - Private methods
-    func realmNotify() {
+    private func realmNotify() {
         friendsToken = userService.realmUserResults?.observe({ [weak self] friendChanges in
             guard let self = self else { return }
             switch friendChanges {
@@ -108,6 +99,8 @@ class FriendsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: ImageCell = tableView.dequeueReusableCell(for: indexPath)
         let currentFriend = getCurrentUser(for: indexPath)
+        if indexPath.row <= 2 {
+        }
     
         cell.configureCell(
             label: currentFriend.firstName,

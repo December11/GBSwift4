@@ -12,8 +12,8 @@ struct FeedDTO {
     let date: Double
     let text: String?
     var photosURLs: [PhotoAttachmentDTO]?
-    var comments: CommentsDTO
-    var likes: LikesDTO
+    var comments: CommentsDTO?
+    var likes: LikesDTO?
     var views: ViewsDTO?
 }
 
