@@ -74,11 +74,11 @@ final class UsersService {
     }
     
     private func fetchFromRealm(_ realmUsers: [RealmUser]) -> [User] {
-        let res = realmUsers.map { User(user: $0) }
-        return res
+        realmUsers.map { User(user: $0) }
     }
     
     private func fetchFromJSON() {
+        let dispatchGroup = DispatchGroup()
         let usersService = NetworkService<UserDTO>()
         usersService.path = "/method/friends.get"
         usersService.queryItems = [
@@ -88,7 +88,7 @@ final class UsersService {
             URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
             URLQueryItem(name: "v", value: "5.131")
         ]
-        DispatchQueue.global().async {
+        DispatchQueue.global().async(group: dispatchGroup) {
             usersService.fetch { [weak self] usersDTOObjects in
                 switch usersDTOObjects {
                 case .failure(let error):
@@ -97,26 +97,27 @@ final class UsersService {
                     let color = CGColor.generateLightColor()
                     var realmUsers = usersDTO.map { RealmUser(user: $0, color: color) }
                     realmUsers = realmUsers.filter { $0.deactivated == nil }
-                    self?.saveToRealm(realmUsers)
+                    
+                    dispatchGroup.notify(queue: DispatchQueue.main) {
+                        self?.saveToRealm(realmUsers)
+                    }
                 }
             }
         }
     }
     
     private func saveToRealm(_ realmUsers: [RealmUser]) {
-        DispatchQueue.main.async {
-            do {
-                try RealmService.save(items: realmUsers)
-                let realmUpdateDate = RealmAppInfo(
-                    groupsUpdateDate: AppDataInfo.shared.groupsUpdateDate,
-                    friendsUpdateDate: Date()
-                )
-                try RealmService.save(items: [realmUpdateDate])
-                self.realmResults = try RealmService.load(typeOf: RealmUser.self)
-                self.updateUsers(realmUsers)
-            } catch {
-                print(error)
-            }
+        do {
+            try RealmService.save(items: realmUsers)
+            let realmUpdateDate = RealmAppInfo(
+                groupsUpdateDate: AppDataInfo.shared.groupsUpdateDate,
+                friendsUpdateDate: Date()
+            )
+            try RealmService.save(items: [realmUpdateDate])
+            self.realmResults = try RealmService.load(typeOf: RealmUser.self)
+            self.updateUsers(realmUsers)
+        } catch {
+            print(error)
         }
     }
 }

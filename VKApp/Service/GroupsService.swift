@@ -51,19 +51,17 @@ final class GroupsService {
     
     // MARK: - Methods
     func saveToRealm(_ realmGroups: [RealmGroup]) {
-        DispatchQueue.main.async {
-            do {
-                try RealmService.save(items: realmGroups)
-                let realmUpdateDate = RealmAppInfo(
-                    groupsUpdateDate: Date(),
-                    friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate
-                )
-                try RealmService.save(items: [realmUpdateDate])
-                self.realmResults = try RealmService.load(typeOf: RealmGroup.self)
-                self.updateGroups(realmGroups)
-            } catch {
-                print(error)
-            }
+        do {
+            try RealmService.save(items: realmGroups)
+            let realmUpdateDate = RealmAppInfo(
+                groupsUpdateDate: Date(),
+                friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate
+            )
+            try RealmService.save(items: [realmUpdateDate])
+            self.realmResults = try RealmService.load(typeOf: RealmGroup.self)
+            self.updateGroups(realmGroups)
+        } catch {
+            print(error)
         }
     }
     
@@ -114,6 +112,7 @@ final class GroupsService {
     }
 
     private func fetchFromJSON() {
+        let dispatchGroup = DispatchGroup()
         let groupsService = NetworkService<GroupDTO>()
         groupsService.path = "/method/groups.get"
         groupsService.queryItems = [
@@ -123,19 +122,23 @@ final class GroupsService {
             URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
             URLQueryItem(name: "v", value: "5.131")
         ]
-        groupsService.fetch { [weak self] groupsDTO in
-            switch groupsDTO {
-            case .failure(let error):
-                print(error)
-            case .success(let groupsDTO):
-                let color = CGColor.generateLightColor()
-                let realmGroups = groupsDTO.compactMap({ groupDTO -> RealmGroup? in
-                    if groupDTO.isMember == 1 {
-                        return RealmGroup(group: groupDTO, color: color)
+        DispatchQueue.global().async(group: dispatchGroup) {
+            groupsService.fetch { [weak self] groupsDTO in
+                switch groupsDTO {
+                case .failure(let error):
+                    print(error)
+                case .success(let groupsDTO):
+                    let color = CGColor.generateLightColor()
+                    let realmGroups = groupsDTO.compactMap({ groupDTO -> RealmGroup? in
+                        if groupDTO.isMember == 1 {
+                            return RealmGroup(group: groupDTO, color: color)
+                        }
+                        return nil
+                    })
+                    dispatchGroup.notify(queue: DispatchQueue.main) {
+                        self?.saveToRealm(realmGroups)
                     }
-                    return nil
-                })
-                self?.saveToRealm(realmGroups)
+                }
             }
         }
     }

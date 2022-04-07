@@ -29,6 +29,7 @@ final class FeedsService {
     
     // MARK: - Private methods
     private func fetchFromJSON(completion: @escaping ([Feed]) -> Void) {
+        let dispatchGroup = DispatchGroup()
         let feedService = NetworkService<FeedDTO>()
         userService.loadDataIfNeeded()
         groupService.loadDataIfNeeded()
@@ -39,29 +40,33 @@ final class FeedsService {
             URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
             URLQueryItem(name: "v", value: "5.131")
         ]
-        feedService.fetch { [weak self] feedsDTO in
-            switch feedsDTO {
-            case .failure(let error):
-                print(error)
-            case .success(let feedsDTO):
-                guard let self = self else { return }
-                let feeds = feedsDTO.map { feed -> Feed in
-                    let photosURLs = self.loadPhotosFromFeed(feed)
-                    if feed.sourceID >= 0 {
-                        var feedUser = User(id: 0, firstName: "Unknown", secondName: "", userPhotoURLString: nil)
-                        if let user = self.userService.getByID(feed.sourceID) {
-                            feedUser = user
+        DispatchQueue.global().async(group: dispatchGroup) {
+            feedService.fetch { [weak self] feedsDTO in
+                switch feedsDTO {
+                case .failure(let error):
+                    print(error)
+                case .success(let feedsDTO):
+                    guard let self = self else { return }
+                    let feeds = feedsDTO.map { feed -> Feed in
+                        let photosURLs = self.loadPhotosFromFeed(feed)
+                        if feed.sourceID >= 0 {
+                            var feedUser = User(id: 0, firstName: "Unknown", secondName: "", userPhotoURLString: nil)
+                            if let user = self.userService.getByID(feed.sourceID) {
+                                feedUser = user
+                            }
+                            return Feed(user: feedUser, photos: photosURLs, feed: feed)
+                        } else {
+                            var feedGroup = Group(id: 0, title: "Unknown", imageURL: nil)
+                            if let group = self.groupService.getByID(feed.sourceID) {
+                                feedGroup = group
+                            }
+                            return Feed(group: feedGroup, photos: photosURLs, feed: feed)
                         }
-                        return Feed(user: feedUser, photos: photosURLs, feed: feed)
-                    } else {
-                        var feedGroup = Group(id: 0, title: "Unknown", imageURL: nil)
-                        if let group = self.groupService.getByID(feed.sourceID) {
-                            feedGroup = group
-                        }
-                        return Feed(group: feedGroup, photos: photosURLs, feed: feed)
+                    }
+                    dispatchGroup.notify(queue: DispatchQueue.main) {
+                        completion(feeds)
                     }
                 }
-                completion(feeds)
             }
         }
     }
