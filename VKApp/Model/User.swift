@@ -25,24 +25,12 @@ final class User {
         self.codeColor = CGColor.generateLightColor()
     }
     
-    init(user: UserDTO) {
-        self.id = user.id
-        self.firstName = user.firstName
-        self.secondName = user.secondName
-        self.userPhotoURLString = user.photoURLString 
-        self.codeColor = CGColor.generateLightColor() 
-    }
-    
-    init(user: RealmUser) {
-        self.id = user.id
-        self.firstName = user.firstName
-        self.secondName = user.secondName
-        self.userPhotoURLString = user.userPhotoURLString ?? nil
-        self.codeColor = user.codecolor
-    }
-    
-    func getUserByID(id: Int) -> User? {
-        self.id == id ? self : nil
+    init(fromRealm: RealmUser) {
+        self.id = fromRealm.id
+        self.firstName = fromRealm.firstName
+        self.secondName = fromRealm.secondName
+        self.userPhotoURLString = fromRealm.userPhotoURLString ?? nil
+        self.codeColor = fromRealm.codeColor
     }
 }
 

@@ -66,15 +66,15 @@ final class UsersService {
         else {
             return nil
         }
-        return realmUsers.map { User(user: $0) }.first
+        return realmUsers.map { User(fromRealm: $0) }.first
     }
     
     private func updateUsers(_ realmUsers: [RealmUser]) {
-        users = realmUsers.map { User(user: $0)}
+        users = realmUsers.map { User(fromRealm: $0)}
     }
     
     private func fetchFromRealm(_ realmUsers: [RealmUser]) -> [User] {
-        realmUsers.map { User(user: $0) }
+        realmUsers.map { User(fromRealm: $0) }
     }
     
     private func fetchFromJSON() {
@@ -94,8 +94,7 @@ final class UsersService {
                 case .failure(let error):
                     print(error)
                 case .success(let usersDTO):
-                    let color = CGColor.generateLightColor()
-                    var realmUsers = usersDTO.map { RealmUser(user: $0, color: color) }
+                    var realmUsers = usersDTO.map { RealmUser(fromDTO: $0) }
                     realmUsers = realmUsers.filter { $0.deactivated == nil }
                     
                     dispatchGroup.notify(queue: DispatchQueue.main) {

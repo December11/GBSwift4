@@ -20,11 +20,11 @@ struct Group {
         codeColor = CGColor.generateLightColor()
     }
     
-    init(group: RealmGroup) {
-        self.id = group.id
-        self.title = group.title
-        self.groupPictureURL = group.groupPhotoURL ?? nil
-        self.codeColor = group.codeColor
+    init(fromRealm: RealmGroup) {
+        self.id = fromRealm.id
+        self.title = fromRealm.title
+        self.groupPictureURL = fromRealm.groupPhotoURL ?? nil
+        self.codeColor = fromRealm.codeColor
     }
 }
 

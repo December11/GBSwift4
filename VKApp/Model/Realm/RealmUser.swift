@@ -14,8 +14,7 @@ class RealmUser: Object {
     @Persisted var secondName: String = ""
     @Persisted var deactivated: String?
     @Persisted var userPhotoURLString: String?
-    var codecolor: CGColor = UIColor.systemGray.cgColor
-    
+    var codeColor = UIColor.systemGray.cgColor
 }
 
 extension RealmUser {    
@@ -25,16 +24,15 @@ extension RealmUser {
         self.firstName = user.firstName
         self.secondName = user.secondName
         self.userPhotoURLString = user.userPhotoURLString
-        self.codecolor = user.codeColor
+        self.codeColor = user.codeColor
     }
-    
-    convenience init(user: UserDTO, color: CGColor) {
+    convenience init(fromDTO: UserDTO) {
         self.init()
-        self.id = user.id
-        self.firstName = user.firstName
-        self.secondName = user.secondName
-        self.userPhotoURLString = user.photoURLString
-        self.deactivated = user.deactivated
-        self.codecolor = color
+        self.id = fromDTO.id
+        self.firstName = fromDTO.firstName
+        self.secondName = fromDTO.secondName
+        self.userPhotoURLString = fromDTO.photoURLString
+        self.deactivated = fromDTO.deactivated
+        self.codeColor = UIColor.systemGray.cgColor
     }
 }

@@ -68,7 +68,7 @@ final class GroupsService {
     func deleteFromRealm(_ realmGroup: RealmGroup) {
         DispatchQueue.main.async {
             do {
-                let group = Group(group: realmGroup)
+                let group = Group(fromRealm: realmGroup)
                 if let index = self.groups.firstIndex(of: group) {
                     self.groups.remove(at: index)
                 }
@@ -96,19 +96,18 @@ final class GroupsService {
         guard
             let realmGroups = self.realmResults?.filter({ $0.id == -id })
         else {
-            print("### a. loadObjectFromRealmByID is nil, realmResults.count = \(self.realmResults?.count)")
             return nil
         }
-        return realmGroups.map { Group(group: $0) }.first
+        return realmGroups.map { Group(fromRealm: $0) }.first
     }
     
     // MARK: - Private methods
     private func updateGroups(_ realmGroups: [RealmGroup]) {
-        groups = realmGroups.map { Group(group: $0) }
+        groups = realmGroups.map { Group(fromRealm: $0) }
     }
     
     private func fetchFromRealm(_ realmGroups: [RealmGroup]) -> [Group] {
-        realmGroups.map { Group(group: $0) }
+        realmGroups.map { Group(fromRealm: $0) }
     }
 
     private func fetchFromJSON() {
@@ -128,10 +127,9 @@ final class GroupsService {
                 case .failure(let error):
                     print(error)
                 case .success(let groupsDTO):
-                    let color = CGColor.generateLightColor()
                     let realmGroups = groupsDTO.compactMap({ groupDTO -> RealmGroup? in
                         if groupDTO.isMember == 1 {
-                            return RealmGroup(group: groupDTO, color: color)
+                            return RealmGroup(fromDTO: groupDTO)
                         }
                         return nil
                     })

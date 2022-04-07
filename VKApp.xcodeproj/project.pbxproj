@@ -39,6 +39,8 @@
 		BA7BB1B7276BCA2800E12B03 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BABCEB2F276A699700C0ED3E /* Main.storyboard */; };
 		BA91B4BF27FB47D4009CBE53 /* UICollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA91B4BE27FB47D4009CBE53 /* UICollectionView.swift */; };
 		BA91B4C127FC7814009CBE53 /* FeedService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA91B4C027FC7814009CBE53 /* FeedService.swift */; };
+		BA91B4C427FF3147009CBE53 /* AsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA91B4C327FF3147009CBE53 /* AsyncOperation.swift */; };
+		BA91B4C627FF357E009CBE53 /* GetDataOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA91B4C527FF357E009CBE53 /* GetDataOperation.swift */; };
 		BA9A85BC27F4EB120019423C /* FeedImagesCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9A85BB27F4EB120019423C /* FeedImagesCell.swift */; };
 		BAA1ED1827CA4CA1002666F9 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = BAA1ED1727CA4CA1002666F9 /* Realm */; };
 		BAA1ED1A27CA4CA1002666F9 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BAA1ED1927CA4CA1002666F9 /* RealmSwift */; };
@@ -102,6 +104,8 @@
 		BA7B7A50276E4194000506F2 /* AllGroupTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllGroupTableViewController.swift; sourceTree = "<group>"; };
 		BA91B4BE27FB47D4009CBE53 /* UICollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UICollectionView.swift; sourceTree = "<group>"; };
 		BA91B4C027FC7814009CBE53 /* FeedService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedService.swift; sourceTree = "<group>"; };
+		BA91B4C327FF3147009CBE53 /* AsyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncOperation.swift; sourceTree = "<group>"; };
+		BA91B4C527FF357E009CBE53 /* GetDataOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetDataOperation.swift; sourceTree = "<group>"; };
 		BA9A85BB27F4EB120019423C /* FeedImagesCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImagesCell.swift; sourceTree = "<group>"; };
 		BAA1ED1B27CA54A2002666F9 /* FeedDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDTO.swift; sourceTree = "<group>"; };
 		BAA1ED1D27CA5768002666F9 /* CommentsDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsDTO.swift; sourceTree = "<group>"; };
@@ -200,6 +204,7 @@
 		BA1D5BAC27775EF0003CC32D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				BA097DC527BC155900252A0C /* DTO */,
 				BAA1ED2727CA6892002666F9 /* Realm */,
 				BACF6E7E27C124DE00669EF2 /* Helpers */,
 				BA6CA9E527B3A6010049BC1B /* Storage */,
@@ -257,6 +262,15 @@
 			path = Service;
 			sourceTree = "<group>";
 		};
+		BA91B4C227FF310F009CBE53 /* Operations */ = {
+			isa = PBXGroup;
+			children = (
+				BA91B4C327FF3147009CBE53 /* AsyncOperation.swift */,
+				BA91B4C527FF357E009CBE53 /* GetDataOperation.swift */,
+			);
+			path = Operations;
+			sourceTree = "<group>";
+		};
 		BAA1ED2727CA6892002666F9 /* Realm */ = {
 			isa = PBXGroup;
 			children = (
@@ -286,7 +300,7 @@
 		BABCEB28276A699700C0ED3E /* VKApp */ = {
 			isa = PBXGroup;
 			children = (
-				BA097DC527BC155900252A0C /* DTO */,
+				BA91B4C227FF310F009CBE53 /* Operations */,
 				BA6CA9EA27B7E27D0049BC1B /* Service */,
 				BA08979327A46C8C00DBAFFC /* UIHelpers */,
 				BA4CDE072777977E00B14B00 /* Extensions */,
@@ -474,6 +488,7 @@
 				BAD93B592792EBCE00794DC0 /* Feed.swift in Sources */,
 				BA772F4827824A2900EE46BD /* Photo.swift in Sources */,
 				BA1D5BAE27775EFD003CC32D /* User.swift in Sources */,
+				BA91B4C627FF357E009CBE53 /* GetDataOperation.swift in Sources */,
 				BA772F702784E6F500EE46BD /* String.swift in Sources */,
 				BA6CA9EC27B7E2A30049BC1B /* NetworkService.swift in Sources */,
 				BACF6E7B27C0153D00669EF2 /* PhotoInfosDTO.swift in Sources */,
@@ -481,6 +496,7 @@
 				BAA3CE0527D7BEB400AB6888 /* UITableView.swift in Sources */,
 				BAE9A20E27F50D80006F1323 /* FeedFooterView.swift in Sources */,
 				BA6CA9E727B3A62B0049BC1B /* SessionStorage.swift in Sources */,
+				BA91B4C427FF3147009CBE53 /* AsyncOperation.swift in Sources */,
 				BAB0258E27F3967C0022C4DF /* UsersService.swift in Sources */,
 				BA097DC727BC159600252A0C /* UserDTO.swift in Sources */,
 				BA772F6C27849FB600EE46BD /* UserHelper.swift in Sources */,
