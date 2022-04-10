@@ -5,17 +5,14 @@
 //  Created by Alla Shkolnik on 18.12.2021.
 //
 
-import UIKit
 import RealmSwift
+import UIKit
 
 class FriendsTableViewController: UITableViewController {
     
     private let helper = UserHelper()
-    private let friendsService = NetworkService<UserDTO>()
     private let userService = UsersService.instance
-    
     private var friendsToken: NotificationToken?
-    private var realmFriendResults: Results<RealmUser>?
     var friends = [User]()
     
     // MARK: - Данные для экрана Фото
@@ -26,10 +23,7 @@ class FriendsTableViewController: UITableViewController {
                     as? FriendCollectionViewController,
                 let indexPath = sender as? IndexPath
             else { return }
-            let currentSectionNumber = indexPath.section
-            let currentKeys = helper.getSortedKeyArray(for: friends)[currentSectionNumber]
-            let friendsForCurrentKey = helper.getArrayForKey(from: friends, for: currentKeys)
-            let currentFriend = friendsForCurrentKey[indexPath.row]
+            let currentFriend = getCurrentUser(for: indexPath)
             photosController.friend = currentFriend
         }
     }
@@ -37,31 +31,31 @@ class FriendsTableViewController: UITableViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        tableView.register(
-            UINib(nibName: "ImageCell", bundle: nil),
-            forCellReuseIdentifier: "imageCell")
-        
-        do {
-            if let fetchedData = try userService.getData() {
-                friends = fetchedData
-            }
-        } catch {
-            print(error)
+        tableView.register(for: ImageCell.self)
+        if let fetchedData = userService.getUsers() {
+            friends = fetchedData
         }
+        realmNotify()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        friendsToken = userService.realmFriendResults?.observe({ [weak self] friendChanges in
+    deinit {
+        friendsToken?.invalidate()
+    }
+    
+    @IBAction func dismiss() {
+        dismiss(animated: true)
+    }
+    
+    // MARK: - Private methods
+    private func realmNotify() {
+        friendsToken = userService.realmResults?.observe({ [weak self] friendChanges in
             guard let self = self else { return }
             switch friendChanges {
-            case .initial(_):
+            case .initial:
                 self.tableView.reloadData()
             case .update(_, deletions: let deletions, insertions: let insertions, modifications: let modifications):
                 print(deletions, insertions, modifications)
                 self.tableView.beginUpdates()
-                
                 let deletionIndexPath = deletions.map {
                     IndexPath(row: $0, section: self.tableView.sectionOf(row: $0) ?? 0)
                 }
@@ -81,13 +75,11 @@ class FriendsTableViewController: UITableViewController {
         })
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        friendsToken?.invalidate()
-    }
-    
-    @IBAction func dismiss() {
-        dismiss(animated: true)
+    private func getCurrentUser(for indexPath: IndexPath) -> User {
+        let currentSectionNumber = indexPath.section
+        let currentKeys = helper.getSortedKeyArray(for: friends)[currentSectionNumber]
+        let friendsForCurrentKey = helper.getArrayForKey(from: friends, for: currentKeys)
+        return friendsForCurrentKey[indexPath.row]
     }
 
     // MARK: - Секции и вывод строк
@@ -105,16 +97,11 @@ class FriendsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell", for: indexPath) as? ImageCell
-        else { return UITableViewCell() }
-        
-        // все чтобы получить нужного друга в нужной секции
-        let currentSectionNumber = indexPath.section
-        let currentKeys = helper.getSortedKeyArray(for: friends)[currentSectionNumber]
-        let friendsForCurrentKey = helper.getArrayForKey(from: friends, for: currentKeys)
-        let currentFriend = friendsForCurrentKey[indexPath.row]
-        
+        let cell: ImageCell = tableView.dequeueReusableCell(for: indexPath)
+        let currentFriend = getCurrentUser(for: indexPath)
+        if indexPath.row <= 2 {
+        }
+    
         cell.configureCell(
             label: currentFriend.firstName,
             additionalLabel: currentFriend.secondName,

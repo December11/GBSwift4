@@ -20,7 +20,15 @@ final class RealmFeed: Object {
 }
 
 extension RealmFeed {
-    convenience init(sourceID: Int, date: Date, text: String, commentsCount: Int, likesCount: Int, viewsCount: Int, photoURLs: [String]?)  {
+    convenience init(
+        sourceID: Int,
+        date: Date,
+        text: String,
+        commentsCount: Int,
+        likesCount: Int,
+        viewsCount: Int,
+        photoURLs: [String]?
+    ) {
         self.init()
         self.id = String(sourceID) + "_" + date.toString(dateFormat: .dateTime)
         self.sourceID = sourceID

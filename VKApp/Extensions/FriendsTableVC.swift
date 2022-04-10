@@ -7,7 +7,7 @@
 
 import UIKit
 
-//extension FriendsTableViewController: UISearchBarDelegate {
+// extension FriendsTableViewController: UISearchBarDelegate {
 //    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
 //        filteredFriendsDictionary = searchText.isEmpty
 //        ? friendsDictionary
@@ -25,4 +25,4 @@ import UIKit
 //    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
 //        searchBar.endEditing(true)
 //    }
-//}
+// }

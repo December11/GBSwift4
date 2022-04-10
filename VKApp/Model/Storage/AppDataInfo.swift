@@ -12,7 +12,6 @@ class AppDataInfo {
     
     var friendsUpdateDate: Date?
     var groupsUpdateDate: Date?
-    var feedUpdateDate: Date?
     
     private init() {}
 }

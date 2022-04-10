@@ -18,5 +18,4 @@ extension Date {
         dateFormatter.dateFormat = dateFormat.rawValue
         return dateFormatter.string(from: self)
     }
-    
 }

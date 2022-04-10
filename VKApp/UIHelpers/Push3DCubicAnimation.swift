@@ -22,7 +22,7 @@ final class Push3DCubicAnimation: NSObject, UIViewControllerAnimatedTransitionin
         else { return }
         let const: CGFloat = -0.002
         
-        destination.view.layer.anchorPoint = CGPoint(x: 0 , y: 0.5)
+        destination.view.layer.anchorPoint = CGPoint(x: 0, y: 0.5)
         source.view.layer.anchorPoint = CGPoint(x: 1, y: 0.5)
         
         var viewFromTransform: CATransform3D = CATransform3DMakeRotation(.pi / 2, 0.0, 1.0, 0.0)
@@ -42,15 +42,14 @@ final class Push3DCubicAnimation: NSObject, UIViewControllerAnimatedTransitionin
                 y: 0)
             source.view.layer.transform = viewFromTransform
             destination.view.layer.transform = CATransform3DIdentity
-        }, completion: {
-            finished in
+        }, completion: { _ in
             transitionContext.containerView.transform = .identity
             source.view.layer.transform = CATransform3DIdentity
             destination.view.layer.transform = CATransform3DIdentity
             source.view.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
             destination.view.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
             
-            if (transitionContext.transitionWasCancelled) {
+            if transitionContext.transitionWasCancelled {
                 destination.view.removeFromSuperview()
             } else {
                 source.view.removeFromSuperview()

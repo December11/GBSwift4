@@ -10,10 +10,8 @@ import UIKit
 extension String {
     var wordsCount: Int {
         var temp = self.count > 0 ? 1 : 0
-        for symbol in self {
-            if symbol == " " {
-                temp += 1
-            }
+        for symbol in self where symbol == " " {
+            temp += 1
         }
         return temp
     }
@@ -38,7 +36,7 @@ extension String {
     }
     
     var bold: NSMutableAttributedString {
-        let attributes = [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 17)]
+        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 17)]
         return NSMutableAttributedString(string: self, attributes: attributes)
     }
 }

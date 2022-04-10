@@ -5,79 +5,114 @@
 //  Created by Alla Shkolnik on 29.03.2022.
 //
 
-import UIKit
 import RealmSwift
+import UIKit
 
 final class GroupsService {
     
     static let instance = GroupsService()
     
     var groups = [Group]()
-    var realmGroupResults: Results<RealmGroup>?
+    var realmResults: Results<RealmGroup>?
     
-    private init() {}
+    private var realmUpdateDate = Date(timeIntervalSince1970: 0)
     
-    func updateData() throws {
+    private init() {
         do {
-            let updateInterval: TimeInterval = 60 * 1
-            if let updateInfo = try RealmService.load(typeOf: RealmAppInfo.self).first,
-               let groupsUpdateDate = updateInfo.groupsUpdateDate,
-               groupsUpdateDate >= Date(timeIntervalSinceNow: -updateInterval)  {
-                let realmGroupResults: Results<RealmGroup> = try RealmService.load(typeOf: RealmGroup.self)
-                self.realmGroupResults = realmGroupResults
-                updateGroups(realmGroupResults.map { $0 })
-            } else {
-                fetchGroupsFromJSON()
-            }
+            let date = try RealmService.load(typeOf: RealmAppInfo.self).first?.groupsUpdateDate
+            self.realmUpdateDate = date ?? Date(timeIntervalSince1970: 0)
         } catch {
             print(error)
         }
     }
     
-    func getData() throws -> [Group]? {
-        do {
-            try updateData()
-            let realmGroups: Results<RealmGroup> = try RealmService.load(typeOf: RealmGroup.self)
-            let groups = fetchGroupsFromRealm(realmGroups.map { $0 })
-            return groups
-        } catch {
-            print(error)
+    func loadDataIfNeeded() {
+        DispatchQueue.main.async {
+            do {
+                let updateInterval: TimeInterval = 60 * 60
+                if self.realmUpdateDate >= Date(timeIntervalSinceNow: -updateInterval) {
+                    self.realmResults = try RealmService.load(typeOf: RealmGroup.self)
+                } else {
+                    self.fetchFromJSON()
+                }
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func getGroups() throws -> [Group]? {
+        loadDataIfNeeded()
+        if let realmGroups = self.realmResults {
+            return fetchFromRealm(realmGroups.map { $0 })
         }
         return nil
     }
     
-    // MARK: - Private methods
-    private func updateGroups(_ realmGroups: [RealmGroup]) {
-        groups = realmGroups.map({ realmGroup in
-            Group(id: realmGroup.id, title: realmGroup.title, imageURL: realmGroup.groupPhotoURL)
-        })
-    }
-
-    private func saveGroupsToRealm(_ realmGroups: [RealmGroup]) {
+    // MARK: - Methods
+    func saveToRealm(_ realmGroups: [RealmGroup]) {
         do {
             try RealmService.save(items: realmGroups)
-            AppDataInfo.shared.groupsUpdateDate = Date()
             let realmUpdateDate = RealmAppInfo(
-                groupsUpdateDate: AppDataInfo.shared.groupsUpdateDate,
-                friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate,
-                feedUpdateDate: AppDataInfo.shared.feedUpdateDate
+                groupsUpdateDate: Date(),
+                friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate
             )
             try RealmService.save(items: [realmUpdateDate])
-            updateGroups(realmGroups)
+            self.realmResults = try RealmService.load(typeOf: RealmGroup.self)
+            self.updateGroups(realmGroups)
         } catch {
             print(error)
         }
     }
     
-    private func fetchGroupsFromRealm(_ realmGroups: [RealmGroup]) -> [Group] {
-        let groups = realmGroups.map({ realmGroup in
-            Group(id: realmGroup.id, title: realmGroup.title, imageURL: realmGroup.groupPhotoURL)
-        })
-        return groups
+    func deleteFromRealm(_ realmGroup: RealmGroup) {
+        DispatchQueue.main.async {
+            do {
+                let group = Group(group: realmGroup)
+                if let index = self.groups.firstIndex(of: group) {
+                    self.groups.remove(at: index)
+                }
+                try RealmService.delete(object: realmGroup)
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func getByID(_ id: Int) -> Group? {
+        var result: Group?
+        let groupFromRealm = loadFromRealmByID(id)
+        if let group = groupFromRealm {
+            result = group
+        }
+        if result == nil {
+            print("### a. getGroupByID is nil")
+        }
+        return result
+    }
+    
+    // MARK: - Private methods
+    private func loadFromRealmByID(_ id: Int) -> Group? {
+        guard
+            let realmGroups = self.realmResults?.filter({ $0.id == -id })
+        else {
+            print("### a. loadObjectFromRealmByID is nil, realmResults.count = \(self.realmResults?.count)")
+            return nil
+        }
+        return realmGroups.map { Group(group: $0) }.first
+    }
+    
+    // MARK: - Private methods
+    private func updateGroups(_ realmGroups: [RealmGroup]) {
+        groups = realmGroups.map { Group(group: $0) }
+    }
+    
+    private func fetchFromRealm(_ realmGroups: [RealmGroup]) -> [Group] {
+        realmGroups.map { Group(group: $0) }
     }
 
-    private func fetchGroupsFromJSON() {
-        //получаем список групп
+    private func fetchFromJSON() {
+        let dispatchGroup = DispatchGroup()
         let groupsService = NetworkService<GroupDTO>()
         groupsService.path = "/method/groups.get"
         groupsService.queryItems = [
@@ -87,15 +122,22 @@ final class GroupsService {
             URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
             URLQueryItem(name: "v", value: "5.131")
         ]
-        groupsService.fetch { [weak self] groupsDTOObject in
-            switch groupsDTOObject {
-            case .failure(let error):
-                print(error)
-            case .success(let groupsDTO):
-                DispatchQueue.main.async {
+        DispatchQueue.global().async(group: dispatchGroup) {
+            groupsService.fetch { [weak self] groupsDTO in
+                switch groupsDTO {
+                case .failure(let error):
+                    print(error)
+                case .success(let groupsDTO):
                     let color = CGColor.generateLightColor()
-                    let realmGroups = groupsDTO.map({ RealmGroup(group: $0, color: color) })
-                    self?.saveGroupsToRealm(realmGroups)
+                    let realmGroups = groupsDTO.compactMap({ groupDTO -> RealmGroup? in
+                        if groupDTO.isMember == 1 {
+                            return RealmGroup(group: groupDTO, color: color)
+                        }
+                        return nil
+                    })
+                    dispatchGroup.notify(queue: DispatchQueue.main) {
+                        self?.saveToRealm(realmGroups)
+                    }
                 }
             }
         }

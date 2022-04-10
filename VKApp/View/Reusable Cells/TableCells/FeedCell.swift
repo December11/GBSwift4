@@ -5,8 +5,8 @@
 //  Created by Alla Shkolnik on 15.01.2022.
 //
 
-import UIKit
 import Kingfisher
+import UIKit
 
 final class FeedCell: UITableViewCell {
     @IBOutlet weak var feedMessage: UILabel!
@@ -20,7 +20,7 @@ final class FeedCell: UITableViewCell {
         feedMessage.text = feed.messageText
     }
     
-    //MARK: - Private functions
+    // MARK: - Private functions
     private func anyObject(of feed: Feed) -> [Any] {
         var array = [String]()
         if let message = feed.messageText {

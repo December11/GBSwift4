@@ -5,9 +5,9 @@
 //  Created by Alla Shkolnik on 30.12.2021.
 //
 
-//import UIKit
+// import UIKit
 //
-//final class GroupStorage {
+// final class GroupStorage {
 //    static let shared = GroupStorage()
 //    
 //    let groups = [
@@ -19,4 +19,4 @@
 //              image: UIImage(named: "groupPhoto1.jpg"))]
 //    
 //    private init() {}
-//}
+// }

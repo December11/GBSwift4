@@ -23,4 +23,12 @@ extension RealmGroup {
         self.groupPhotoURL = group.groupPhotoURL
         self.codeColor = color ?? UIColor.systemGray.cgColor
     }
+    
+    convenience init (group: Group) {
+        self.init()
+        self.id = group.id
+        self.title = group.title
+        self.groupPhotoURL = group.groupPictureURL ?? ""
+        self.codeColor = group.codeColor
+    }
 }

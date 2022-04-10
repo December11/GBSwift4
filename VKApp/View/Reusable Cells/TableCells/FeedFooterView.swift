@@ -31,7 +31,7 @@ class FeedFooterView: UITableViewHeaderFooterView {
         likeButton.configuration?.background.backgroundColor = .clear
     }
     
-    //MARK: - Private functions
+    // MARK: - Private functions
     private func loadLikes(of feed: Feed) {
         feed.likesCount += feed.isLiked ? 1 : 0
         self.likeButton.setTitle(String(feed.likesCount), for: .init())
@@ -45,7 +45,7 @@ class FeedFooterView: UITableViewHeaderFooterView {
         self.viewsCountLabel.text = String(feed.viewsCount)
     }
     
-    //MARK: - Animations
+    // MARK: - Animations
     private func likeAnimate() {
         UIView.transition(with: self.likeButton, duration: 0.1, options: .transitionCrossDissolve) { [self] in
             let image = likeButton.isSelected
@@ -54,14 +54,20 @@ class FeedFooterView: UITableViewHeaderFooterView {
             likeButton.setImage(image, for: .init())
         }
         
-        UIView.animate(withDuration: 0.3, delay: 0.1, usingSpringWithDamping: 0.4, initialSpringVelocity: 0.5, options: .curveEaseInOut) { [self] in
+        UIView.animate(
+            withDuration: 0.3,
+            delay: 0.1,
+            usingSpringWithDamping: 0.4,
+            initialSpringVelocity: 0.5,
+            options: .curveEaseInOut
+        ) { [self] in
             likeButton.imageView?.frame.origin.y += 1
-        } completion: { [self] isCompletion in
+        } completion: { [self] _ in
             likeButton.imageView?.frame.origin.y -= 1
         }
     }
     
-    //MARK: - IBActions
+    // MARK: - IBActions
     @IBAction func like(_ sender: UIButton) {
         sender.isSelected.toggle()
         feed?.isLiked.toggle()
@@ -74,5 +80,4 @@ class FeedFooterView: UITableViewHeaderFooterView {
     @IBAction func share(_ sender: Any) {
         self.onShare()
     }
-
 }

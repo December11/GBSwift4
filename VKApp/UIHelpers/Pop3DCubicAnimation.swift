@@ -42,15 +42,14 @@ final class Pop3DCubicAnimation: NSObject, UIViewControllerAnimatedTransitioning
                 y: 0)
             source.view.layer.transform = viewFromTransform
             destination.view.layer.transform = CATransform3DIdentity
-        }, completion: {
-            finished in
+        }, completion: { _ in
             transitionContext.containerView.transform = .identity
             source.view.layer.transform = CATransform3DIdentity
             destination.view.layer.transform = CATransform3DIdentity
             source.view.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
             destination.view.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
             
-            if (transitionContext.transitionWasCancelled) {
+            if transitionContext.transitionWasCancelled {
                 destination.view.removeFromSuperview()
             } else {
                 source.view.removeFromSuperview()
