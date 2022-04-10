@@ -29,19 +29,10 @@ class FetchDataOperation: AsyncOperation {
                 switch fetchResult {
                 case .failure(let error): print(error)
                 case .success(let dataDTO):
-                    print("1 - load from JSON")
                     self?.fetchedData = dataDTO.compactMap { $0 }
-                    print("2 - load from JSON is finished")
-                    print("## fetchedData.count = \(String(describing: self?.fetchedData?.count))")
                     self?.state = .finished
                 }
             }
         }
-    }
-    
-    // QUESTION - разобраться как отменить команду загрузки.
-    override func cancel() {
-        self.cancel()
-        super.cancel()
     }
 }

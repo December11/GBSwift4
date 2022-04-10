@@ -31,9 +31,7 @@ class GroupsTableViewController: UITableViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
         tableView.register(for: ImageCell.self)
-        
         do {
             if let fetchedData = try groupsDataService.getGroups() {
                 groups = fetchedData

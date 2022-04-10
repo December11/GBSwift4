@@ -18,8 +18,6 @@ final class RealmLoadOperation: AsyncOperation {
             print("## Error. can't check dependencies")
             return
         }
-        let str = String(describing: realmData?.realmResults?.count)
-        print("7 - hi there, this is LoadFromRealm! realmData has \(str) elements! ")
         self.realmResults = realmData?.realmResults
         self.state = .finished
     }

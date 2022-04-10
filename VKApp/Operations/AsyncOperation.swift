@@ -17,7 +17,6 @@ class AsyncOperation: Operation {
     }
     
     // MARK: - Parameters
-    // QUESTION: что помогает избежать гонки состояний значения state?
     var state = State.ready {
         willSet {
             willChangeValue(forKey: state.keyPath)
@@ -29,7 +28,6 @@ class AsyncOperation: Operation {
         }
     }
     
-    // QUESTION: в каких случаях нужен этот флаг? Понимаю что это для проверки асинхронна ли функция, но в каких случаях это нужно?
     override var isAsynchronous: Bool {
         true
     }

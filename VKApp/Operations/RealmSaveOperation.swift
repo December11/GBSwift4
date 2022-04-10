@@ -30,10 +30,7 @@ final class RealmSaveOperation: AsyncOperation {
             print("## Error. Data is not loaded from JSON")
             return
         }
-        print("3 - parse from JSON to Realm")
         self.fetchedData = data.map { RealmGroup(fromDTO: $0) }
-        print("4 - parse from JSON to Realm is finished")
-        print("## fetchedData.count = \(String(describing: self.fetchedData.count))")
         saveToRealmIfNeeded()
         reloadRealmResults()
         self.state = .finished
@@ -41,22 +38,20 @@ final class RealmSaveOperation: AsyncOperation {
     
     // MARK: - Private methods
     private func saveToRealmIfNeeded() {
-        guard let resultsCount = self.realmResults?.count else { return }
-        if resultsCount < self.fetchedData.count {
+        if realmResults?.count == nil {
             saveToRealm(fetchedData)
-        } else {
-            print("5 - realmResults?.count == fetchedData.count")
+        }
+        guard let resultsCount = realmResults?.count else { return }
+        if resultsCount < fetchedData.count {
+            saveToRealm(fetchedData)
         }
     }
     
     private func saveToRealm(_ realmGroups: [RealmGroup]) {
         DispatchQueue.main.async {
             do {
-                print("6 - save to Realm")
                 try RealmService.save(items: realmGroups)
                 self.updateRealmAppInfo()
-                print("7 - save to Realm is finished")
-                print("realmResults.count = \(String(describing: self.realmResults?.count))")
             } catch {
                 print("## Error. can't load groups from Realm at \(#function): ", error)
             }
@@ -71,7 +66,6 @@ final class RealmSaveOperation: AsyncOperation {
         )
         DispatchQueue.main.async {
             do {
-                print("5 - save date of updating to Realm")
                 try RealmService.save(items: [updateDate])
             } catch {
                 print("## Error. can't save date of updating groups to Realm: ", error)
@@ -80,7 +74,6 @@ final class RealmSaveOperation: AsyncOperation {
     }
     
     private func reloadRealmResults() {
-        print("5 - load data from Realm")
         let updateInterval: TimeInterval = 60 * 60
         let needToBeUpdatedDate = Date(timeIntervalSinceNow: -updateInterval)
         if self.realmUpdateDate >= needToBeUpdatedDate || self.realmResults == nil {
@@ -92,7 +85,5 @@ final class RealmSaveOperation: AsyncOperation {
                 }
             }
         }
-        print("6 - load data from Realm is finished")
-        print("## realmResults.count = \(String(describing: self.realmResults?.count))")
     }
 }

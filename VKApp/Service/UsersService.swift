@@ -19,6 +19,7 @@ final class UsersService {
     
     private init() {
         do {
+            self.realmResults = try RealmService.load(typeOf: RealmUser.self)
             let date = try RealmService.load(typeOf: RealmAppInfo.self).first?.friendsUpdateDate
             self.realmUpdateDate = date ?? Date(timeIntervalSince1970: 0)
         } catch {
@@ -50,17 +51,8 @@ final class UsersService {
         return nil
     }
     
-    func getByID(_ id: Int) -> User? {
-        var result: User?
-        let userFromRealm = loadFromRealmByID(id)
-        if let user = userFromRealm {
-            result = user
-        }
-        return result
-    }
-    
     // MARK: - Private methods
-    private func loadFromRealmByID(_ id: Int) -> User? {
+    func getByID(_ id: Int) -> User? {
         guard
             let realmUsers = self.realmResults?.filter({ $0.id == id })
         else {
