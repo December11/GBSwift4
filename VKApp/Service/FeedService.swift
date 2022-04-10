@@ -44,7 +44,7 @@ final class FeedsService {
             feedService.fetch { [weak self] feedsDTO in
                 switch feedsDTO {
                 case .failure(let error):
-                    print(error)
+                    print("## Error. Can't load groups from JSON", error)
                 case .success(let feedsDTO):
                     guard let self = self else { return }
                     let feeds = feedsDTO.map { feed -> Feed in
@@ -91,7 +91,7 @@ final class FeedsService {
         guard let images = feed.photosURLs else { return nil }
         let photos = images.compactMap { $0.photo }
         let photoSizes = photos.map { $0.photos }
-        return photoSizes.map { Photo(imageURLString: $0.last?.url) }
+        return photoSizes.map { Photo(imageURLString: $0?.last?.url) }
     }
     
 }

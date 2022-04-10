@@ -28,9 +28,9 @@ extension RealmUser {
     }
     convenience init(fromDTO: UserDTO) {
         self.init()
-        self.id = fromDTO.id
-        self.firstName = fromDTO.firstName
-        self.secondName = fromDTO.secondName
+        self.id = fromDTO.id ?? 0
+        self.firstName = fromDTO.firstName ?? "Anonymous"
+        self.secondName = fromDTO.secondName ?? ""
         self.userPhotoURLString = fromDTO.photoURLString
         self.deactivated = fromDTO.deactivated
         self.codeColor = UIColor.systemGray.cgColor

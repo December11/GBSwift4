@@ -57,10 +57,10 @@ class FriendCollectionViewController: UICollectionViewController {
             photosService.fetch { [weak self] photosDTOObject in
                 switch photosDTOObject {
                 case .failure(let error):
-                    print(error)
+                    print("## Error. Can't load friend's photos", error)
                 case .success(let fetchedPhotos):
                     fetchedPhotos.forEach { photo in
-                        photo.photos.forEach { info in
+                        photo.photos?.forEach { info in
                             if info.sizeType == "x" {
                                 self?.friendPhotos.append(Photo(imageURLString: info.url))
                             }

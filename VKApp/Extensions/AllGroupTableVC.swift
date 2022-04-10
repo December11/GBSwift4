@@ -31,10 +31,10 @@ extension AllGroupTableViewController: UISearchBarDelegate {
             groupsService.fetch { [weak self] searchedGroupsDTO in
                 switch searchedGroupsDTO {
                 case .failure(let error):
-                    print(error)
+                    print("## Error. Can't load search group results from JSON", error)
                 case .success(let searchedGroupsDTO):
                     self?.filteredGroups = searchedGroupsDTO.map {
-                        return Group(id: $0.id, title: $0.title, imageURL: $0.groupPhotoURL)
+                        Group(id: $0.id ?? 0, title: $0.title ?? "Anonymous group", imageURL: $0.groupPhotoURL)
                     }
                 }
             }

@@ -25,8 +25,8 @@ extension RealmGroup {
     }
     convenience init(fromDTO: GroupDTO) {
         self.init()
-        self.id = fromDTO.id
-        self.title = fromDTO.title
+        self.id = fromDTO.id ?? 0
+        self.title = fromDTO.title ?? "Anonymous group"
         self.groupPhotoURL = fromDTO.groupPhotoURL
         self.codeColor = CGColor.generateLightColor()
     }

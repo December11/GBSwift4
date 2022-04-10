@@ -39,7 +39,7 @@ class GroupsTableViewController: UITableViewController {
                 groups = fetchedData
             }
         } catch {
-            print(error)
+            print("## Error. Can't load groups from Realm or JSON", error)
         }
         
         groupToken = groupsDataService.realmResults?.observe({ [weak self] groupChanges in
@@ -58,7 +58,7 @@ class GroupsTableViewController: UITableViewController {
                 self.tableView.reloadRows(at: modificateIndexPath, with: .automatic)
                 self.tableView.endUpdates()
             case .error(let error):
-                print(error)
+                print("## Error. Can't reload groups tableView", error)
             }
         })
     }

@@ -8,10 +8,10 @@
 import Foundation
 
 struct UserDTO {
-    let id: Int
-    var firstName: String
-    var secondName: String
-    var photoURLString: String
+    let id: Int?
+    var firstName: String?
+    var secondName: String?
+    var photoURLString: String?
     var deactivated: String?
 }
 

@@ -70,7 +70,7 @@ class FriendsTableViewController: UITableViewController {
                 self.tableView.reloadRows(at: modificateIndexPath, with: .automatic)
                 self.tableView.endUpdates()
             case .error(let error):
-                print(error)
+                print("## Error. Can't reload friends tableView", error)
             }
         })
     }

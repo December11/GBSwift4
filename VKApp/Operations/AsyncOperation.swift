@@ -8,6 +8,7 @@
 import Foundation
 
 class AsyncOperation: Operation {
+    
     enum State: String {
         case ready, executing, finished
         fileprivate var keyPath: String {
@@ -15,6 +16,8 @@ class AsyncOperation: Operation {
         }
     }
     
+    // MARK: - Parameters
+    // QUESTION: что помогает избежать гонки состояний значения state?
     var state = State.ready {
         willSet {
             willChangeValue(forKey: state.keyPath)
@@ -26,12 +29,35 @@ class AsyncOperation: Operation {
         }
     }
     
+    // QUESTION: в каких случаях нужен этот флаг? Понимаю что это для проверки асинхронна ли функция, но в каких случаях это нужно?
     override var isAsynchronous: Bool {
-        return true
+        true
     }
     
     override var isReady: Bool {
-        return super.isReady && state == .ready
+        super.isReady && state == .ready
     }
     
+    override var isExecuting: Bool {
+        state == .executing
+    }
+    
+    override var isFinished: Bool {
+        state == .finished
+    }
+    
+    // MARK: - Methods
+    override func start() {
+        if isCancelled {
+            state = .finished
+        } else {
+            main()
+            state = .executing
+        }
+    }
+    
+    override func cancel() {
+        super.cancel()
+        state = .finished
+    }
 }
