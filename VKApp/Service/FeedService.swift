@@ -48,7 +48,8 @@ final class FeedsService {
                 case .success(let feedsDTO):
                     guard let self = self else { return }
                     let feeds = feedsDTO.map { feed -> Feed in
-                        if feed.sourceID >= 0 {
+                        let isFeedFromUser = feed.sourceID >= 0
+                        if isFeedFromUser {
                             return self.configurateUserFeed(feed)
                         } else {
                             return self.configurateGroupFeed(feed)
