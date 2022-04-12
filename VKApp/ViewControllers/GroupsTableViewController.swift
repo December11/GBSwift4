@@ -97,6 +97,7 @@ class GroupsTableViewController: UITableViewController {
             guard
                 let realmGroups = groupsDataService.realmResults,
                 let realmGroup = realmGroups.first(where: { $0.id == group.id }) else { return }
+            self.groups.remove(at: indexPath.row)
             groupsDataService.deleteFromRealm(realmGroup)
         }    
     }
