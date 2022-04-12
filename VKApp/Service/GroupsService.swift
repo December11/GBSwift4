@@ -30,11 +30,11 @@ final class GroupsService {
         let updateInterval: TimeInterval = 60 * 60
         let expiredDate = Date(timeIntervalSinceNow: -updateInterval)
         if realmUpdateDate < expiredDate || realmResults?.count == 0 {
-            fetchFromJSON()
+            fetchGroups()
         }
     }
     
-    func fetchFromJSON() {
+    func fetchGroups() {
         let fetchDataQueue: OperationQueue = {
             let queue = OperationQueue()
             queue.qualityOfService = .utility
@@ -43,8 +43,12 @@ final class GroupsService {
         }()
         
         let fetchData = FetchDataOperation()
-        let realmGroups = RealmSaveOperation()
         let realmData = RealmLoadOperation()
+        
+        fetchDataQueue.addOperation(fetchData)
+        
+        let groups = fetchData.fetchedData?.map { RealmGroup(fromDTO: $0)} ?? []
+        let realmGroups = RealmSaveOperation(data: groups)
         
         realmGroups.addDependency(fetchData)
         realmData.addDependency(realmGroups)
@@ -52,7 +56,6 @@ final class GroupsService {
             self.realmResults = realmData.realmResults
         }
         
-        fetchDataQueue.addOperation(fetchData)
         OperationQueue.main.addOperation(realmGroups)
         OperationQueue.main.addOperation(realmData)
     }
@@ -65,23 +68,6 @@ final class GroupsService {
     }
     
     // MARK: - Methods
-    func saveToRealm(_ realmGroups: [RealmGroup]) {
-        DispatchQueue.main.async {
-            do {
-                try RealmService.save(items: realmGroups)
-                let realmUpdateDate = RealmAppInfo(
-                    groupsUpdateDate: Date(),
-                    friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate
-                )
-                try RealmService.save(items: [realmUpdateDate])
-                self.realmResults = try RealmService.load(typeOf: RealmGroup.self)
-                self.updateGroups(realmGroups)
-            } catch {
-                print("## Error. Can't save groups to Realm. ", error)
-            }
-        }
-    }
-    
     func deleteFromRealm(_ realmGroup: RealmGroup) {
         DispatchQueue.main.async {
             do {

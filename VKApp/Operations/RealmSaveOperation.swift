@@ -24,14 +24,6 @@ final class RealmSaveOperation: AsyncOperation {
     }
     
     override func main() {
-//        guard
-//            let fetchDataOperation = dependencies.first(where: { $0 is FetchDataOperation }) as? FetchDataOperation,
-//            let data = fetchDataOperation.fetchedData
-//        else {
-//            print("## Error. Data is not loaded from JSON")
-//            return
-//        }
-//        self.fetchedData = data.map { RealmGroup(fromDTO: $0) }
         saveToRealmIfNeeded()
         reloadRealmResults()
         self.state = .finished

@@ -11,8 +11,8 @@ import UIKit
 class GroupsTableViewController: UITableViewController {
     
     private let groupsDataService = GroupsService.instance
-    private var groups = [Group]()
     private var groupToken: NotificationToken?
+    private var groups = [Group]()
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard
@@ -23,7 +23,9 @@ class GroupsTableViewController: UITableViewController {
             guard let self = self else { return }
             if !self.groups.contains(group) {
                 let realmGroup = RealmGroup(group: group)
-                self.groupsDataService.saveToRealm([realmGroup])
+                self.groups.append(group)
+                let saveOperation = RealmSaveOperation(data: [realmGroup])
+                OperationQueue.main.addOperation(saveOperation)
             }
         }
     }
