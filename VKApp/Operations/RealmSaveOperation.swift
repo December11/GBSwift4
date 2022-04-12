@@ -13,24 +13,25 @@ final class RealmSaveOperation: AsyncOperation {
     private(set) var realmResults: Results<RealmGroup>?
     private var realmUpdateDate = Date(timeIntervalSince1970: 0)
     
-    override init() {
+    init(data: [RealmGroup]) {
         do {
             let date = try RealmService.load(typeOf: RealmAppInfo.self).first?.groupsUpdateDate
             self.realmUpdateDate = date ?? Date(timeIntervalSince1970: 0)
         } catch {
             print("## Error. Can't load groups update date from Realm", error)
         }
+        self.fetchedData = data
     }
     
     override func main() {
-        guard
-            let fetchDataOperation = dependencies.first(where: { $0 is FetchDataOperation }) as? FetchDataOperation,
-            let data = fetchDataOperation.fetchedData
-        else {
-            print("## Error. Data is not loaded from JSON")
-            return
-        }
-        self.fetchedData = data.map { RealmGroup(fromDTO: $0) }
+//        guard
+//            let fetchDataOperation = dependencies.first(where: { $0 is FetchDataOperation }) as? FetchDataOperation,
+//            let data = fetchDataOperation.fetchedData
+//        else {
+//            print("## Error. Data is not loaded from JSON")
+//            return
+//        }
+//        self.fetchedData = data.map { RealmGroup(fromDTO: $0) }
         saveToRealmIfNeeded()
         reloadRealmResults()
         self.state = .finished

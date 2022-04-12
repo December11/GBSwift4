@@ -80,17 +80,15 @@ final class UsersService {
             URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
             URLQueryItem(name: "v", value: "5.131")
         ]
-        DispatchQueue.global().async(group: dispatchGroup) {
-            usersService.fetch { [weak self] usersDTOObjects in
-                switch usersDTOObjects {
-                case .failure(let error):
-                    print("## Error. Can't fetch users from JSON", error)
-                case .success(let usersDTO):
-                    var realmUsers = usersDTO.map { RealmUser(fromDTO: $0) }
-                    realmUsers = realmUsers.filter { $0.deactivated == nil }
-                    dispatchGroup.notify(queue: DispatchQueue.main) {
-                        self?.saveToRealm(realmUsers)
-                    }
+        usersService.fetch { [weak self] usersDTOObjects in
+            switch usersDTOObjects {
+            case .failure(let error):
+                print("## Error. Can't fetch users from JSON", error)
+            case .success(let usersDTO):
+                var realmUsers = usersDTO.map { RealmUser(fromDTO: $0) }
+                realmUsers = realmUsers.filter { $0.deactivated == nil }
+                dispatchGroup.notify(queue: DispatchQueue.main) {
+                    self?.saveToRealm(realmUsers)
                 }
             }
         }

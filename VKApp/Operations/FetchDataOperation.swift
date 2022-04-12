@@ -24,14 +24,12 @@ class FetchDataOperation: AsyncOperation {
     }
     
     override func main() {
-        DispatchQueue.global().async {
-            self.request.fetch { [weak self] fetchResult in
-                switch fetchResult {
-                case .failure(let error): print(error)
-                case .success(let dataDTO):
-                    self?.fetchedData = dataDTO.compactMap { $0 }
-                    self?.state = .finished
-                }
+        self.request.fetch { [weak self] fetchResult in
+            switch fetchResult {
+            case .failure(let error): print(error)
+            case .success(let dataDTO):
+                self?.fetchedData = dataDTO.compactMap { $0 }
+                self?.state = .finished
             }
         }
     }

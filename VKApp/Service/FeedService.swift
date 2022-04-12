@@ -39,25 +39,22 @@ final class FeedsService {
         ]
         userService.loadDataIfNeeded()
         groupService.loadDataIfNeeded()
-        
-        DispatchQueue.global().async(group: dispatchGroup) {
-            feedService.fetch { [weak self] feedsDTO in
-                switch feedsDTO {
-                case .failure(let error):
-                    print("## Error. Can't load groups from JSON", error)
-                case .success(let feedsDTO):
-                    guard let self = self else { return }
-                    let feeds = feedsDTO.map { feed -> Feed in
-                        let isFeedFromUser = feed.sourceID >= 0
-                        if isFeedFromUser {
-                            return self.configurateUserFeed(feed)
-                        } else {
-                            return self.configurateGroupFeed(feed)
-                        }
+        feedService.fetch { [weak self] feedsDTO in
+            switch feedsDTO {
+            case .failure(let error):
+                print("## Error. Can't load groups from JSON", error)
+            case .success(let feedsDTO):
+                guard let self = self else { return }
+                let feeds = feedsDTO.map { feed -> Feed in
+                    let isFeedFromUser = feed.sourceID >= 0
+                    if isFeedFromUser {
+                        return self.configurateUserFeed(feed)
+                    } else {
+                        return self.configurateGroupFeed(feed)
                     }
-                    dispatchGroup.notify(queue: DispatchQueue.main) {
-                        completion(feeds)
-                    }
+                }
+                dispatchGroup.notify(queue: DispatchQueue.main) {
+                    completion(feeds)
                 }
             }
         }

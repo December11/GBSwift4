@@ -14,11 +14,11 @@ final class RealmLoadOperation: AsyncOperation {
     override init() { }
     
     override func main() {
-        guard let realmData = dependencies.first as? RealmSaveOperation? else {
+        guard let realmData = dependencies.first as? RealmSaveOperation else {
             print("## Error. can't check dependencies")
             return
         }
-        self.realmResults = realmData?.realmResults
+        self.realmResults = realmData.realmResults
         self.state = .finished
     }
 }
