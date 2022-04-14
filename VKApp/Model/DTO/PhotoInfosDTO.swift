@@ -8,8 +8,8 @@
 import UIKit
 
 struct PhotoInfosDTO {
-    let sizeType: String
-    let url: String
+    let sizeType: String?
+    let url: String?
 }
 
 extension PhotoInfosDTO: Decodable {

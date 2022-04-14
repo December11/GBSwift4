@@ -31,67 +31,58 @@ final class FeedsService {
     private func fetchFromJSON(completion: @escaping ([Feed]) -> Void) {
         let dispatchGroup = DispatchGroup()
         let feedService = NetworkService<FeedDTO>()
-        userService.loadDataIfNeeded()
-        groupService.loadDataIfNeeded()
-
         feedService.path = "/method/newsfeed.get"
         feedService.queryItems = [
             URLQueryItem(name: "filters", value: "post"),
             URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
             URLQueryItem(name: "v", value: "5.131")
         ]
-        DispatchQueue.global().async(group: dispatchGroup) {
-            feedService.fetch { [weak self] feedsDTO in
-                switch feedsDTO {
-                case .failure(let error):
-                    print(error)
-                case .success(let feedsDTO):
-                    guard let self = self else { return }
-                    let feeds = feedsDTO.map { feed -> Feed in
-                        let photosURLs = self.loadPhotosFromFeed(feed)
-                        if feed.sourceID >= 0 {
-                            var feedUser = User(id: 0, firstName: "Unknown", secondName: "", userPhotoURLString: nil)
-                            if let user = self.userService.getByID(feed.sourceID) {
-                                feedUser = user
-                            }
-                            return Feed(user: feedUser, photos: photosURLs, feed: feed)
-                        } else {
-                            var feedGroup = Group(id: 0, title: "Unknown", imageURL: nil)
-                            if let group = self.groupService.getByID(feed.sourceID) {
-                                feedGroup = group
-                            }
-                            return Feed(group: feedGroup, photos: photosURLs, feed: feed)
-                        }
+        userService.loadDataIfNeeded()
+        groupService.loadDataIfNeeded()
+        feedService.fetch { [weak self] feedsDTO in
+            switch feedsDTO {
+            case .failure(let error):
+                print("## Error. Can't load groups from JSON", error)
+            case .success(let feedsDTO):
+                guard let self = self else { return }
+                let feeds = feedsDTO.map { feed -> Feed in
+                    let isFeedFromUser = feed.sourceID >= 0
+                    if isFeedFromUser {
+                        return self.configurateUserFeed(feed)
+                    } else {
+                        return self.configurateGroupFeed(feed)
                     }
-                    dispatchGroup.notify(queue: DispatchQueue.main) {
-                        completion(feeds)
-                    }
+                }
+                dispatchGroup.notify(queue: DispatchQueue.main) {
+                    completion(feeds)
                 }
             }
         }
     }
-    
-    private func isUsersUpdated() -> Bool {
-        if !userService.users.isEmpty {
-            return true
-        } else {
-            return false
+ 
+    private func configurateUserFeed(_ feed: FeedDTO) -> Feed {
+        let photosURLs = self.loadPhotosFromFeed(feed)
+        var feedUser = User(id: 0, firstName: "Unknown", secondName: "", userPhotoURLString: nil)
+        if let user = self.userService.getByID(feed.sourceID) {
+            feedUser = user
         }
+        return Feed(user: feedUser, photos: photosURLs, feed: feed)
     }
     
-    private func isGroupsUpdated() -> Bool {
-        if !groupService.groups.isEmpty {
-            return true
-        } else {
-            return false
+    private func configurateGroupFeed(_ feed: FeedDTO) -> Feed {
+        let photosURLs = self.loadPhotosFromFeed(feed)
+        var feedGroup = Group(id: 0, title: "Unknown", imageURL: nil)
+        if let group = self.groupService.getByID(feed.sourceID) {
+            feedGroup = group
         }
+        return Feed(group: feedGroup, photos: photosURLs, feed: feed)
     }
     
     private func loadPhotosFromFeed(_ feed: FeedDTO) -> [Photo]? {
         guard let images = feed.photosURLs else { return nil }
         let photos = images.compactMap { $0.photo }
         let photoSizes = photos.map { $0.photos }
-        return photoSizes.map { Photo(imageURLString: $0.last?.url) }
+        return photoSizes.map { Photo(imageURLString: $0?.last?.url) }
     }
     
 }

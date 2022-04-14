@@ -17,25 +17,23 @@ extension AllGroupTableViewController: UISearchBarDelegate {
             self.fetchSearchedGroupsFromJSON(by: searchText)
         }
     }
-        
+    
     func fetchSearchedGroupsFromJSON(by searchText: String) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            let groupsService = NetworkService<GroupDTO>()
-            groupsService.path = "/method/groups.search"
-            groupsService.queryItems = [
-                URLQueryItem(name: "q", value: searchText),
-                URLQueryItem(name: "type", value: "group"),
-                URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
-                URLQueryItem(name: "v", value: "5.131")
-            ]
-            groupsService.fetch { [weak self] searchedGroupsDTO in
-                switch searchedGroupsDTO {
-                case .failure(let error):
-                    print(error)
-                case .success(let searchedGroupsDTO):
-                    self?.filteredGroups = searchedGroupsDTO.map {
-                        return Group(id: $0.id, title: $0.title, imageURL: $0.groupPhotoURL)
-                    }
+        let groupsService = NetworkService<GroupDTO>()
+        groupsService.path = "/method/groups.search"
+        groupsService.queryItems = [
+            URLQueryItem(name: "q", value: searchText),
+            URLQueryItem(name: "type", value: "group"),
+            URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
+            URLQueryItem(name: "v", value: "5.131")
+        ]
+        groupsService.fetch { [weak self] searchedGroupsDTO in
+            switch searchedGroupsDTO {
+            case .failure(let error):
+                print("## Error. Can't load search group results from JSON", error)
+            case .success(let searchedGroupsDTO):
+                self?.filteredGroups = searchedGroupsDTO.map {
+                    Group(id: $0.id ?? 0, title: $0.title ?? "Anonymous group", imageURL: $0.groupPhotoURL)
                 }
             }
         }

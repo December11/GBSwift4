@@ -36,10 +36,14 @@ final class NetworkService<ItemsType: Decodable> {
                 do {
                     let json = try JSONDecoder().decode(ResponseDTO<ItemsType>.self, from: data)
                     DispatchQueue.main.async {
-                        completion(.success(json.response.items))
+                        if let items = json.response.items {
+                            completion(.success(items))
+                        } else {
+                            print("## Error. No items in response")
+                        }
                     }
                 } catch {
-                    print(error)
+                    print("## Error. can't load data from JSON", error)
                     DispatchQueue.main.async {
                         completion(.failure(error))
                     }

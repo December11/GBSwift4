@@ -8,8 +8,8 @@
 import UIKit
 
 struct PhotoDTO {
-    let id: Int
-    let photos: [PhotoInfosDTO]
+    let id: Int?
+    let photos: [PhotoInfosDTO]?
 }
 
 extension PhotoDTO: Decodable {

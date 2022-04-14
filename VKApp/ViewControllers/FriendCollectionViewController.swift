@@ -46,24 +46,22 @@ class FriendCollectionViewController: UICollectionViewController {
     // MARK: - Private methods
     private func fetchPhotosFromJSON(_ userID: Int) {
         let photosService = NetworkService<PhotoDTO>()
-        DispatchQueue.global(qos: .userInitiated).async {
-            photosService.path = "/method/photos.get"
-            photosService.queryItems = [
-                URLQueryItem(name: "owner_id", value: String(userID)),
-                URLQueryItem(name: "album_id", value: "profile"),
-                URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
-                URLQueryItem(name: "v", value: "5.131")
-            ]
-            photosService.fetch { [weak self] photosDTOObject in
-                switch photosDTOObject {
-                case .failure(let error):
-                    print(error)
-                case .success(let fetchedPhotos):
-                    fetchedPhotos.forEach { photo in
-                        photo.photos.forEach { info in
-                            if info.sizeType == "x" {
-                                self?.friendPhotos.append(Photo(imageURLString: info.url))
-                            }
+        photosService.path = "/method/photos.get"
+        photosService.queryItems = [
+            URLQueryItem(name: "owner_id", value: String(userID)),
+            URLQueryItem(name: "album_id", value: "profile"),
+            URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
+            URLQueryItem(name: "v", value: "5.131")
+        ]
+        photosService.fetch { [weak self] photosDTOObject in
+            switch photosDTOObject {
+            case .failure(let error):
+                print("## Error. Can't load friend's photos", error)
+            case .success(let fetchedPhotos):
+                fetchedPhotos.forEach { photo in
+                    photo.photos?.forEach { info in
+                        if info.sizeType == "x" {
+                            self?.friendPhotos.append(Photo(imageURLString: info.url))
                         }
                     }
                 }

@@ -8,6 +8,6 @@
 import Foundation
 
 struct ItemsDTO<ItemsType: Decodable>: Decodable {
-    let items: [ItemsType]
+    let items: [ItemsType]?
     let count: Int?
 }

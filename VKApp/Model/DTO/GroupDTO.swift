@@ -8,10 +8,10 @@
 import Foundation
 
 struct GroupDTO {
-    let id: Int
-    var title: String
-    var groupPhotoURL: String
-    var isMember: Int
+    let id: Int?
+    var title: String?
+    var groupPhotoURL: String?
+    var isMember: Int?
 
 }
 

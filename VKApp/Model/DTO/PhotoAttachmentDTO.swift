@@ -8,6 +8,6 @@
 import Foundation
 
 struct PhotoAttachmentDTO: Decodable {
-    let type: String
+    let type: String?
     let photo: PhotoDTO?
 }

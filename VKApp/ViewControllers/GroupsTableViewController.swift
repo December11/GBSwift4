@@ -11,8 +11,8 @@ import UIKit
 class GroupsTableViewController: UITableViewController {
     
     private let groupsDataService = GroupsService.instance
-    private var groups = [Group]()
     private var groupToken: NotificationToken?
+    private var groups = [Group]()
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard
@@ -23,7 +23,9 @@ class GroupsTableViewController: UITableViewController {
             guard let self = self else { return }
             if !self.groups.contains(group) {
                 let realmGroup = RealmGroup(group: group)
-                self.groupsDataService.saveToRealm([realmGroup])
+                self.groups.append(group)
+                let saveOperation = RealmSaveOperation(data: [realmGroup])
+                OperationQueue.main.addOperation(saveOperation)
             }
         }
     }
@@ -31,15 +33,13 @@ class GroupsTableViewController: UITableViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
         tableView.register(for: ImageCell.self)
-        
         do {
             if let fetchedData = try groupsDataService.getGroups() {
                 groups = fetchedData
             }
         } catch {
-            print(error)
+            print("## Error. Can't load groups from Realm or JSON", error)
         }
         
         groupToken = groupsDataService.realmResults?.observe({ [weak self] groupChanges in
@@ -58,7 +58,7 @@ class GroupsTableViewController: UITableViewController {
                 self.tableView.reloadRows(at: modificateIndexPath, with: .automatic)
                 self.tableView.endUpdates()
             case .error(let error):
-                print(error)
+                print("## Error. Can't reload groups tableView", error)
             }
         })
     }
@@ -97,6 +97,7 @@ class GroupsTableViewController: UITableViewController {
             guard
                 let realmGroups = groupsDataService.realmResults,
                 let realmGroup = realmGroups.first(where: { $0.id == group.id }) else { return }
+            self.groups.remove(at: indexPath.row)
             groupsDataService.deleteFromRealm(realmGroup)
         }    
     }
