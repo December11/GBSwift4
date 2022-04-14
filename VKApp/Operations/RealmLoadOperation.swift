@@ -11,14 +11,23 @@ import RealmSwift
 final class RealmLoadOperation: AsyncOperation {
     private(set) var realmResults: Results<RealmGroup>?
     
-    override init() { }
+    init(data: Results<RealmGroup>?) {
+        if let data = data {
+            self.realmResults = data
+        } else {
+            do {
+                self.realmResults = try RealmService.load(typeOf: RealmGroup.self)
+            } catch {
+                print("## Error. Can't load data from Realm")
+            }
+        }
+    }
     
     override func main() {
-        guard let realmData = dependencies.first as? RealmSaveOperation else {
-            print("## Error. can't check dependencies")
+        if isCancelled {
             return
         }
-        self.realmResults = realmData.realmResults
+        print("## 7. realmResults.count = \(String(describing: self.realmResults?.count))")
         self.state = .finished
     }
 }

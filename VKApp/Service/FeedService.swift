@@ -23,18 +23,24 @@ final class FeedsService {
     func getFeeds(completion: @escaping () -> Void) {
         fetchFromJSON { feeds in
             self.feedNews = feeds.filter { $0.messageText != "" }
-            completion()
+            DispatchQueue.main.async {
+                completion()
+            }
         }
     }
     
     // MARK: - Private methods
     private func fetchFromJSON(completion: @escaping ([Feed]) -> Void) {
-        let dispatchGroup = DispatchGroup()
+      //  let dispatchGroup = DispatchGroup()
         let feedService = NetworkService<FeedDTO>()
+        guard
+            let accessToken = VKWVLoginViewController.keychain.get("accessToken")
+        else { return }
+        
         feedService.path = "/method/newsfeed.get"
         feedService.queryItems = [
             URLQueryItem(name: "filters", value: "post"),
-            URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
+            URLQueryItem(name: "access_token", value: accessToken),
             URLQueryItem(name: "v", value: "5.131")
         ]
         userService.loadDataIfNeeded()
@@ -53,7 +59,7 @@ final class FeedsService {
                         return self.configurateGroupFeed(feed)
                     }
                 }
-                dispatchGroup.notify(queue: DispatchQueue.main) {
+                DispatchQueue.main.async {
                     completion(feeds)
                 }
             }

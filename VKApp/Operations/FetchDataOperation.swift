@@ -13,12 +13,17 @@ class FetchDataOperation: AsyncOperation {
     
     override init() {
         self.request = NetworkService<GroupDTO>()
+        guard
+            let userID = VKWVLoginViewController.keychain.get("userID"),
+            let accessToken = VKWVLoginViewController.keychain.get("accessToken")
+        else { return }
+        
         self.request.path = "/method/groups.get"
         self.request.queryItems = [
-            URLQueryItem(name: "user_id", value: String(SessionStorage.shared.userId)),
+            URLQueryItem(name: "user_id", value: userID),
             URLQueryItem(name: "extended", value: "1"),
             URLQueryItem(name: "fields", value: "description"),
-            URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
+            URLQueryItem(name: "access_token", value: accessToken),
             URLQueryItem(name: "v", value: "5.131")
         ]
     }
@@ -29,6 +34,7 @@ class FetchDataOperation: AsyncOperation {
             case .failure(let error): print(error)
             case .success(let dataDTO):
                 self?.fetchedData = dataDTO.compactMap { $0 }
+                print("## 1. fetchedData.count = \(String(describing: self?.fetchedData?.count))")
                 self?.state = .finished
             }
         }

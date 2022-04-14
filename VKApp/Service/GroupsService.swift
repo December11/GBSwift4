@@ -43,19 +43,19 @@ final class GroupsService {
         }()
         
         let fetchData = FetchDataOperation()
-        let realmData = RealmLoadOperation()
-        
-        fetchDataQueue.addOperation(fetchData)
-        
-        let groups = fetchData.fetchedData?.map { RealmGroup(fromDTO: $0)} ?? []
-        let realmGroups = RealmSaveOperation(data: groups)
-        
+        let realmGroups = RealmSaveOperation(data: nil)
         realmGroups.addDependency(fetchData)
+        
+        let realmData = RealmLoadOperation(data: realmGroups.realmResults)
         realmData.addDependency(realmGroups)
         realmData.completionBlock = {
             self.realmResults = realmData.realmResults
+            DispatchQueue.main.async {
+                print("## 8. realmResults.count = \(String(describing: self.realmResults?.count))")
+            }
         }
         
+        fetchDataQueue.addOperation(fetchData)
         OperationQueue.main.addOperation(realmGroups)
         OperationQueue.main.addOperation(realmData)
     }
@@ -69,7 +69,7 @@ final class GroupsService {
     
     // MARK: - Methods
     func deleteFromRealm(_ realmGroup: RealmGroup) {
-        DispatchQueue.main.async {
+       // DispatchQueue.main.async {
             do {
                 let group = Group(fromRealm: realmGroup)
                 if let index = self.groups.firstIndex(of: group) {
@@ -79,7 +79,7 @@ final class GroupsService {
             } catch {
                 print("## Error. Can't delete group from Realm", error)
             }
-        }
+      //  }
     }
     
     func getByID(_ id: Int) -> Group? {

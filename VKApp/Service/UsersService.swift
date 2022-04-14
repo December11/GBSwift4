@@ -28,7 +28,7 @@ final class UsersService {
     }
     
     func loadDataIfNeeded() {
-        DispatchQueue.main.async {
+        // DispatchQueue.main.async {
             do {
                 let updateInterval: TimeInterval = 60 * 60
                 if self.realmUpdateDate >= Date(timeIntervalSinceNow: -updateInterval) {
@@ -39,7 +39,7 @@ final class UsersService {
             } catch {
                 print("## Error. Can't load users from Realm", error)
             }
-        }
+        // }
     }
     
     func getUsers() -> [User]? {
@@ -70,14 +70,18 @@ final class UsersService {
     }
     
     private func fetchFromJSON() {
-        let dispatchGroup = DispatchGroup()
+        // let dispatchGroup = DispatchGroup()
         let usersService = NetworkService<UserDTO>()
+        guard
+            let userID = VKWVLoginViewController.keychain.get("userID"),
+            let accessToken = VKWVLoginViewController.keychain.get("accessToken")
+        else { return }
         usersService.path = "/method/friends.get"
         usersService.queryItems = [
-            URLQueryItem(name: "user_id", value: String(SessionStorage.shared.userId)),
+            URLQueryItem(name: "user_id", value: userID),
             URLQueryItem(name: "order", value: "name"),
             URLQueryItem(name: "fields", value: "photo_50"),
-            URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
+            URLQueryItem(name: "access_token", value: accessToken),
             URLQueryItem(name: "v", value: "5.131")
         ]
         usersService.fetch { [weak self] usersDTOObjects in
@@ -87,15 +91,15 @@ final class UsersService {
             case .success(let usersDTO):
                 var realmUsers = usersDTO.map { RealmUser(fromDTO: $0) }
                 realmUsers = realmUsers.filter { $0.deactivated == nil }
-                dispatchGroup.notify(queue: DispatchQueue.main) {
+               // dispatchGroup.notify(queue: DispatchQueue.main) {
                     self?.saveToRealm(realmUsers)
-                }
+              //  }
             }
         }
     }
     
     private func saveToRealm(_ realmUsers: [RealmUser]) {
-        DispatchQueue.main.async {
+       // DispatchQueue.main.async {
             do {
                 try RealmService.save(items: realmUsers)
                 let realmUpdateDate = RealmAppInfo(
@@ -108,6 +112,6 @@ final class UsersService {
             } catch {
                 print("## Error. Can't load users from Realm", error)
             }
-        }
+      //  }
     }
 }
