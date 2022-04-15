@@ -79,8 +79,9 @@ final class FeedsService {
         let photosURLs = self.loadPhotosFromFeed(feed)
         var feedGroup = Group(id: 0, title: "Unknown", imageURL: nil)
         if let group = self.groupService.getByID(feed.sourceID) {
-            feedGroup = group
+            return Feed(group: group, photos: photosURLs, feed: feed)
         }
+        print("## 0.Feed - no group with id \(feed.sourceID) ")
         return Feed(group: feedGroup, photos: photosURLs, feed: feed)
     }
     

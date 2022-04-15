@@ -83,6 +83,9 @@ final class GroupsService {
     }
     
     func getByID(_ id: Int) -> Group? {
+        if self.realmResults == nil {
+            fetchGroups()
+        }
         guard
             let realmGroups = self.realmResults?.filter({ $0.id == -id })
         else {
