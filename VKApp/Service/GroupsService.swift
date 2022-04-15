@@ -50,9 +50,6 @@ final class GroupsService {
         realmData.addDependency(realmGroups)
         realmData.completionBlock = {
             self.realmResults = realmData.realmResults
-            DispatchQueue.main.async {
-                print("## 8. realmResults.count = \(String(describing: self.realmResults?.count))")
-            }
         }
         
         fetchDataQueue.addOperation(fetchData)

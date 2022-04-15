@@ -27,7 +27,6 @@ final class RealmLoadOperation: AsyncOperation {
         if isCancelled {
             return
         }
-        print("## 7. realmResults.count = \(String(describing: self.realmResults?.count))")
         self.state = .finished
     }
 }

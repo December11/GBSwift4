@@ -34,7 +34,6 @@ class FetchDataOperation: AsyncOperation {
             case .failure(let error): print(error)
             case .success(let dataDTO):
                 self?.fetchedData = dataDTO.compactMap { $0 }
-                print("## 1. fetchedData.count = \(String(describing: self?.fetchedData?.count))")
                 self?.state = .finished
             }
         }

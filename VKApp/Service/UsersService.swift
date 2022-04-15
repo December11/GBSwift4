@@ -37,7 +37,7 @@ final class UsersService {
     
     func loadDataIfNeeded() {
         do {
-            let updateInterval: TimeInterval = 60 * 1
+            let updateInterval: TimeInterval = 60 * 60
             if realmUpdateDate >= Date(timeIntervalSinceNow: -updateInterval) {
                 realmResults = try RealmService.load(typeOf: RealmUser.self)
             } else {
@@ -69,7 +69,6 @@ final class UsersService {
     // MARK: - Private methods
     private func updateUsers(_ realmUsers: [RealmUser]) {
         users = realmUsers.map { User(fromRealm: $0)}
-        print("3.4 users.count = \(users.count)")
     }
     
     private func fetchFromRealm(_ realmUsers: [RealmUser]) -> [User] {
@@ -77,7 +76,6 @@ final class UsersService {
     }
     
     private func getURL() -> Promise<URL> {
-        print("##1. getURL() started")
         
         guard
             let userID = VKWVLoginViewController.keychain.get("userID"),
@@ -108,14 +106,12 @@ final class UsersService {
                 resolver.reject(AppError.notCorrectUrl)
                 return
             }
-            print("1.1 URL = \(url)")
             resolver.fulfill(url)
         }
     }
     
     private func fetchData(_ url: URL) -> Promise<Data> {
         let session = URLSession.shared
-        print("##2. fetchData(url) started")
         return Promise { resolver in
             let task = session.dataTask(with: url) { data, _, error in
                 guard error == nil else {
@@ -128,7 +124,6 @@ final class UsersService {
                     resolver.reject(AppError.noDataProvided)
                     return
                 }
-                print("1.2 Load data successfully")
                 resolver.fulfill(data)
             }
             task.resume()
@@ -136,11 +131,9 @@ final class UsersService {
     }
     
     private func parseData(_ data: Data) -> Promise <[UserDTO]> {
-        print("##3. parseData(data) started")
         return Promise { resolver in
             do {
                 if let usersDTO = try JSONDecoder().decode(ResponseDTO<UserDTO>.self, from: data).response.items {
-                    print("1.3 usersDTO.count = \(usersDTO.count)")
                     resolver.fulfill(usersDTO)
                 }
             } catch {
@@ -160,11 +153,8 @@ final class UsersService {
             self.parseData(data)
         }.done { users in
             usersDTO = users
-            print("1. usersDTO.count = \(usersDTO.count)")
             let realmUsers = self.convertToRealm(from: usersDTO)
-            print("2. converted to realmUsers")
             self.saveToRealm(realmUsers)
-            print("3. saved to Realm")
         }.catch { error in
             print("## Error. can't loador parse Data: \(error)")
         }
@@ -172,7 +162,6 @@ final class UsersService {
     
     private func convertToRealm(from usersDTO: [UserDTO]) -> [RealmUser] {
         let users = usersDTO.map { RealmUser(fromDTO: $0) }.filter { $0.deactivated == nil }
-        print("2.1 realmUsers.count = \(users.count)")
         return users
     }
     
@@ -180,15 +169,12 @@ final class UsersService {
        // DispatchQueue.main.async {
             do {
                 try RealmService.save(items: realmUsers)
-                print("3.1 realmUsers.count = \(realmUsers.count)")
                 let realmUpdateDate = RealmAppInfo(
                     groupsUpdateDate: AppDataInfo.shared.groupsUpdateDate,
                     friendsUpdateDate: Date()
                 )
                 try RealmService.save(items: [realmUpdateDate])
-                print("3.2 realmUpdateDate = \(realmUpdateDate)")
                 self.realmResults = try RealmService.load(typeOf: RealmUser.self)
-                print("3.3 realmResults.count = \(self.realmResults?.count)")
                 self.updateUsers(realmUsers)
             } catch {
                 print("## Error. Can't load users from Realm", error)

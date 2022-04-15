@@ -26,10 +26,8 @@ final class RealmSaveOperation: AsyncOperation {
     
     override func main() {
         loadFetchedData()
-        print("## 2. fetchedData.count = \( String(describing: self.fetchedData.count))")
         saveToRealmIfNeeded()
         reloadRealmResults()
-        print("## 6. realmResults.count = \( String(describing: self.realmResults?.count))")
         self.state = .finished
     }
     
@@ -48,7 +46,6 @@ final class RealmSaveOperation: AsyncOperation {
     
     private func saveToRealmIfNeeded() {
        let resultsCount = realmResults?.count ?? 0
-        print("## 3. realmResults.count = \( String(describing: self.realmResults?.count))")
         if realmResults == nil || resultsCount < fetchedData.count {
             saveToRealm(fetchedData)
         }
@@ -58,7 +55,6 @@ final class RealmSaveOperation: AsyncOperation {
 //        DispatchQueue.main.async {
             do {
                 try RealmService.save(items: realmGroups)
-                print("## 4. data (\(realmGroups.count)) saved to Realm")
                 self.updateRealmAppInfo()
             } catch {
                 print("## Error. can't load groups from Realm: ", error)
@@ -88,7 +84,6 @@ final class RealmSaveOperation: AsyncOperation {
 //            DispatchQueue.main.async {
                 do {
                     self.realmResults = try RealmService.load(typeOf: RealmGroup.self)
-                    print("## 5. Reload. realmResults.count = \(String(describing: self.realmResults?.count))")
                 } catch {
                     print("## Error. Data is not loaded from Realm")
                 }
