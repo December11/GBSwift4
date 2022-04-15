@@ -16,7 +16,7 @@
 		BA097DC927BC17D100252A0C /* ItemsDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA097DC827BC17D100252A0C /* ItemsDTO.swift */; };
 		BA097DCB27BC19E700252A0C /* PhotoDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA097DCA27BC19E700252A0C /* PhotoDTO.swift */; };
 		BA097DCD27BC1BE800252A0C /* GroupDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA097DCC27BC1BE800252A0C /* GroupDTO.swift */; };
-		BA12C5B22806FA60003A812D /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BA12C5B12806FA60003A812D /* KeychainSwift */; };
+		BA12C5B22806FA60003A812D /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BA12C5B12806FA60003A812D /* KeychainSwift */; settings = {ATTRIBUTES = (Required, ); }; };
 		BA1D5BAA27775A1B003CC32D /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1D5BA827775A1B003CC32D /* ImageCell.swift */; };
 		BA1D5BAB27775A1B003CC32D /* ImageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA1D5BA927775A1B003CC32D /* ImageCell.xib */; };
 		BA1D5BAE27775EFD003CC32D /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1D5BAD27775EFD003CC32D /* User.swift */; };
@@ -45,6 +45,7 @@
 		BA91B4C427FF3147009CBE53 /* AsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA91B4C327FF3147009CBE53 /* AsyncOperation.swift */; };
 		BA91B4C627FF357E009CBE53 /* FetchDataOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA91B4C527FF357E009CBE53 /* FetchDataOperation.swift */; };
 		BA9A85BC27F4EB120019423C /* FeedImagesCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9A85BB27F4EB120019423C /* FeedImagesCell.swift */; };
+		BA9E827A28099A22008660AF /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = BA9E827928099A22008660AF /* PromiseKit */; };
 		BAA1ED1827CA4CA1002666F9 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = BAA1ED1727CA4CA1002666F9 /* Realm */; };
 		BAA1ED1A27CA4CA1002666F9 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BAA1ED1927CA4CA1002666F9 /* RealmSwift */; };
 		BAA1ED1C27CA54A2002666F9 /* FeedDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA1ED1B27CA54A2002666F9 /* FeedDTO.swift */; };
@@ -147,6 +148,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA9E827A28099A22008660AF /* PromiseKit in Frameworks */,
 				BAA1ED1A27CA4CA1002666F9 /* RealmSwift in Frameworks */,
 				BAA1ED1827CA4CA1002666F9 /* Realm in Frameworks */,
 				BA12C5B22806FA60003A812D /* KeychainSwift in Frameworks */,
@@ -385,6 +387,7 @@
 				BAA1ED1727CA4CA1002666F9 /* Realm */,
 				BAA1ED1927CA4CA1002666F9 /* RealmSwift */,
 				BA12C5B12806FA60003A812D /* KeychainSwift */,
+				BA9E827928099A22008660AF /* PromiseKit */,
 			);
 			productName = weatherApp;
 			productReference = BABCEB26276A699700C0ED3E /* VKApp.app */;
@@ -418,6 +421,7 @@
 				BACF6E7F27C1426D00669EF2 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				BAA1ED1627CA4CA1002666F9 /* XCRemoteSwiftPackageReference "realm-swift" */,
 				BA12C5B02806FA5F003A812D /* XCRemoteSwiftPackageReference "keychain-swift" */,
+				BA9E827828099A22008660AF /* XCRemoteSwiftPackageReference "PromiseKit" */,
 			);
 			productRefGroup = BABCEB27276A699700C0ED3E /* Products */;
 			projectDirPath = "";
@@ -759,6 +763,14 @@
 				version = 19.0.0;
 			};
 		};
+		BA9E827828099A22008660AF /* XCRemoteSwiftPackageReference "PromiseKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mxcl/PromiseKit";
+			requirement = {
+				kind = exactVersion;
+				version = 6.17.0;
+			};
+		};
 		BAA1ED1627CA4CA1002666F9 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-swift.git";
@@ -782,6 +794,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BA12C5B02806FA5F003A812D /* XCRemoteSwiftPackageReference "keychain-swift" */;
 			productName = KeychainSwift;
+		};
+		BA9E827928099A22008660AF /* PromiseKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BA9E827828099A22008660AF /* XCRemoteSwiftPackageReference "PromiseKit" */;
+			productName = PromiseKit;
 		};
 		BAA1ED1727CA4CA1002666F9 /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
