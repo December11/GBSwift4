@@ -46,6 +46,8 @@
 		BA91B4C627FF357E009CBE53 /* FetchDataOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA91B4C527FF357E009CBE53 /* FetchDataOperation.swift */; };
 		BA9A85BC27F4EB120019423C /* FeedImagesCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9A85BB27F4EB120019423C /* FeedImagesCell.swift */; };
 		BA9E827A28099A22008660AF /* PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = BA9E827928099A22008660AF /* PromiseKit */; };
+		BA9E827C280AD55C008660AF /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9E827B280AD55C008660AF /* CacheService.swift */; };
+		BA9E827E280B629B008660AF /* ImageDownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9E827D280B629B008660AF /* ImageDownloadOperation.swift */; };
 		BAA1ED1827CA4CA1002666F9 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = BAA1ED1727CA4CA1002666F9 /* Realm */; };
 		BAA1ED1A27CA4CA1002666F9 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BAA1ED1927CA4CA1002666F9 /* RealmSwift */; };
 		BAA1ED1C27CA54A2002666F9 /* FeedDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA1ED1B27CA54A2002666F9 /* FeedDTO.swift */; };
@@ -71,6 +73,7 @@
 		BAD93B5B2792F13700794DC0 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD93B5A2792F13700794DC0 /* FeedViewController.swift */; };
 		BAD93B5F2792F52B00794DC0 /* FeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAD93B5E2792F52B00794DC0 /* FeedCell.swift */; };
 		BAE893F62793011800331380 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE893F52793011800331380 /* Date.swift */; };
+		BAE8A258280C1ED20019CFF9 /* GetImageDataOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE8A257280C1ED20019CFF9 /* GetImageDataOperation.swift */; };
 		BAE9A20A27F504E0006F1323 /* UIView+Nib.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE9A20927F504E0006F1323 /* UIView+Nib.swift */; };
 		BAE9A20C27F50D6D006F1323 /* FeedFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BAE9A20B27F50D6D006F1323 /* FeedFooterView.xib */; };
 		BAE9A20E27F50D80006F1323 /* FeedFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE9A20D27F50D80006F1323 /* FeedFooterView.swift */; };
@@ -113,6 +116,8 @@
 		BA91B4C327FF3147009CBE53 /* AsyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncOperation.swift; sourceTree = "<group>"; };
 		BA91B4C527FF357E009CBE53 /* FetchDataOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchDataOperation.swift; sourceTree = "<group>"; };
 		BA9A85BB27F4EB120019423C /* FeedImagesCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImagesCell.swift; sourceTree = "<group>"; };
+		BA9E827B280AD55C008660AF /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
+		BA9E827D280B629B008660AF /* ImageDownloadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDownloadOperation.swift; sourceTree = "<group>"; };
 		BAA1ED1B27CA54A2002666F9 /* FeedDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDTO.swift; sourceTree = "<group>"; };
 		BAA1ED1D27CA5768002666F9 /* CommentsDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsDTO.swift; sourceTree = "<group>"; };
 		BAA1ED1F27CA5844002666F9 /* LikesDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikesDTO.swift; sourceTree = "<group>"; };
@@ -138,6 +143,7 @@
 		BAD93B5A2792F13700794DC0 /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
 		BAD93B5E2792F52B00794DC0 /* FeedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCell.swift; sourceTree = "<group>"; };
 		BAE893F52793011800331380 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
+		BAE8A257280C1ED20019CFF9 /* GetImageDataOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetImageDataOperation.swift; sourceTree = "<group>"; };
 		BAE9A20927F504E0006F1323 /* UIView+Nib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Nib.swift"; sourceTree = "<group>"; };
 		BAE9A20B27F50D6D006F1323 /* FeedFooterView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeedFooterView.xib; sourceTree = "<group>"; };
 		BAE9A20D27F50D80006F1323 /* FeedFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedFooterView.swift; sourceTree = "<group>"; };
@@ -266,6 +272,7 @@
 				BAB0258D27F3967C0022C4DF /* UsersService.swift */,
 				BAB0258F27F39E800022C4DF /* GroupsService.swift */,
 				BA91B4C027FC7814009CBE53 /* FeedService.swift */,
+				BA9E827B280AD55C008660AF /* CacheService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -277,6 +284,8 @@
 				BA91B4C527FF357E009CBE53 /* FetchDataOperation.swift */,
 				BA61BF26280077EA00114D82 /* RealmSaveOperation.swift */,
 				BA61BF2C2801CF7E00114D82 /* RealmLoadOperation.swift */,
+				BA9E827D280B629B008660AF /* ImageDownloadOperation.swift */,
+				BAE8A257280C1ED20019CFF9 /* GetImageDataOperation.swift */,
 			);
 			path = Operations;
 			sourceTree = "<group>";
@@ -487,6 +496,7 @@
 				BAD93B5F2792F52B00794DC0 /* FeedCell.swift in Sources */,
 				BA097DC927BC17D100252A0C /* ItemsDTO.swift in Sources */,
 				BA08979B27A589FA00DBAFFC /* PushAnimation.swift in Sources */,
+				BAE8A258280C1ED20019CFF9 /* GetImageDataOperation.swift in Sources */,
 				BA39E59F27CA9ADE008B9F27 /* RealmGroup.swift in Sources */,
 				BAE893F62793011800331380 /* Date.swift in Sources */,
 				BAE9A20A27F504E0006F1323 /* UIView+Nib.swift in Sources */,
@@ -507,6 +517,7 @@
 				BA6CA9EC27B7E2A30049BC1B /* NetworkService.swift in Sources */,
 				BACF6E7B27C0153D00669EF2 /* PhotoInfosDTO.swift in Sources */,
 				BAD93B55279218CC00794DC0 /* AllGroupTableVC.swift in Sources */,
+				BA9E827E280B629B008660AF /* ImageDownloadOperation.swift in Sources */,
 				BAA3CE0527D7BEB400AB6888 /* UITableView.swift in Sources */,
 				BAE9A20E27F50D80006F1323 /* FeedFooterView.swift in Sources */,
 				BA6CA9E727B3A62B0049BC1B /* SessionStorage.swift in Sources */,
@@ -526,6 +537,7 @@
 				BA61BF2D2801CF7E00114D82 /* RealmLoadOperation.swift in Sources */,
 				BA7B7A4B276E402F000506F2 /* FriendsTableViewController.swift in Sources */,
 				BA08979D27A58A3800DBAFFC /* PopAnimation.swift in Sources */,
+				BA9E827C280AD55C008660AF /* CacheService.swift in Sources */,
 				BA39E5A127CAC04E008B9F27 /* RealmAppInfo.swift in Sources */,
 				BACF6E7D27C10D4100669EF2 /* ResponseDTO.swift in Sources */,
 				BA097DCB27BC19E700252A0C /* PhotoDTO.swift in Sources */,

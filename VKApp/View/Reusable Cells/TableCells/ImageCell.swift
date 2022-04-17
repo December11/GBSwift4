@@ -41,9 +41,12 @@ class ImageCell: UITableViewCell {
         if let imageURL = picture {
             let url = URL(string: imageURL)
             photo.kf.setImage(with: url, options: [.transition(.fade(0.2))])
+            let cache = CachePhotoService()
+            cache.saveImageToCache(url: imageURL)
         } else {
             photo.image = nil
         }
+        
     }
     
     func configureFeedCell(label: String?, pictureURL: String?, color: CGColor?, date: Date) {

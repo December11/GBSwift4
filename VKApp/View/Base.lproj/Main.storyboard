@@ -233,10 +233,10 @@
             </objects>
             <point key="canvasLocation" x="6337.68115942029" y="-621.42857142857144"/>
         </scene>
-        <!--Friends-->
+        <!--Feed news-->
         <scene sceneID="wdR-du-cj4">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="zlU-DJ-xOu" customClass="CustomNavigationController" customModule="VKApp" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController title="Feed news" automaticallyAdjustsScrollViewInsets="NO" id="zlU-DJ-xOu" customClass="CustomNavigationController" customModule="VKApp" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Friends" id="WyS-vE-5fW">
                         <imageReference key="image" image="person.2" catalog="system" symbolScale="default"/>
                         <imageReference key="selectedImage" image="person.2.fill" catalog="system" symbolScale="default"/>
@@ -291,10 +291,10 @@
             </objects>
             <point key="canvasLocation" x="3408.6956521739135" y="102.45535714285714"/>
         </scene>
-        <!--Feed-->
+        <!--Feed news-->
         <scene sceneID="1Io-b6-HeW">
             <objects>
-                <viewController title="Feed" id="lv6-e3-sIr" customClass="FeedViewController" customModule="VKApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Feed news" id="lv6-e3-sIr" customClass="FeedViewController" customModule="VKApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="WNY-Jg-t1U">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -467,7 +467,7 @@
                         </userDefinedRuntimeAttributes>
                     </view>
                     <tabBarItem key="tabBarItem" title="Feed" id="yDp-DC-sH3"/>
-                    <navigationItem key="navigationItem" title="Title" id="arz-qE-d6N">
+                    <navigationItem key="navigationItem" title="Feed news" id="arz-qE-d6N">
                         <barButtonItem key="leftBarButtonItem" image="rectangle.portrait.and.arrow.right" catalog="system" id="FNB-L8-cU0">
                             <connections>
                                 <action selector="logout:" destination="lv6-e3-sIr" id="LXz-ml-CO3"/>
@@ -510,10 +510,10 @@
             </objects>
             <point key="canvasLocation" x="2498.5507246376815" y="-259.82142857142856"/>
         </scene>
-        <!--Feed-->
+        <!--Title-->
         <scene sceneID="uPO-0u-m8a">
             <objects>
-                <navigationController title="Feed" automaticallyAdjustsScrollViewInsets="NO" id="e6v-2i-mpq" sceneMemberID="viewController">
+                <navigationController title="Title" automaticallyAdjustsScrollViewInsets="NO" id="e6v-2i-mpq" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Feed" id="HhB-Pq-PaN">
                         <imageReference key="image" image="newspaper" catalog="system" symbolScale="default"/>
                         <imageReference key="selectedImage" image="newspaper.fill" catalog="system" symbolScale="default"/>

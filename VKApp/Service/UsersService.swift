@@ -115,7 +115,7 @@ final class UsersService {
         return Promise { resolver in
             let task = session.dataTask(with: url) { data, _, error in
                 guard error == nil else {
-                    print("## Error. Can't load data \(error)")
+                    print("## Error. Can't load data \(String(describing: error))")
                     resolver.reject(AppError.errorTask)
                     return
                 }
