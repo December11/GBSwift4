@@ -16,65 +16,80 @@ class ImageCell: UITableViewCell {
     @IBOutlet weak var abbreviationLabel: UILabel!
     @IBOutlet weak var userPicView: UIView!
     
+    // MARK: - Cell configuration methods
     func configureCell(label: String, additionalLabel: String?, pictureURL: String?, color: CGColor?) {
-        
+        // имя или название группы
+        setUsername(name: label, secondName: additionalLabel)
         self.subTextLabel.isHidden = true
-        let attributedString = NSMutableAttributedString(string: label)
-        if let secondName = additionalLabel {
+        
+        // аватар юзера
+        getUserPictire(name: label, addLabel: additionalLabel, url: pictureURL, color: color)
+    }
+    
+    func configureFeedCell(label: String, pictureURL: String?, color: CGColor?, date: Date) {
+        // имя или название группы
+        self.label.text = label
+        self.subTextLabel.text = date.toString(dateFormat: .dateTime)
+        
+        // аватар юзера
+        getUserPictire(name: label, url: pictureURL, color: color)
+    }
+    
+    // MARK: - Private methods
+    private func getUserPictire(name: String, addLabel: String? = nil, url: String? = nil, color: CGColor? = nil) {
+        abbreviationLabel.isHidden = isUserImageExist(url)
+        photo.isHidden = !isUserImageExist(url)
+        
+        if !isUserImageExist(url) {
+            setAcronym(name, additionalLabel: addLabel)
+            userPicView.layer.backgroundColor = color ?? UIColor.yellow.cgColor
+        } else {
+            setUserPhoto(url)
+        }
+    }
+    
+    private func setUsername(name: String, secondName: String?) {
+        let attributedString = NSMutableAttributedString(string: name)
+        if let secondName = secondName {
             attributedString.append(NSMutableAttributedString(string: " "))
             attributedString.append(secondName.bold)
         }
         self.label.attributedText = attributedString
         
-        let picture = pictureURL == "https://vk.com/images/camera_50.png" || pictureURL == "https://vk.com/images/community_50.png"
-        ? nil
-        : pictureURL
-        abbreviationLabel.isHidden = picture != nil
-        var name = label
-        if let additionalLabel = additionalLabel {
-            name += " " + additionalLabel
-        }
-        abbreviationLabel.text = picture == nil ? name.acronym : nil
-        userPicView.layer.backgroundColor = color ?? UIColor.yellow.cgColor
-        
-        photo.isHidden = pictureURL == nil
-        if let imageURL = picture {
-            let url = URL(string: imageURL)
-            photo.kf.setImage(with: url, options: [.transition(.fade(0.2))])
-            let cache = CachePhotoService()
-            cache.saveImageToCache(url: imageURL)
-        } else {
-            photo.image = nil
-        }
-        
-    }
-    
-    func configureFeedCell(label: String?, pictureURL: String?, color: CGColor?, date: Date) {
-        
-        // имя или название
-        self.label.text = label != nil ? label : "No title"
-        self.subTextLabel.text = date.toString(dateFormat: .dateTime)
-        
-        // акроним
-        let picture = pictureURL == "https://vk.com/images/camera_50.png" || pictureURL == "https://vk.com/images/community_50.png"
-        ? nil
-        : pictureURL
-        abbreviationLabel.isHidden = picture != nil
-        if let label = label {
-            abbreviationLabel.text = label.acronym
-        }
-        userPicView.layer.backgroundColor = color ?? UIColor.yellow.cgColor
-        
-        // фотка
-        photo.isHidden = pictureURL == nil
-        if let imageURL = picture {
-            let url = URL(string: imageURL)
-            photo.kf.setImage(with: url, options: [.transition(.fade(0.2))])
-        } else {
-            photo.image = nil
+        var fullName = name
+        if let secondName = secondName {
+            fullName += " " + secondName
         }
     }
     
+    private func isUserImageExist(_ pictureURL: String?) -> Bool {
+        return pictureURL != nil
+        && pictureURL != "https://vk.com/images/camera_50.png"
+        && pictureURL != "https://vk.com/images/community_50.png"
+    }
+    
+    private func setUserPhoto(_ url: String?) {
+        let service = CachePhotoService()
+        guard let imageURL = url else { return }
+        if let image = service.photo(byUrl: imageURL) {
+            self.photo.image = image
+        } else {
+            print("## Error. No image with such URL \(String(describing: url))")
+        }
+        
+//        let url = URL(string: url)
+//        photo.kf.setImage(with: url, options: [.transition(.fade(0.2))])
+    }
+    
+    private func setAcronym(_ label: String, additionalLabel: String? = nil) {
+        var fullName = label
+        if let label = additionalLabel {
+            fullName += label
+        }
+        abbreviationLabel.text = fullName.acronym
+    }
+    
+    // MARK: - Methods
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }

@@ -14,7 +14,7 @@ class RealmUser: Object {
     @Persisted var secondName: String = ""
     @Persisted var deactivated: String?
     @Persisted var userPhotoURLString: String?
-    var codeColor = UIColor.systemGray.cgColor
+    var codeColor = CGColor.generateLightColor()
 }
 
 extension RealmUser {    
@@ -33,6 +33,6 @@ extension RealmUser {
         self.secondName = fromDTO.secondName ?? ""
         self.userPhotoURLString = fromDTO.photoURLString
         self.deactivated = fromDTO.deactivated
-        self.codeColor = UIColor.systemGray.cgColor
+        self.codeColor = CGColor.generateLightColor()
     }
 }

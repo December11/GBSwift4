@@ -12,7 +12,7 @@ class RealmGroup: Object {
     @Persisted(primaryKey: true) var id: Int = 0
     @Persisted var title: String = ""
     @Persisted var groupPhotoURL: String?
-    var codeColor = UIColor.systemGray.cgColor
+    var codeColor = CGColor.generateLightColor()
 }
 
 extension RealmGroup {
