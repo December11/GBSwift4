@@ -39,10 +39,10 @@ class ImageCell: UITableViewCell {
     private func getUserPictire(name: String, addLabel: String? = nil, url: String? = nil, color: CGColor? = nil) {
         abbreviationLabel.isHidden = isUserImageExist(url)
         photo.isHidden = !isUserImageExist(url)
+        userPicView.layer.backgroundColor = color ?? UIColor.yellow.cgColor
         
         if !isUserImageExist(url) {
             setAcronym(name, additionalLabel: addLabel)
-            userPicView.layer.backgroundColor = color ?? UIColor.yellow.cgColor
         } else {
             setUserPhoto(url)
         }
@@ -69,16 +69,11 @@ class ImageCell: UITableViewCell {
     }
     
     private func setUserPhoto(_ url: String?) {
-        let service = CachePhotoService()
+        photo.image = nil
         guard let imageURL = url else { return }
-        if let image = service.photo(byUrl: imageURL) {
-            self.photo.image = image
-        } else {
-            print("## Error. No image with such URL \(String(describing: url))")
+        CachePhotoService.shared.photo(byUrl: imageURL) { [weak self] _ in
+            self?.photo.image = CachePhotoService.shared.images[imageURL]
         }
-        
-//        let url = URL(string: url)
-//        photo.kf.setImage(with: url, options: [.transition(.fade(0.2))])
     }
     
     private func setAcronym(_ label: String, additionalLabel: String? = nil) {
@@ -90,9 +85,6 @@ class ImageCell: UITableViewCell {
     }
     
     // MARK: - Methods
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
     
     @objc func userPhotoTapped(_ sender: Any) {
         UIView.animate(withDuration: 0.1) {

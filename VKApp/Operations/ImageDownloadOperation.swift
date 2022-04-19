@@ -23,18 +23,16 @@ final class ImageDownloadOperation: AsyncOperation {
         else { return }
         
         let imageResource = ImageResource(downloadURL: url, cacheKey: nil)
-        print("## 1. url is \(imageResource.downloadURL)")
         KingfisherManager.shared.retrieveImage(with: imageResource.downloadURL) { result in
             switch result {
             case .success(let value):
-                print("## 1.1 Image downloaded successfully with kf")
                 self.image = value.image
             case .failure(let error):
                 print("## Error. Can't download image with KF, \(error)")
                 self.image = nil
             }
+            self.state = .finished
         }
-        self.state = .finished
     }
     
     private func isAvatarExist(_ url: String) -> Bool {

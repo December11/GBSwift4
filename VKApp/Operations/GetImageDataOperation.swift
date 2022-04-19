@@ -6,18 +6,20 @@
 //
 
 import Foundation
+import UIKit
 
 final class GetImageDataOperation: AsyncOperation {
     var data: Data?
     var filePath: String?
+    var image: UIImage?
     
     override func main() {
         guard
             let prevOperation = dependencies.first as? ImageDownloadOperation,
             let image = prevOperation.image
         else { return }
-        print("## 2.1 Image data getting successfully")
         self.data = image.pngData()
+        self.image = image
         
         self.state = .finished
     }
