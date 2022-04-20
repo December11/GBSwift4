@@ -11,7 +11,7 @@ import UIKit
 final class CachePhotoService {
     static let shared = CachePhotoService()
     
-    private let cacheLifetime: TimeInterval = 60 * 60 * 24
+    private let cacheLifetime: TimeInterval = 30 * 24 * 60 * 60
     private let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
     var images = [String: UIImage]()
     let queue: OperationQueue = {
@@ -62,7 +62,6 @@ final class CachePhotoService {
     }
     
     private func getFilePath(url: String) -> String? {
-        print("\(String(describing: documentsDirectory?.path))")
         guard let directory = documentsDirectory else { return nil }
         let title = url.split(separator: "/").last ?? "default"
         return directory.appendingPathComponent(pathName + "/" + title).path

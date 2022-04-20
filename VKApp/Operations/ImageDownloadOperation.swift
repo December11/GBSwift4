@@ -12,6 +12,8 @@ final class ImageDownloadOperation: AsyncOperation {
     private(set) var image: UIImage?
     private var url: String
     
+    let session = URLSession.shared
+    
     init(url: String) {
         self.url = url
     }
@@ -21,18 +23,20 @@ final class ImageDownloadOperation: AsyncOperation {
             isAvatarExist(url),
             let url = URL(string: url)
         else { return }
-        
-        let imageResource = ImageResource(downloadURL: url, cacheKey: nil)
-        KingfisherManager.shared.retrieveImage(with: imageResource.downloadURL) { result in
-            switch result {
-            case .success(let value):
-                self.image = value.image
-            case .failure(let error):
-                print("## Error. Can't download image with KF, \(error)")
-                self.image = nil
+      
+        let task = self.session.dataTask(with: url) { [weak self] data, _, error in
+            guard
+                error == nil,
+                let data = data
+            else {
+                print("## Error 0. Can't load data", error)
+                self?.image = nil
+                return
             }
-            self.state = .finished
+            self?.image = UIImage(data: data)
+            self?.state = .finished
         }
+        task.resume()
     }
     
     private func isAvatarExist(_ url: String) -> Bool {

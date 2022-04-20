@@ -18,20 +18,16 @@ class ImageCell: UITableViewCell {
     
     // MARK: - Cell configuration methods
     func configureCell(label: String, additionalLabel: String?, pictureURL: String?, color: CGColor?) {
-        // имя или название группы
         setUsername(name: label, secondName: additionalLabel)
         self.subTextLabel.isHidden = true
         
-        // аватар юзера
         getUserPictire(name: label, addLabel: additionalLabel, url: pictureURL, color: color)
     }
     
     func configureFeedCell(label: String, pictureURL: String?, color: CGColor?, date: Date) {
-        // имя или название группы
         self.label.text = label
         self.subTextLabel.text = date.toString(dateFormat: .dateTime)
         
-        // аватар юзера
         getUserPictire(name: label, url: pictureURL, color: color)
     }
     
@@ -39,10 +35,12 @@ class ImageCell: UITableViewCell {
     private func getUserPictire(name: String, addLabel: String? = nil, url: String? = nil, color: CGColor? = nil) {
         abbreviationLabel.isHidden = isUserImageExist(url)
         photo.isHidden = !isUserImageExist(url)
-        userPicView.layer.backgroundColor = color ?? UIColor.yellow.cgColor
+        userPicView.layer.backgroundColor = UIColor.systemGray3.cgColor
         
         if !isUserImageExist(url) {
             setAcronym(name, additionalLabel: addLabel)
+            userPicView.layer.backgroundColor = nil
+            userPicView.layer.backgroundColor = color ?? CGColor.generateLightColor()
         } else {
             setUserPhoto(url)
         }
@@ -69,9 +67,9 @@ class ImageCell: UITableViewCell {
     }
     
     private func setUserPhoto(_ url: String?) {
-        photo.image = nil
         guard let imageURL = url else { return }
         CachePhotoService.shared.photo(byUrl: imageURL) { [weak self] _ in
+            self?.photo.image = nil
             self?.photo.image = CachePhotoService.shared.images[imageURL]
         }
     }
