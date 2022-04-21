@@ -118,60 +118,41 @@ extension FeedViewController: UITableViewDelegate {
     }
     
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 64
+        64
     }
     
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 44
+        44
     }
     
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UITableViewHeaderFooterView()
-        let headerView: ImageCell = UIView.fromNib()
-        view.addSubview(headerView)
-        
-        NSLayoutConstraint.activate([
-            headerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-        
         let currentFeed = feedNews[section]
-        if let user = currentFeed.user {
-            headerView.configureFeedCell(
-                label: user.userName,
-                pictureURL: user.userPhotoURLString,
-                color: user.codeColor,
-                date: currentFeed.date
-            )
-        } else if let group = currentFeed.group {
-            headerView.configureFeedCell(
-                label: group.title,
-                pictureURL: group.groupPictureURL,
-                color: group.codeColor,
-                date: currentFeed.date
-            )
-        }
-        return view
+        let headerView = FeedHeaderView()
+        headerView.setupConstraints()
+        return headerView.configurateHeader(feed: currentFeed)
     }
     
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let footer: FeedFooterView = tableView.dequeueReusableHeaderFooterView()
-        footer.configurateFooter(feed: feedNews[section]) {
-            var sharedItem = [Any]()
-            var array = [String]()
-            if let message = self.feedNews[section].messageText {
-                array.append(message)
-            }
-            sharedItem = !self.feedNews[section].photos.isEmpty
-            ? self.feedNews[section].photos.compactMap(\.imageURLString)
-            : array
-
-            let activityView = UIActivityViewController(activityItems: sharedItem, applicationActivities: nil)
-            self.present(activityView, animated: true, completion: nil)
+        footer.configurateFooter(feed: feedNews[section]) { [weak self] in
+            guard let feed = self?.feedNews[section] else { return }
+            self?.callActivityView(for: feed)
         }
         return footer
+    }
+    
+    private func callActivityView(for feed: Feed) {
+        var sharedItem = [Any]()
+        var array = [String]()
+        if let message = feed.messageText {
+            array.append(message)
+        }
+        sharedItem = !feed.photos.isEmpty
+        ? feed.photos.compactMap { $0.imageURLString }
+        : array
+        
+        let activityView = UIActivityViewController(activityItems: sharedItem, applicationActivities: nil)
+        self.present(activityView, animated: true, completion: nil)
     }
 }
 

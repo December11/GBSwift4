@@ -23,6 +23,7 @@
 		BA1D5BB027776112003CC32D /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1D5BAF27776112003CC32D /* Group.swift */; };
 		BA39E59F27CA9ADE008B9F27 /* RealmGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA39E59E27CA9ADE008B9F27 /* RealmGroup.swift */; };
 		BA39E5A127CAC04E008B9F27 /* RealmAppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA39E5A027CAC04E008B9F27 /* RealmAppInfo.swift */; };
+		BA40FC572811F0600067986E /* FeedHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA40FC562811F0600067986E /* FeedHeaderView.swift */; };
 		BA4CDE052777757500B14B00 /* ImageCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4CDE032777757500B14B00 /* ImageCollectionCell.swift */; };
 		BA4CDE062777757500B14B00 /* ImageCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA4CDE042777757500B14B00 /* ImageCollectionCell.xib */; };
 		BA4CDE0B277BA73900B14B00 /* UIView+Inspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4CDE0A277BA73900B14B00 /* UIView+Inspectable.swift */; };
@@ -95,6 +96,7 @@
 		BA1D5BAF27776112003CC32D /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		BA39E59E27CA9ADE008B9F27 /* RealmGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmGroup.swift; sourceTree = "<group>"; };
 		BA39E5A027CAC04E008B9F27 /* RealmAppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmAppInfo.swift; sourceTree = "<group>"; };
+		BA40FC562811F0600067986E /* FeedHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedHeaderView.swift; sourceTree = "<group>"; };
 		BA4CDE032777757500B14B00 /* ImageCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCollectionCell.swift; sourceTree = "<group>"; };
 		BA4CDE042777757500B14B00 /* ImageCollectionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImageCollectionCell.xib; sourceTree = "<group>"; };
 		BA4CDE0A277BA73900B14B00 /* UIView+Inspectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Inspectable.swift"; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 		BA1D5BA7277759F3003CC32D /* TableCells */ = {
 			isa = PBXGroup;
 			children = (
+				BA40FC562811F0600067986E /* FeedHeaderView.swift */,
 				BAD93B5E2792F52B00794DC0 /* FeedCell.swift */,
 				BA9A85BB27F4EB120019423C /* FeedImagesCell.swift */,
 				BAE9A20D27F50D80006F1323 /* FeedFooterView.swift */,
@@ -512,6 +515,7 @@
 				BAD93B592792EBCE00794DC0 /* Feed.swift in Sources */,
 				BA772F4827824A2900EE46BD /* Photo.swift in Sources */,
 				BA1D5BAE27775EFD003CC32D /* User.swift in Sources */,
+				BA40FC572811F0600067986E /* FeedHeaderView.swift in Sources */,
 				BA91B4C627FF357E009CBE53 /* FetchDataOperation.swift in Sources */,
 				BA772F702784E6F500EE46BD /* String.swift in Sources */,
 				BA6CA9EC27B7E2A30049BC1B /* NetworkService.swift in Sources */,
