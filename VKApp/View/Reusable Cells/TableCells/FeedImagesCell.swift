@@ -45,7 +45,7 @@ final class FeedImagesCell: UITableViewCell {
                 width: UIScreen.main.bounds.width - 32,
                 height: UIScreen.main.bounds.width - 32
             )
-            feedImageViews[index].contentMode = .scaleAspectFit
+            feedImageViews[index].contentMode = .scaleAspectFill
             imgScrollView.cornerRadius = 8
             imgScrollView.addSubview(feedImageViews[index])
         }

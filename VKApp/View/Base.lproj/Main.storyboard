@@ -312,11 +312,15 @@
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="249" verticalHuggingPriority="249" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rkn-Ag-1RK">
                                                     <rect key="frame" x="16" y="16" width="382" height="20.5"/>
+                                                    <color key="backgroundColor" name="background"/>
+                                                    <color key="tintColor" name="mainText"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" name="mainText"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
+                                            <color key="backgroundColor" name="background"/>
+                                            <color key="tintColor" name="AccentColor"/>
                                             <constraints>
                                                 <constraint firstAttribute="bottom" secondItem="rkn-Ag-1RK" secondAttribute="bottom" constant="16" id="91L-zi-6Fk"/>
                                                 <constraint firstItem="rkn-Ag-1RK" firstAttribute="leading" secondItem="ZvR-Ec-jn1" secondAttribute="leading" constant="16" id="bbE-8u-peQ"/>
@@ -336,12 +340,12 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="430"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AJL-A4-NVI">
+                                                <view contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="AJL-A4-NVI">
                                                     <rect key="frame" x="0.0" y="0.0" width="414" height="414"/>
                                                     <subviews>
-                                                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" verticalCompressionResistancePriority="749" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YnU-FG-2a5">
+                                                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" horizontalCompressionResistancePriority="749" verticalCompressionResistancePriority="749" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YnU-FG-2a5">
                                                             <rect key="frame" x="16" y="16" width="382" height="398"/>
-                                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <color key="backgroundColor" name="background"/>
                                                             <color key="tintColor" systemColor="systemRedColor"/>
                                                             <userDefinedRuntimeAttributes>
                                                                 <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -356,6 +360,7 @@
                                                             <rect key="frame" x="0.0" y="372" width="414" height="26"/>
                                                         </pageControl>
                                                     </subviews>
+                                                    <color key="backgroundColor" name="background"/>
                                                     <constraints>
                                                         <constraint firstAttribute="trailing" secondItem="YnU-FG-2a5" secondAttribute="trailing" constant="16" id="773-e1-FuJ"/>
                                                         <constraint firstAttribute="bottom" secondItem="s1g-sD-cfT" secondAttribute="bottom" constant="16" id="DkU-mn-qEd"/>
@@ -373,6 +378,7 @@
                                                     </userDefinedRuntimeAttributes>
                                                 </view>
                                             </subviews>
+                                            <color key="backgroundColor" name="background"/>
                                             <constraints>
                                                 <constraint firstItem="AJL-A4-NVI" firstAttribute="top" secondItem="7Ak-vC-6Yi" secondAttribute="top" id="1tK-bM-dOZ"/>
                                                 <constraint firstItem="AJL-A4-NVI" firstAttribute="leading" secondItem="7Ak-vC-6Yi" secondAttribute="leading" id="G62-gS-gXJ"/>
@@ -465,6 +471,11 @@
                                 <color key="value" systemColor="systemBackgroundColor"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="Ymq-xH-ASN"/>
+                            </mask>
+                        </variation>
                     </view>
                     <tabBarItem key="tabBarItem" title="Feed" id="yDp-DC-sH3"/>
                     <navigationItem key="navigationItem" title="Feed news" id="arz-qE-d6N">
