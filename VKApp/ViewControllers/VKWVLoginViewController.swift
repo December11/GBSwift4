@@ -9,9 +9,8 @@ import KeychainSwift
 import UIKit
 import WebKit
 
-class VKWVLoginViewController: UIViewController {
-    
-    static let keychain = KeychainSwift()
+final class VKWVLoginViewController: UIViewController {
+    private let authService = AuthService.shared
     private let notificationCenter = NotificationCenter.default
     var urlComponents: URLComponents {
         var components = URLComponents()
@@ -54,27 +53,50 @@ extension VKWVLoginViewController: WKNavigationDelegate {
                 url.path == "/blank.html",
                 let fragment = url.fragment
             else { return decisionHandler(.allow) }
+            let parameters = getFragments(fragment)
             
-            let parameters = fragment
-                .components(separatedBy: "&")
-                .map { $0.components(separatedBy: "=") }
-                .reduce([String: String]()) { partialResult, params in
-                    var dict = partialResult
-                    let key = params[0]
-                    let value = params[1]
-                    dict[key] = value
-                    return dict
-                }
             guard
                 let token = parameters["access_token"],
-                let userIDString = parameters["user_id"]
-                // let userID = Int(userIDString)
+                let userID = parameters["user_id"]
             else { return decisionHandler(.allow) }
-            
-            VKWVLoginViewController.keychain.set(token, forKey: "accessToken")
-            VKWVLoginViewController.keychain.set(userIDString, forKey: "userID")
-            
+
+            authService.setAuthData(token: token, userID: userID)
             performSegue(withIdentifier: "goToMain", sender: nil)
             decisionHandler(.cancel)
         }
+    
+    private func getFragments(_ fragment: String) -> [String: String] {
+        return fragment
+            .components(separatedBy: "&")
+            .map { $0.components(separatedBy: "=") }
+            .reduce([String: String]()) { partialResult, params in
+                var dict = partialResult
+                let key = params[0]
+                let value = params[1]
+                dict[key] = value
+                return dict
+            }
+    }
+}
+
+final class AuthService {
+    static let shared = AuthService()
+    let keychain = KeychainSwift()
+    private(set) var userID: String?
+    private(set) var token: String?
+    
+    private init() { }
+    
+    func deleteAuthData() {
+        keychain.delete("accessToken")
+        keychain.delete("userID")
+    }
+    
+    fileprivate func setAuthData(token: String, userID: String) {
+        keychain.set(token, forKey: "accessToken")
+        keychain.set(userID, forKey: "userID")
+        
+        self.userID = userID
+        self.token = token
+    }
 }

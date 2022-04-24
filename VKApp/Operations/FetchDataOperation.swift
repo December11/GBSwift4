@@ -12,10 +12,11 @@ class FetchDataOperation: AsyncOperation {
     var fetchedData: [GroupDTO]?
     
     override init() {
+        let authService = AuthService.shared
         self.request = NetworkService<GroupDTO>()
         guard
-            let userID = VKWVLoginViewController.keychain.get("userID"),
-            let accessToken = VKWVLoginViewController.keychain.get("accessToken")
+            let userID = authService.keychain.get("userID"),
+            let accessToken = authService.keychain.get("accessToken")
         else { return }
         
         self.request.path = "/method/groups.get"

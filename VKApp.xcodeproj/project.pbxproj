@@ -24,6 +24,7 @@
 		BA39E59F27CA9ADE008B9F27 /* RealmGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA39E59E27CA9ADE008B9F27 /* RealmGroup.swift */; };
 		BA39E5A127CAC04E008B9F27 /* RealmAppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA39E5A027CAC04E008B9F27 /* RealmAppInfo.swift */; };
 		BA40FC572811F0600067986E /* FeedHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA40FC562811F0600067986E /* FeedHeaderView.swift */; };
+		BA40FC592815467C0067986E /* PhotoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA40FC582815467C0067986E /* PhotoService.swift */; };
 		BA4CDE052777757500B14B00 /* ImageCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4CDE032777757500B14B00 /* ImageCollectionCell.swift */; };
 		BA4CDE062777757500B14B00 /* ImageCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA4CDE042777757500B14B00 /* ImageCollectionCell.xib */; };
 		BA4CDE0B277BA73900B14B00 /* UIView+Inspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4CDE0A277BA73900B14B00 /* UIView+Inspectable.swift */; };
@@ -97,6 +98,7 @@
 		BA39E59E27CA9ADE008B9F27 /* RealmGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmGroup.swift; sourceTree = "<group>"; };
 		BA39E5A027CAC04E008B9F27 /* RealmAppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmAppInfo.swift; sourceTree = "<group>"; };
 		BA40FC562811F0600067986E /* FeedHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedHeaderView.swift; sourceTree = "<group>"; };
+		BA40FC582815467C0067986E /* PhotoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoService.swift; sourceTree = "<group>"; };
 		BA4CDE032777757500B14B00 /* ImageCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCollectionCell.swift; sourceTree = "<group>"; };
 		BA4CDE042777757500B14B00 /* ImageCollectionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImageCollectionCell.xib; sourceTree = "<group>"; };
 		BA4CDE0A277BA73900B14B00 /* UIView+Inspectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Inspectable.swift"; sourceTree = "<group>"; };
@@ -275,6 +277,7 @@
 				BAB0258D27F3967C0022C4DF /* UsersService.swift */,
 				BAB0258F27F39E800022C4DF /* GroupsService.swift */,
 				BA91B4C027FC7814009CBE53 /* FeedService.swift */,
+				BA40FC582815467C0067986E /* PhotoService.swift */,
 				BA9E827B280AD55C008660AF /* CacheService.swift */,
 			);
 			path = Service;
@@ -538,6 +541,7 @@
 				BA7B7A4F276E4074000506F2 /* FriendCollectionViewController.swift in Sources */,
 				BAA1ED2427CA58A7002666F9 /* PhotoAttachmentDTO.swift in Sources */,
 				BAD93B5B2792F13700794DC0 /* FeedViewController.swift in Sources */,
+				BA40FC592815467C0067986E /* PhotoService.swift in Sources */,
 				BA61BF2D2801CF7E00114D82 /* RealmLoadOperation.swift in Sources */,
 				BA7B7A4B276E402F000506F2 /* FriendsTableViewController.swift in Sources */,
 				BA08979D27A58A3800DBAFFC /* PopAnimation.swift in Sources */,

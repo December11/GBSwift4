@@ -7,29 +7,27 @@
 
 import UIKit
 
-class FriendCollectionViewController: UICollectionViewController {
+final class FriendCollectionViewController: UICollectionViewController {
     
     var friend: User?
-    var friendPhotos = [Photo]() {
+    private var friendPhotos = [Photo]() {
         didSet {
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
             }
         }
     }
-    
-    private var photosDTOObject = [PhotoDTO]()
 
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         guard let userID = friend?.id else { return }
-        
-        fetchPhotosFromJSON(userID)
+        let photoService = PhotoService.shared
+        photoService.fetchPhotosFromJSON(userID) { [weak self] _ in
+            self?.friendPhotos = photoService.userPhotos
+        }
         collectionView.register(ImageCollectionCell.self)
     }
 
-    // MARK: Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "photoPreview"{
             guard
@@ -43,37 +41,6 @@ class FriendCollectionViewController: UICollectionViewController {
         }
     }
     
-    // MARK: - Private methods
-    private func fetchPhotosFromJSON(_ userID: Int) {
-        let photosService = NetworkService<PhotoDTO>()
-        guard
-            let accessToken = VKWVLoginViewController.keychain.get("accessToken")
-        else { return }
-        
-        photosService.path = "/method/photos.get"
-        photosService.queryItems = [
-            URLQueryItem(name: "owner_id", value: String(userID)),
-            URLQueryItem(name: "album_id", value: "profile"),
-            URLQueryItem(name: "access_token", value: accessToken),
-            URLQueryItem(name: "v", value: "5.131")
-        ]
-        photosService.fetch { [weak self] photosDTOObject in
-            switch photosDTOObject {
-            case .failure(let error):
-                print("## Error. Can't load friend's photos", error)
-            case .success(let fetchedPhotos):
-                fetchedPhotos.forEach { photo in
-                    photo.photos?.forEach { info in
-                        if info.sizeType == "x" {
-                            self?.friendPhotos.append(Photo(imageURLString: info.url))
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    // MARK: UICollectionViewDataSource
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return friendPhotos.count
     }

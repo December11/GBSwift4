@@ -34,7 +34,7 @@ final class FeedsService {
       //  let dispatchGroup = DispatchGroup()
         let feedService = NetworkService<FeedDTO>()
         guard
-            let accessToken = VKWVLoginViewController.keychain.get("accessToken")
+            let accessToken = AuthService.shared.keychain.get("accessToken")
         else { return }
         
         feedService.path = "/method/newsfeed.get"

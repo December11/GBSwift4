@@ -8,7 +8,7 @@
 import Kingfisher
 import UIKit
 
-class PhotoPreviewViewController: UIViewController {
+final class PhotoPreviewViewController: UIViewController {
     
     var photos: [Photo]?
     var currentActivePhoto: Photo?
@@ -17,42 +17,30 @@ class PhotoPreviewViewController: UIViewController {
     @IBOutlet weak var currentPhoto: UIImageView!
     @IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var newPhoto: UIImageView!
-    
     @IBOutlet weak var newPhotoTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var newPhotoLeadingConstraint: NSLayoutConstraint!
     
     // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipped(_:)))
-        rightSwipeGesture.direction = .right
-        let leftSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipped(_:)))
-        leftSwipeGesture.direction = .left
-        
-        let downSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(dismissed(_:)))
-        downSwipeGesture.direction = .down
-        
-        currentPhoto.addGestureRecognizer(rightSwipeGesture)
-        currentPhoto.addGestureRecognizer(leftSwipeGesture)
-        currentPhoto.addGestureRecognizer(downSwipeGesture)
+        addGestureRecognizers()
         
         newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
         newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
 
         guard let imageURL = currentActivePhoto?.imageURLString else { return }
-        let url = URL(string: imageURL)
-        self.currentPhoto.kf.setImage(with: url)
+        downloadAndSetImage(url: imageURL, for: currentPhoto)
+        
         likeButton.configuration?.background.backgroundColor = .clear
-    
         likeButton.setTitle("0", for: .init())
         likeButton.setImage(UIImage(systemName: "hand.thumbsup.circle"), for: .init())
-        
     }
     
     @objc func dismissed(_ gesture: UISwipeGestureRecognizer) {
         guard gesture.direction == .down else { return }
-        
+        // TODO: - dismiss
     }
     
     @objc func swipped(_ gesture: UISwipeGestureRecognizer ) {
@@ -67,26 +55,25 @@ class PhotoPreviewViewController: UIViewController {
                 let index = getNewIndex(from: photoIndex, isNext: true),
                 let imageURL = photos[index].imageURLString
             else { return }
-            let url = URL(string: imageURL)
-            self.newPhoto.kf.setImage(with: url)
-            self.newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
+            downloadAndSetImage(url: imageURL, for: newPhoto)
+            newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
             newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
-            self.view.layoutIfNeeded()
-            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut) {
-                self.currentPhoto.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-                self.currentPhoto.alpha = 0
-                self.newPhotoLeadingConstraint.constant = 0
-                self.newPhotoTrailingConstraint.constant = 0
-                self.view.layoutIfNeeded()
-            } completion: { _ in
-                self.currentPhoto.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
-                self.currentPhoto.alpha = 1
-                self.currentPhoto.image = self.newPhoto.image
-                self.currentActivePhoto = photos[index]
-                self.activePhotoIndex = index
-                self.newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
-                self.newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
-                self.updateLikeButton()
+            view.layoutIfNeeded()
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut) { [weak self] in
+                self?.currentPhoto.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+                self?.currentPhoto.alpha = 0
+                self?.newPhotoLeadingConstraint.constant = 0
+                self?.newPhotoTrailingConstraint.constant = 0
+                self?.view.layoutIfNeeded()
+            } completion: { [weak self] _ in
+                self?.currentPhoto.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+                self?.currentPhoto.alpha = 1
+                self?.currentPhoto.image = self?.newPhoto.image
+                self?.currentActivePhoto = photos[index]
+                self?.activePhotoIndex = index
+                self?.newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
+                self?.newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
+                self?.updateLikeButton()
             }
             
         case .right:
@@ -95,24 +82,23 @@ class PhotoPreviewViewController: UIViewController {
                 let index = getNewIndex(from: photoIndex, isNext: false),
                 let imageURL = photos[index].imageURLString
             else { return }
-            let url = URL(string: imageURL)
-            self.newPhoto.image = self.currentPhoto.image
-            self.currentPhoto.kf.setImage(with: url)
-            self.currentPhoto.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-            self.currentPhoto.alpha = 0
-            self.newPhotoLeadingConstraint.constant = 0
+            newPhoto.image = self.currentPhoto.image
+            downloadAndSetImage(url: imageURL, for: currentPhoto)
+            currentPhoto.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+            currentPhoto.alpha = 0
+            newPhotoLeadingConstraint.constant = 0
             newPhotoTrailingConstraint.constant = 0
             self.view.layoutIfNeeded()
-            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut) {
-                self.currentPhoto.transform = CGAffineTransform(scaleX: 1, y: 1)
-                self.currentPhoto.alpha = 1
-                self.newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
-                self.newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
-                self.view.layoutIfNeeded()
-            } completion: { _ in
-                self.activePhotoIndex = index
-                self.currentActivePhoto = photos[index]
-                self.updateLikeButton()
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut) { [weak self] in
+                self?.currentPhoto.transform = CGAffineTransform(scaleX: 1, y: 1)
+                self?.currentPhoto.alpha = 1
+                self?.newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
+                self?.newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
+                self?.view.layoutIfNeeded()
+            } completion: { [weak self] _ in
+                self?.activePhotoIndex = index
+                self?.currentActivePhoto = photos[index]
+                self?.updateLikeButton()
             }
         default:
             break
@@ -125,6 +111,25 @@ class PhotoPreviewViewController: UIViewController {
     }
     
     // MARK: - Private functions
+    
+    private func downloadAndSetImage(url: String, for imageView: UIImageView) {
+        let url = URL(string: url)
+        imageView.kf.setImage(with: url)
+    }
+    
+    private func addGestureRecognizers() {
+        let rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipped(_:)))
+        rightSwipeGesture.direction = .right
+        let leftSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipped(_:)))
+        leftSwipeGesture.direction = .left
+        let downSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(dismissed(_:)))
+        downSwipeGesture.direction = .down
+        
+        currentPhoto.addGestureRecognizer(rightSwipeGesture)
+        currentPhoto.addGestureRecognizer(leftSwipeGesture)
+        currentPhoto.addGestureRecognizer(downSwipeGesture)
+    }
+    
     private func getNewIndex(from index: Int, isNext: Bool) -> Int? {
         guard
             let photos = self.photos,

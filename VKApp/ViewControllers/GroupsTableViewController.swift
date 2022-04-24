@@ -8,7 +8,7 @@
 import RealmSwift
 import UIKit
 
-class GroupsTableViewController: UITableViewController {
+final class GroupsTableViewController: UITableViewController {
     
     private let groupsDataService = GroupsService.instance
     private var groupToken: NotificationToken?

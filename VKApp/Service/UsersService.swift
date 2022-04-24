@@ -76,10 +76,10 @@ final class UsersService {
     }
     
     private func getURL() -> Promise<URL> {
-        
+        let authService = AuthService.shared
         guard
-            let userID = VKWVLoginViewController.keychain.get("userID"),
-            let accessToken = VKWVLoginViewController.keychain.get("accessToken")
+            let userID = authService.keychain.get("userID"),
+            let accessToken = authService.keychain.get("accessToken")
         else {
             print("## Error. Can't load userID or AccessToken from Keychain")
             return Promise.init(error: NSError())

@@ -11,7 +11,7 @@ import WebKit
 
 final class FeedViewController: UIViewController {
    
-    enum CellType: Int {
+    private enum CellType: Int {
         case messageText = 0, images
     }
     
@@ -34,11 +34,12 @@ final class FeedViewController: UIViewController {
         tableView.register(for: FeedFooterView.self)
         loadingDotes()
         
-        feedService.getFeeds {
-            self.feedNews = self.feedService.feedNews
+        feedService.getFeeds { [weak self] in
+            guard let feedNews = self?.feedService.feedNews else { return }
+            self?.feedNews = feedNews
             DispatchQueue.main.async {
-                self.tableView.reloadData()
-                self.animatedView.isHidden = true
+                self?.tableView.reloadData()
+                self?.animatedView.isHidden = true
             }
         }
     }
@@ -50,28 +51,27 @@ final class FeedViewController: UIViewController {
             withDuration: shortDuration,
             delay: 0,
             options: [.repeat, .autoreverse, .curveEaseInOut]
-        ) { [self] in
-            loadingViews[0].alpha = 1
+        ) { [weak self] in
+            self?.loadingViews[0].alpha = 1
         }
         UIView.animate(
             withDuration: shortDuration,
             delay: 0.2,
             options: [.repeat, .autoreverse, .curveEaseInOut]
-        ) { [self] in
-            loadingViews[1].alpha = 1
+        ) { [weak self] in
+            self?.loadingViews[1].alpha = 1
         }
         UIView.animate(
             withDuration: shortDuration,
             delay: 0.4,
             options: [.repeat, .autoreverse, .curveEaseInOut]
-        ) { [self] in
-            loadingViews[2].alpha = 1
+        ) { [weak self] in
+            self?.loadingViews[2].alpha = 1
         }
     }
     
     @IBAction func logout(_ sender: Any) {
-        VKWVLoginViewController.keychain.delete("accessToken")
-        VKWVLoginViewController.keychain.delete("userID")
+        AuthService.shared.deleteAuthData()
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let view = storyboard.instantiateViewController(withIdentifier: "VKWVLoginViewController")
@@ -82,9 +82,6 @@ final class FeedViewController: UIViewController {
             records.forEach {
                 if $0.displayName.contains("vk") {
                     dataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: [$0]) {
-                        guard
-                            let url = view.urlComponents.url
-                        else { return }
                         var urlComponents: URLComponents {
                             var components = URLComponents()
                             components.scheme = "https"
@@ -101,6 +98,11 @@ final class FeedViewController: UIViewController {
                             ]
                             return components
                         }
+
+                        guard
+                            let url = view.urlComponents.url
+                        else { return }
+
                         view.webView.load(URLRequest(url: url))
                     }
                 }
