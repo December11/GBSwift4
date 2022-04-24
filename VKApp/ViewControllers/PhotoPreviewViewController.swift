@@ -26,9 +26,6 @@ final class PhotoPreviewViewController: UIViewController {
         super.viewDidLoad()
         
         addGestureRecognizers()
-        
-        newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
-        newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
 
         guard let imageURL = currentActivePhoto?.imageURLString else { return }
         downloadAndSetImage(url: imageURL, for: currentPhoto)
@@ -40,7 +37,7 @@ final class PhotoPreviewViewController: UIViewController {
     
     @objc func dismissed(_ gesture: UISwipeGestureRecognizer) {
         guard gesture.direction == .down else { return }
-        // TODO: - dismiss
+        dismiss(animated: true, completion: nil)
     }
     
     @objc func swipped(_ gesture: UISwipeGestureRecognizer ) {
@@ -48,6 +45,8 @@ final class PhotoPreviewViewController: UIViewController {
             activePhotoIndex != nil,
             let photos = self.photos
         else { return }
+        newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
+        newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
         switch gesture.direction {
         case .left:
             guard
@@ -56,23 +55,14 @@ final class PhotoPreviewViewController: UIViewController {
                 let imageURL = photos[index].imageURLString
             else { return }
             downloadAndSetImage(url: imageURL, for: newPhoto)
-            newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
-            newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
             view.layoutIfNeeded()
             UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut) { [weak self] in
-                self?.currentPhoto.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-                self?.currentPhoto.alpha = 0
-                self?.newPhotoLeadingConstraint.constant = 0
-                self?.newPhotoTrailingConstraint.constant = 0
-                self?.view.layoutIfNeeded()
+                self?.downscaleAnimation()
             } completion: { [weak self] _ in
-                self?.currentPhoto.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
-                self?.currentPhoto.alpha = 1
                 self?.currentPhoto.image = self?.newPhoto.image
                 self?.currentActivePhoto = photos[index]
                 self?.activePhotoIndex = index
-                self?.newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
-                self?.newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
+                self?.upscaleAnimation()
                 self?.updateLikeButton()
             }
             
@@ -84,17 +74,9 @@ final class PhotoPreviewViewController: UIViewController {
             else { return }
             newPhoto.image = self.currentPhoto.image
             downloadAndSetImage(url: imageURL, for: currentPhoto)
-            currentPhoto.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-            currentPhoto.alpha = 0
-            newPhotoLeadingConstraint.constant = 0
-            newPhotoTrailingConstraint.constant = 0
-            self.view.layoutIfNeeded()
+            downscaleAnimation()
             UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut) { [weak self] in
-                self?.currentPhoto.transform = CGAffineTransform(scaleX: 1, y: 1)
-                self?.currentPhoto.alpha = 1
-                self?.newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
-                self?.newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
-                self?.view.layoutIfNeeded()
+                self?.upscaleAnimation()
             } completion: { [weak self] _ in
                 self?.activePhotoIndex = index
                 self?.currentActivePhoto = photos[index]
@@ -111,6 +93,22 @@ final class PhotoPreviewViewController: UIViewController {
     }
     
     // MARK: - Private functions
+    
+    private func downscaleAnimation() {
+        currentPhoto.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        currentPhoto.alpha = 0
+        newPhotoLeadingConstraint.constant = 0
+        newPhotoTrailingConstraint.constant = 0
+        view.layoutIfNeeded()
+    }
+    
+    private func upscaleAnimation() {
+        currentPhoto.transform = CGAffineTransform(scaleX: 1, y: 1)
+        currentPhoto.alpha = 1
+        newPhotoLeadingConstraint.constant = UIScreen.main.bounds.width
+        newPhotoTrailingConstraint.constant = UIScreen.main.bounds.width
+        view.layoutIfNeeded()
+    }
     
     private func downloadAndSetImage(url: String, for imageView: UIImageView) {
         let url = URL(string: url)
