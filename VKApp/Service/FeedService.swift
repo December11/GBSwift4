@@ -77,7 +77,7 @@ final class FeedsService {
     
     private func configurateGroupFeed(_ feed: FeedDTO) -> Feed {
         let photosURLs = self.loadPhotosFromFeed(feed)
-        var feedGroup = Group(id: 0, title: "Unknown", imageURL: nil)
+        let feedGroup = Group(id: 0, title: "Unknown", imageURL: nil)
         if let group = self.groupService.getByID(feed.sourceID) {
             return Feed(group: group, photos: photosURLs, feed: feed)
         }

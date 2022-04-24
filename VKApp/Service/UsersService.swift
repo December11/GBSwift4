@@ -115,7 +115,7 @@ final class UsersService {
         return Promise { resolver in
             let task = session.dataTask(with: url) { data, _, error in
                 guard error == nil else {
-                    print("## Error. Can't load data \(error)")
+                    print("## Error. Can't load data \(String(describing: error))")
                     resolver.reject(AppError.errorTask)
                     return
                 }
@@ -166,19 +166,17 @@ final class UsersService {
     }
     
     private func saveToRealm(_ realmUsers: [RealmUser]) {
-       // DispatchQueue.main.async {
-            do {
-                try RealmService.save(items: realmUsers)
-                let realmUpdateDate = RealmAppInfo(
-                    groupsUpdateDate: AppDataInfo.shared.groupsUpdateDate,
-                    friendsUpdateDate: Date()
-                )
-                try RealmService.save(items: [realmUpdateDate])
-                self.realmResults = try RealmService.load(typeOf: RealmUser.self)
-                self.updateUsers(realmUsers)
-            } catch {
-                print("## Error. Can't load users from Realm", error)
-            }
-      //  }
+        do {
+            try RealmService.save(items: realmUsers)
+            let realmUpdateDate = RealmAppInfo(
+                groupsUpdateDate: AppDataInfo.shared.groupsUpdateDate,
+                friendsUpdateDate: Date()
+            )
+            try RealmService.save(items: [realmUpdateDate])
+            self.realmResults = try RealmService.load(typeOf: RealmUser.self)
+            self.updateUsers(realmUsers)
+        } catch {
+            print("## Error. Can't load users from Realm", error)
+        }
     }
 }
