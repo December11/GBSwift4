@@ -46,11 +46,15 @@ class FriendCollectionViewController: UICollectionViewController {
     // MARK: - Private methods
     private func fetchPhotosFromJSON(_ userID: Int) {
         let photosService = NetworkService<PhotoDTO>()
+        guard
+            let accessToken = VKWVLoginViewController.keychain.get("accessToken")
+        else { return }
+        
         photosService.path = "/method/photos.get"
         photosService.queryItems = [
             URLQueryItem(name: "owner_id", value: String(userID)),
             URLQueryItem(name: "album_id", value: "profile"),
-            URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
+            URLQueryItem(name: "access_token", value: accessToken),
             URLQueryItem(name: "v", value: "5.131")
         ]
         photosService.fetch { [weak self] photosDTOObject in

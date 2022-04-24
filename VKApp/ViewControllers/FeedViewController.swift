@@ -5,6 +5,7 @@
 //  Created by Alla Shkolnik on 15.01.2022.
 //
 
+import KeychainSwift
 import UIKit
 import WebKit
 
@@ -161,8 +162,9 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     @IBAction func logout(_ sender: Any) {
-        SessionStorage.shared.token = ""
-        SessionStorage.shared.userId = 0
+        VKWVLoginViewController.keychain.delete("accessToken")
+        VKWVLoginViewController.keychain.delete("userID")
+        
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let view = storyboard.instantiateViewController(withIdentifier: "VKWVLoginViewController")
                 as? VKWVLoginViewController else { return }
@@ -175,6 +177,22 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
                         guard
                             let url = view.urlComponents.url
                         else { return }
+                        var urlComponents: URLComponents {
+                            var components = URLComponents()
+                            components.scheme = "https"
+                            components.host = "oauth.vk.com"
+                            components.path = "/authorize"
+                            components.queryItems = [
+                                URLQueryItem(name: "client_id", value: "8077898"),
+                                URLQueryItem(name: "display", value: "mobile"),
+                                URLQueryItem(name: "redirect_uri", value: "https://oauth.vk.com/blank.html"),
+                                URLQueryItem(name: "scope", value: "336918"),
+                                URLQueryItem(name: "response_type", value: "token"),
+                                URLQueryItem(name: "v", value: "5.131"),
+                                URLQueryItem(name: "revoke", value: "1")
+                            ]
+                            return components
+                        }
                         view.webView.load(URLRequest(url: url))
                     }
                 }

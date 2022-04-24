@@ -5,8 +5,16 @@
 //  Created by Alla Shkolnik on 29.03.2022.
 //
 
+import PromiseKit
 import RealmSwift
 import UIKit
+
+enum AppError: Error {
+    case noDataProvided
+    case failedToDecode
+    case errorTask
+    case notCorrectUrl
+}
 
 final class UsersService {
     
@@ -28,17 +36,15 @@ final class UsersService {
     }
     
     func loadDataIfNeeded() {
-        DispatchQueue.main.async {
-            do {
-                let updateInterval: TimeInterval = 60 * 60
-                if self.realmUpdateDate >= Date(timeIntervalSinceNow: -updateInterval) {
-                    self.realmResults = try RealmService.load(typeOf: RealmUser.self)
-                } else {
-                    self.fetchFromJSON()
-                }
-            } catch {
-                print("## Error. Can't load users from Realm", error)
+        do {
+            let updateInterval: TimeInterval = 60 * 60
+            if realmUpdateDate >= Date(timeIntervalSinceNow: -updateInterval) {
+                realmResults = try RealmService.load(typeOf: RealmUser.self)
+            } else {
+                fetchUsersFromJSONAndSaveToRealm()
             }
+        } catch {
+            print("## Error. Can't load users from Realm", error)
         }
     }
     
@@ -50,8 +56,7 @@ final class UsersService {
         }
         return nil
     }
-    
-    // MARK: - Private methods
+
     func getByID(_ id: Int) -> User? {
         guard
             let realmUsers = self.realmResults?.filter({ $0.id == id })
@@ -61,6 +66,7 @@ final class UsersService {
         return realmUsers.map { User(fromRealm: $0) }.first
     }
     
+    // MARK: - Private methods
     private func updateUsers(_ realmUsers: [RealmUser]) {
         users = realmUsers.map { User(fromRealm: $0)}
     }
@@ -69,33 +75,98 @@ final class UsersService {
         realmUsers.map { User(fromRealm: $0) }
     }
     
-    private func fetchFromJSON() {
-        let dispatchGroup = DispatchGroup()
-        let usersService = NetworkService<UserDTO>()
-        usersService.path = "/method/friends.get"
-        usersService.queryItems = [
-            URLQueryItem(name: "user_id", value: String(SessionStorage.shared.userId)),
-            URLQueryItem(name: "order", value: "name"),
-            URLQueryItem(name: "fields", value: "photo_50"),
-            URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
-            URLQueryItem(name: "v", value: "5.131")
-        ]
-        usersService.fetch { [weak self] usersDTOObjects in
-            switch usersDTOObjects {
-            case .failure(let error):
-                print("## Error. Can't fetch users from JSON", error)
-            case .success(let usersDTO):
-                var realmUsers = usersDTO.map { RealmUser(fromDTO: $0) }
-                realmUsers = realmUsers.filter { $0.deactivated == nil }
-                dispatchGroup.notify(queue: DispatchQueue.main) {
-                    self?.saveToRealm(realmUsers)
+    private func getURL() -> Promise<URL> {
+        
+        guard
+            let userID = VKWVLoginViewController.keychain.get("userID"),
+            let accessToken = VKWVLoginViewController.keychain.get("accessToken")
+        else {
+            print("## Error. Can't load userID or AccessToken from Keychain")
+            return Promise.init(error: NSError())
+        }
+        
+        var urlComponents: URLComponents {
+            var components = URLComponents()
+            components.scheme = "https"
+            components.host = "api.vk.com"
+            components.path = "/method/friends.get"
+            components.queryItems = [
+                URLQueryItem(name: "user_id", value: userID),
+                URLQueryItem(name: "order", value: "name"),
+                URLQueryItem(name: "fields", value: "photo_50"),
+                URLQueryItem(name: "access_token", value: accessToken),
+                URLQueryItem(name: "v", value: "5.131")
+            ]
+            return components
+        }
+        
+        return Promise { resolver in
+            guard let url = urlComponents.url else {
+                print("## Error. Can't get URL")
+                resolver.reject(AppError.notCorrectUrl)
+                return
+            }
+            resolver.fulfill(url)
+        }
+    }
+    
+    private func fetchData(_ url: URL) -> Promise<Data> {
+        let session = URLSession.shared
+        return Promise { resolver in
+            let task = session.dataTask(with: url) { data, _, error in
+                guard error == nil else {
+                    print("## Error. Can't load data \(error)")
+                    resolver.reject(AppError.errorTask)
+                    return
                 }
+                guard let data = data else {
+                    print("## Error. Can't load data")
+                    resolver.reject(AppError.noDataProvided)
+                    return
+                }
+                resolver.fulfill(data)
+            }
+            task.resume()
+        }
+    }
+    
+    private func parseData(_ data: Data) -> Promise <[UserDTO]> {
+        return Promise { resolver in
+            do {
+                if let usersDTO = try JSONDecoder().decode(ResponseDTO<UserDTO>.self, from: data).response.items {
+                    resolver.fulfill(usersDTO)
+                }
+            } catch {
+                print("## Error. can't load data from JSON", error)
+                resolver.reject(AppError.failedToDecode)
             }
         }
     }
     
+    private func fetchUsersFromJSONAndSaveToRealm() {
+        var usersDTO = [UserDTO]()
+        
+        getURL()
+        .then(on: .global()) { url in
+            self.fetchData(url)
+        }.then { data in
+            self.parseData(data)
+        }.done { users in
+            usersDTO = users
+            let realmUsers = self.convertToRealm(from: usersDTO)
+            self.saveToRealm(realmUsers)
+        }.catch { error in
+            print("## Error. can't loador parse Data: \(error)")
+        }
+    }
+    
+    private func convertToRealm(from usersDTO: [UserDTO]) -> [RealmUser] {
+        let users = usersDTO.map { RealmUser(fromDTO: $0) }.filter { $0.deactivated == nil }
+        return users
+    }
+    
     private func saveToRealm(_ realmUsers: [RealmUser]) {
-        DispatchQueue.main.async {
+       // DispatchQueue.main.async {
             do {
                 try RealmService.save(items: realmUsers)
                 let realmUpdateDate = RealmAppInfo(
@@ -108,6 +179,6 @@ final class UsersService {
             } catch {
                 print("## Error. Can't load users from Realm", error)
             }
-        }
+      //  }
     }
 }

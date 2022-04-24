@@ -13,12 +13,17 @@ class FetchDataOperation: AsyncOperation {
     
     override init() {
         self.request = NetworkService<GroupDTO>()
+        guard
+            let userID = VKWVLoginViewController.keychain.get("userID"),
+            let accessToken = VKWVLoginViewController.keychain.get("accessToken")
+        else { return }
+        
         self.request.path = "/method/groups.get"
         self.request.queryItems = [
-            URLQueryItem(name: "user_id", value: String(SessionStorage.shared.userId)),
+            URLQueryItem(name: "user_id", value: userID),
             URLQueryItem(name: "extended", value: "1"),
             URLQueryItem(name: "fields", value: "description"),
-            URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
+            URLQueryItem(name: "access_token", value: accessToken),
             URLQueryItem(name: "v", value: "5.131")
         ]
     }

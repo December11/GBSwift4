@@ -5,26 +5,14 @@
 //  Created by Alla Shkolnik on 12.02.2022.
 //
 
+import KeychainSwift
 import UIKit
 import WebKit
 
 class VKWVLoginViewController: UIViewController {
-
-    @IBOutlet weak var webView: WKWebView! {
-        didSet {
-            webView.navigationDelegate = self
-        }
-    }
     
-    // MARK: - Lifecycle
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        guard let url = urlComponents.url else { return }
-        let request = URLRequest(url: url)
-                
-        webView.load(request)
-    }
-    
+    static let keychain = KeychainSwift()
+    private let notificationCenter = NotificationCenter.default
     var urlComponents: URLComponents {
         var components = URLComponents()
         components.scheme = "https"
@@ -36,9 +24,23 @@ class VKWVLoginViewController: UIViewController {
             URLQueryItem(name: "redirect_uri", value: "https://oauth.vk.com/blank.html"),
             URLQueryItem(name: "scope", value: "336918"),
             URLQueryItem(name: "response_type", value: "token"),
-            URLQueryItem(name: "v", value: "5.131"),
+            URLQueryItem(name: "v", value: "5.131")
         ]
         return components
+    }
+    
+    @IBOutlet weak var webView: WKWebView! {
+        didSet {
+            webView.navigationDelegate = self
+        }
+    }
+    
+    // MARK: - Lifecycle
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        guard let url = urlComponents.url else { return }
+        let request = URLRequest(url: url)
+        webView.load(request)
     }
 }
 
@@ -65,14 +67,14 @@ extension VKWVLoginViewController: WKNavigationDelegate {
                 }
             guard
                 let token = parameters["access_token"],
-                let userIDString = parameters["user_id"],
-                let userID = Int(userIDString)
+                let userIDString = parameters["user_id"]
+                // let userID = Int(userIDString)
             else { return decisionHandler(.allow) }
             
-            SessionStorage.shared.token = token
-            SessionStorage.shared.userId = userID
+            VKWVLoginViewController.keychain.set(token, forKey: "accessToken")
+            VKWVLoginViewController.keychain.set(userIDString, forKey: "userID")
             
             performSegue(withIdentifier: "goToMain", sender: nil)
             decisionHandler(.cancel)
-    }
+        }
 }

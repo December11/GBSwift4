@@ -7,6 +7,7 @@
 
 import RealmSwift
 import UIKit
+import WebKit
 
 class FriendsTableViewController: UITableViewController {
     
@@ -42,8 +43,28 @@ class FriendsTableViewController: UITableViewController {
         friendsToken?.invalidate()
     }
     
-    @IBAction func dismiss() {
-        dismiss(animated: true)
+    @IBAction func dismiss(_ sender: Any) {
+        VKWVLoginViewController.keychain.delete("accessToken")
+        VKWVLoginViewController.keychain.delete("userID")
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard let view = storyboard.instantiateViewController(withIdentifier: "VKWVLoginViewController")
+                as? VKWVLoginViewController else { return }
+        view.loadView()
+        let dataStore = WKWebsiteDataStore.default()
+        dataStore.fetchDataRecords( ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+            records.forEach {
+                if $0.displayName.contains("vk") {
+                    dataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: [$0]) {
+                        guard
+                            let url = view.urlComponents.url
+                        else { return }
+                        view.webView.load(URLRequest(url: url))
+                    }
+                }
+            }
+        }
+        dismiss(animated: true, completion: nil)
     }
     
     // MARK: - Private methods

@@ -20,11 +20,15 @@ extension AllGroupTableViewController: UISearchBarDelegate {
     
     func fetchSearchedGroupsFromJSON(by searchText: String) {
         let groupsService = NetworkService<GroupDTO>()
+        guard
+            let accessToken = VKWVLoginViewController.keychain.get("accessToken")
+        else { return }
+        
         groupsService.path = "/method/groups.search"
         groupsService.queryItems = [
             URLQueryItem(name: "q", value: searchText),
             URLQueryItem(name: "type", value: "group"),
-            URLQueryItem(name: "access_token", value: SessionStorage.shared.token),
+            URLQueryItem(name: "access_token", value: accessToken),
             URLQueryItem(name: "v", value: "5.131")
         ]
         groupsService.fetch { [weak self] searchedGroupsDTO in
