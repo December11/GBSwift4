@@ -5,7 +5,6 @@
 //  Created by Alla Shkolnik on 04.04.2022.
 //
 
-import Foundation
 import UIKit
 
 extension UICollectionView {

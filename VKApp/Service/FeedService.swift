@@ -31,7 +31,6 @@ final class FeedsService {
     
     // MARK: - Private methods
     private func fetchFromJSON(completion: @escaping ([Feed]) -> Void) {
-      //  let dispatchGroup = DispatchGroup()
         let feedService = NetworkService<FeedDTO>()
         guard
             let accessToken = AuthService.shared.keychain.get("accessToken")

@@ -5,7 +5,6 @@
 //  Created by Alla Shkolnik on 26.02.2022.
 //
 
-import Foundation
 import RealmSwift
 
 final class RealmService {
