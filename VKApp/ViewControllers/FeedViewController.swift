@@ -30,6 +30,9 @@ final class FeedViewController: UIViewController {
         super.viewDidLoad()
         self.animatedView.isHidden = false
         
+        tableView.delegate = self
+        tableView.dataSource = self
+        
         tableView.sectionHeaderTopPadding = 16.0
         tableView.register(for: FeedFooterView.self)
         loadingDotes()
