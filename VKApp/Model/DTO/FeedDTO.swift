@@ -14,6 +14,7 @@ struct FeedDTO {
     var comments: CommentsDTO?
     var likes: LikesDTO?
     var views: ViewsDTO?
+    var startTime: Double?
 }
 
 extension FeedDTO: Decodable {
@@ -25,5 +26,6 @@ extension FeedDTO: Decodable {
         case comments
         case likes
         case views
+        case startTime = "start_time"
     }
 }

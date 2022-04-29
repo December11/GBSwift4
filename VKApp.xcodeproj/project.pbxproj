@@ -25,6 +25,7 @@
 		BA39E5A127CAC04E008B9F27 /* RealmAppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA39E5A027CAC04E008B9F27 /* RealmAppInfo.swift */; };
 		BA40FC572811F0600067986E /* FeedHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA40FC562811F0600067986E /* FeedHeaderView.swift */; };
 		BA40FC592815467C0067986E /* PhotoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA40FC582815467C0067986E /* PhotoService.swift */; };
+		BA40FC5F2815B7510067986E /* FetchAnyDataOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA40FC5E2815B7510067986E /* FetchAnyDataOperation.swift */; };
 		BA4CDE052777757500B14B00 /* ImageCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4CDE032777757500B14B00 /* ImageCollectionCell.swift */; };
 		BA4CDE062777757500B14B00 /* ImageCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA4CDE042777757500B14B00 /* ImageCollectionCell.xib */; };
 		BA4CDE0B277BA73900B14B00 /* UIView+Inspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4CDE0A277BA73900B14B00 /* UIView+Inspectable.swift */; };
@@ -99,6 +100,7 @@
 		BA39E5A027CAC04E008B9F27 /* RealmAppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmAppInfo.swift; sourceTree = "<group>"; };
 		BA40FC562811F0600067986E /* FeedHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedHeaderView.swift; sourceTree = "<group>"; };
 		BA40FC582815467C0067986E /* PhotoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoService.swift; sourceTree = "<group>"; };
+		BA40FC5E2815B7510067986E /* FetchAnyDataOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchAnyDataOperation.swift; sourceTree = "<group>"; };
 		BA4CDE032777757500B14B00 /* ImageCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCollectionCell.swift; sourceTree = "<group>"; };
 		BA4CDE042777757500B14B00 /* ImageCollectionCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImageCollectionCell.xib; sourceTree = "<group>"; };
 		BA4CDE0A277BA73900B14B00 /* UIView+Inspectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Inspectable.swift"; sourceTree = "<group>"; };
@@ -288,6 +290,7 @@
 			children = (
 				BA91B4C327FF3147009CBE53 /* AsyncOperation.swift */,
 				BA91B4C527FF357E009CBE53 /* FetchDataOperation.swift */,
+				BA40FC5E2815B7510067986E /* FetchAnyDataOperation.swift */,
 				BA61BF26280077EA00114D82 /* RealmSaveOperation.swift */,
 				BA61BF2C2801CF7E00114D82 /* RealmLoadOperation.swift */,
 				BA9E827D280B629B008660AF /* ImageDownloadOperation.swift */,
@@ -538,6 +541,7 @@
 				BA08979527A46C9F00DBAFFC /* CustomNavigationController.swift in Sources */,
 				BA7B7A51276E4194000506F2 /* AllGroupTableViewController.swift in Sources */,
 				BAA1ED2227CA585D002666F9 /* ViewsDTO.swift in Sources */,
+				BA40FC5F2815B7510067986E /* FetchAnyDataOperation.swift in Sources */,
 				BA7B7A4F276E4074000506F2 /* FriendCollectionViewController.swift in Sources */,
 				BAA1ED2427CA58A7002666F9 /* PhotoAttachmentDTO.swift in Sources */,
 				BAD93B5B2792F13700794DC0 /* FeedViewController.swift in Sources */,

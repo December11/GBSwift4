@@ -41,6 +41,19 @@ final class VKWVLoginViewController: UIViewController {
         let request = URLRequest(url: url)
         webView.load(request)
     }
+    
+    static func logout() {
+        AuthService.shared.deleteAuthData()
+        
+        let dataStore = WKWebsiteDataStore.default()
+        dataStore.fetchDataRecords( ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+            records.forEach {
+                if $0.displayName.contains("vk") {
+                    dataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: [$0]) { }
+                }
+            }
+        }
+    }
 }
 
 extension VKWVLoginViewController: WKNavigationDelegate {
@@ -75,7 +88,7 @@ extension VKWVLoginViewController: WKNavigationDelegate {
                 let value = params[1]
                 dict[key] = value
                 return dict
-            }
+        }
     }
 }
 
@@ -87,7 +100,7 @@ final class AuthService {
     
     private init() { }
     
-    func deleteAuthData() {
+    fileprivate func deleteAuthData() {
         keychain.delete("accessToken")
         keychain.delete("userID")
     }

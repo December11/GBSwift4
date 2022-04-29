@@ -26,6 +26,7 @@ final class Feed {
     var likesCount: Int
     var commentsCount: Int
     var viewsCount: Int
+    var startTime: Date?
     
     init(
         user: User?,
@@ -78,6 +79,7 @@ final class Feed {
         self.commentsCount = feed.comments?.count ?? 0
         self.likesCount = feed.likes?.count ?? 0
         self.viewsCount = feed.views?.count ?? 0
+        self.startTime = Date(timeIntervalSince1970: feed.startTime ?? 0)
     }
     init(user: User?, photos: [Photo]?, feed: FeedDTO) {
         self.user = user
@@ -88,6 +90,7 @@ final class Feed {
         self.commentsCount = feed.comments?.count ?? 0
         self.likesCount = feed.likes?.count ?? 0
         self.viewsCount = feed.views?.count ?? 0
+        self.startTime = Date(timeIntervalSince1970: feed.startTime ?? 0)
     }
 }
 
