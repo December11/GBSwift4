@@ -11,6 +11,7 @@ import UIKit
 final class FeedsService {
     static let instance = FeedsService()
     var feedNews = [Feed]()
+    var nextFrom = ""
     
     private var groupService = GroupsService.instance
     private var userService = UsersService.instance
@@ -27,7 +28,16 @@ final class FeedsService {
         }
     }
     
-    private func fetchFromJSON(by date: String, completion: @escaping ([Feed]) -> Void) {
+    func getFeeds(by date: String, nextFrom: String, completion: @escaping ([Feed]) -> Void) {
+        fetchFromJSON(by: date, nextFrom: nextFrom) { feeds in
+            self.feedNews = feeds.filter { $0.messageText != "" }
+            DispatchQueue.main.async {
+                completion(self.feedNews)
+            }
+        }
+    }
+    
+    private func fetchFromJSON(by date: String, nextFrom: String, completion: @escaping ([Feed]) -> Void) {
         let feedService = NetworkService<FeedDTO>()
         guard
             let accessToken = AuthService.shared.keychain.get("accessToken")
@@ -36,9 +46,9 @@ final class FeedsService {
         feedService.path = "/method/newsfeed.get"
         feedService.queryItems = [
             URLQueryItem(name: "filters", value: "post"),
-            URLQueryItem(name: "start_from", value: "next_from"),
+            URLQueryItem(name: "start_from", value: nextFrom),
             URLQueryItem(name: "start_time", value: date),
-            URLQueryItem(name: "count", value: "5"),
+            URLQueryItem(name: "count", value: "2"),
             URLQueryItem(name: "access_token", value: accessToken),
             URLQueryItem(name: "v", value: "5.131")
         ]
@@ -69,6 +79,8 @@ final class FeedsService {
         fetchOperation.completionBlock = {
             DispatchQueue.main.async {
                 guard let feedsDTO = fetchOperation.fetchedData else { return }
+                self.nextFrom = fetchOperation.nextFrom
+                print("## feedService nextFrom = \(self.nextFrom)")
                 let feeds = feedsDTO.map { self.getFeed($0, from: $0.sourceID) }
                 completion(feeds)
             }
@@ -97,7 +109,6 @@ final class FeedsService {
         if let group = self.groupService.getByID(feed.sourceID) {
             return Feed(group: group, photos: photosURLs, feed: feed)
         }
-        print("## 0.Feed - no group with id \(feed.sourceID) ")
         return Feed(group: feedGroup, photos: photosURLs, feed: feed)
     }
     

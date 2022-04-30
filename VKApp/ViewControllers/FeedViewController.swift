@@ -17,6 +17,7 @@ final class FeedViewController: UIViewController {
     private let loadDuration = 2.0
     private let shortDuration = 0.5
     private let feedService = FeedsService.instance
+    private var lastFeedDateString: String?
     fileprivate var feedNews = [Feed]()
 
     @IBOutlet weak var tableView: UITableView!
@@ -57,8 +58,29 @@ final class FeedViewController: UIViewController {
     
     @objc private func refreshNews() {
         tableView.refreshControl?.beginRefreshing()
-        let lastNewsDate = feedNews.first?.date ?? Date(timeIntervalSince1970: 0)
-        
+        print("## Start refreshing")
+        let date1 = feedNews.first?.date.timeIntervalSince1970
+        lastFeedDateString = date1?.description
+        print("## feedNews.first?.date = \(String(describing: feedNews.first?.date))")
+        print("## feedNews.first?.date.timeinterval... = \(lastFeedDateString ?? "")")
+        guard let date = lastFeedDateString else {
+            self.tableView.refreshControl?.endRefreshing()
+            return
+        }
+        let nextFrom = feedService.nextFrom
+        print("## feedVC nextFrom = \(nextFrom)")
+        feedService.getFeeds(by: date, nextFrom: nextFrom) { [weak self] feeds in
+            print("## new feeds.count = \(feeds.count)")
+            guard let self = self else { return }
+            self.tableView.refreshControl?.endRefreshing()
+            guard feeds.count > 0 else { return }
+            print("## before inserting: feedNews.count = \(self.feedNews.count)")
+            let indexSet = IndexSet(integersIn: self.feedNews.count..<self.feedNews.count + feeds.count)
+            self.feedNews.insert(contentsOf: feeds, at: 0)
+            self.tableView.insertSections(indexSet, with: .automatic)
+            print("## after inserting: feedNews.count = \(self.feedNews.count)")
+            self.lastFeedDateString = self.feedNews.first?.date.timeIntervalSince1970.description
+        }
     }
     
     // MARK: - Animation

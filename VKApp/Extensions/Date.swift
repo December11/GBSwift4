@@ -11,6 +11,7 @@ extension Date {
     enum DateFormat: String {
         case dateTime = "dd.MM.yy, HH:mm"
         case date = "dd.MM.yy"
+        case dateTimeZone = "yyyy-MM-dd HH:mm:ss Z"
     }
     
     func toString(dateFormat: DateFormat) -> String {

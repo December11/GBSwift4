@@ -8,6 +8,7 @@
 final class FetchAnyDataOperation<FetchType: Decodable>: AsyncOperation {
     private var request: NetworkService<FetchType>
     var fetchedData: [FetchType]?
+    var nextFrom = ""
     
     init(service: NetworkService<FetchType>) {
         self.request = service
@@ -19,6 +20,8 @@ final class FetchAnyDataOperation<FetchType: Decodable>: AsyncOperation {
             case .failure(let error): print(error)
             case .success(let dataDTO):
                 self?.fetchedData = dataDTO.compactMap { $0 }
+                self?.nextFrom = self?.request.nextFrom ?? ""
+                print("## FetchAnyDataOperation nextFrom = \(self?.nextFrom)")
                 self?.state = .finished
             }
         }
