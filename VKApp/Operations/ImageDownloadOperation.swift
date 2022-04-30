@@ -29,7 +29,7 @@ final class ImageDownloadOperation: AsyncOperation {
                 error == nil,
                 let data = data
             else {
-                print("## Error 0. Can't load data", error)
+                print("## Error 0. Can't load data", error as Any)
                 self?.image = nil
                 return
             }

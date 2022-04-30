@@ -5,7 +5,6 @@
 //  Created by Alla Shkolnik on 09.04.2022.
 //
 
-import Foundation
 import RealmSwift
 
 final class RealmLoadOperation: AsyncOperation {

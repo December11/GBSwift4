@@ -15,7 +15,6 @@ final class NetworkService<ItemsType: Decodable> {
     var path = "/method/user"
     var queryItems = [URLQueryItem]()
     
-    // MARK: - Public methods
     func fetch(completion: @escaping (Result<[ItemsType], Error>) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
             var urlComponents: URLComponents {

@@ -60,10 +60,10 @@ class FeedFooterView: UITableViewHeaderFooterView {
             usingSpringWithDamping: 0.4,
             initialSpringVelocity: 0.5,
             options: .curveEaseInOut
-        ) { [self] in
-            likeButton.imageView?.frame.origin.y += 1
-        } completion: { [self] _ in
-            likeButton.imageView?.frame.origin.y -= 1
+        ) { [weak self] in
+            self?.likeButton.imageView?.frame.origin.y += 1
+        } completion: { [weak self] _ in
+            self?.likeButton.imageView?.frame.origin.y -= 1
         }
     }
     

@@ -8,11 +8,11 @@
 import RealmSwift
 import UIKit
 
-class AllGroupTableViewController: UITableViewController {
+final class AllGroupTableViewController: UITableViewController {
 
     @IBOutlet weak var searchBar: UISearchBar!
     
-    var groupsDataService = GroupsService.instance
+    private var groupsDataService = GroupsService.instance
     var filteredGroups = [Group]() {
         didSet {
             DispatchQueue.main.async {
@@ -22,7 +22,6 @@ class AllGroupTableViewController: UITableViewController {
     }
     var completion: ((Group) -> Void)?
     
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         searchBar.delegate = self
@@ -30,7 +29,6 @@ class AllGroupTableViewController: UITableViewController {
         tableView.register(for: ImageCell.self)
     }
     
-    // MARK: - Table view data source
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         filteredGroups.count
     }

@@ -9,161 +9,72 @@ import KeychainSwift
 import UIKit
 import WebKit
 
-final class FeedViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+final class FeedViewController: UIViewController {
    
-    enum CellType: Int {
+    private enum CellType: Int {
         case messageText = 0, images
     }
     
     private let loadDuration = 2.0
     private let shortDuration = 0.5
-    
     private let feedService = FeedsService.instance
-    var feedNews = [Feed]() 
+    fileprivate var feedNews = [Feed]()
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet var loadingViews: [UIView]!
     @IBOutlet weak var animatedView: UIView!
     
     // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.animatedView.isHidden = false
+        
+        tableView.delegate = self
+        tableView.dataSource = self
         
         tableView.sectionHeaderTopPadding = 16.0
         tableView.register(for: FeedFooterView.self)
         loadingDotes()
         
-        feedService.getFeeds {
-            self.feedNews = self.feedService.feedNews
+        feedService.getFeeds { [weak self] in
+            guard let feedNews = self?.feedService.feedNews else { return }
+            self?.feedNews = feedNews
             DispatchQueue.main.async {
-                self.tableView.reloadData()
-                self.animatedView.isHidden = true
+                self?.tableView.reloadData()
+                self?.animatedView.isHidden = true
             }
         }
-    }
-    
-    // MARK: Datasource and Delegates
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let isMessageEmpty = feedNews[section].messageText?.isEmpty
-        let isPhotosEmpty = feedNews[section].photos.isEmpty
-        switch (isMessageEmpty, isPhotosEmpty) {
-        case (false, false):
-            return 2
-        default:
-            return 1
-        }
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        feedNews.count
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UITableViewHeaderFooterView()
-        let headerView: ImageCell = UIView.fromNib()
-        view.addSubview(headerView)
-        
-        NSLayoutConstraint.activate([
-            headerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-        
-        let currentFeed = feedNews[section]
-        if let user = currentFeed.user {
-            headerView.configureFeedCell(
-                label: user.userName,
-                pictureURL: user.userPhotoURLString,
-                color: user.codeColor,
-                date: currentFeed.date
-            )
-        } else if let group = currentFeed.group {
-            headerView.configureFeedCell(
-                label: group.title,
-                pictureURL: group.groupPictureURL,
-                color: group.codeColor,
-                date: currentFeed.date
-            )
-        }
-        return view
-    }
-    
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let footer: FeedFooterView = tableView.dequeueReusableHeaderFooterView()
-        footer.configurateFooter(feed: feedNews[section]) {
-            var sharedItem = [Any]()
-            var array = [String]()
-            if let message = self.feedNews[section].messageText {
-                array.append(message)
-            }
-            sharedItem = !self.feedNews[section].photos.isEmpty
-            ? self.feedNews[section].photos.compactMap(\.imageURLString)
-            : array
-
-            let activityView = UIActivityViewController(activityItems: sharedItem, applicationActivities: nil)
-            self.present(activityView, animated: true, completion: nil)
-        }
-        return footer
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 64
-    }
-    
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 44
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let currentFeed = feedNews[indexPath.section]
-        switch indexPath.row {
-        case CellType.messageText.rawValue:
-            let cell: FeedCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.configureFeedCell(feed: currentFeed)
-            return cell
-        case CellType.images.rawValue:
-            let cell: FeedImagesCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.configureFeedCell(feed: currentFeed)
-            return cell
-        default:
-            return UITableViewCell()
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
     }
     
     // MARK: - Animation
+    
     func loadingDotes() {
         UIView.animate(
             withDuration: shortDuration,
             delay: 0,
             options: [.repeat, .autoreverse, .curveEaseInOut]
-        ) { [self] in
-            loadingViews[0].alpha = 1
+        ) { [weak self] in
+            self?.loadingViews[0].alpha = 1
         }
         UIView.animate(
             withDuration: shortDuration,
             delay: 0.2,
             options: [.repeat, .autoreverse, .curveEaseInOut]
-        ) { [self] in
-            loadingViews[1].alpha = 1
+        ) { [weak self] in
+            self?.loadingViews[1].alpha = 1
         }
         UIView.animate(
             withDuration: shortDuration,
             delay: 0.4,
             options: [.repeat, .autoreverse, .curveEaseInOut]
-        ) { [self] in
-            loadingViews[2].alpha = 1
+        ) { [weak self] in
+            self?.loadingViews[2].alpha = 1
         }
     }
     
     @IBAction func logout(_ sender: Any) {
-        VKWVLoginViewController.keychain.delete("accessToken")
-        VKWVLoginViewController.keychain.delete("userID")
+        AuthService.shared.deleteAuthData()
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let view = storyboard.instantiateViewController(withIdentifier: "VKWVLoginViewController")
@@ -174,9 +85,6 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
             records.forEach {
                 if $0.displayName.contains("vk") {
                     dataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: [$0]) {
-                        guard
-                            let url = view.urlComponents.url
-                        else { return }
                         var urlComponents: URLComponents {
                             var components = URLComponents()
                             components.scheme = "https"
@@ -193,11 +101,97 @@ final class FeedViewController: UIViewController, UITableViewDelegate, UITableVi
                             ]
                             return components
                         }
+
+                        guard
+                            let url = view.urlComponents.url
+                        else { return }
+
                         view.webView.load(URLRequest(url: url))
                     }
                 }
             }
         }
         dismiss(animated: true, completion: nil)
+    }
+}
+
+// MARK: - UITableViewDelegate
+
+extension FeedViewController: UITableViewDelegate {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+    }
+    
+    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        64
+    }
+    
+    public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        44
+    }
+    
+    public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let currentFeed = feedNews[section]
+        let headerView = FeedHeaderView()
+        headerView.setupConstraints()
+        return headerView.configurateHeader(feed: currentFeed)
+    }
+    
+    public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let footer: FeedFooterView = tableView.dequeueReusableHeaderFooterView()
+        footer.configurateFooter(feed: feedNews[section]) { [weak self] in
+            guard let feed = self?.feedNews[section] else { return }
+            self?.callActivityView(for: feed)
+        }
+        return footer
+    }
+    
+    private func callActivityView(for feed: Feed) {
+        var sharedItem = [Any]()
+        var array = [String]()
+        if let message = feed.messageText {
+            array.append(message)
+        }
+        sharedItem = !feed.photos.isEmpty
+        ? feed.photos.compactMap { $0.imageURLString }
+        : array
+        
+        let activityView = UIActivityViewController(activityItems: sharedItem, applicationActivities: nil)
+        self.present(activityView, animated: true, completion: nil)
+    }
+}
+
+// MARK: - UITableViewDelegate
+
+extension FeedViewController: UITableViewDataSource {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let isMessageEmpty = feedNews[section].messageText?.isEmpty
+        let isPhotosEmpty = feedNews[section].photos.isEmpty
+        switch (isMessageEmpty, isPhotosEmpty) {
+        case (false, false):
+            return 2
+        default:
+            return 1
+        }
+    }
+    
+    public func numberOfSections(in tableView: UITableView) -> Int {
+        feedNews.count
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let currentFeed = feedNews[indexPath.section]
+        switch indexPath.row {
+        case CellType.messageText.rawValue:
+            let cell: FeedCell = tableView.dequeueReusableCell(for: indexPath)
+            cell.configureFeedCell(feed: currentFeed)
+            return cell
+        case CellType.images.rawValue:
+            let cell: FeedImagesCell = tableView.dequeueReusableCell(for: indexPath)
+            cell.configureFeedCell(feed: currentFeed)
+            return cell
+        default:
+            return UITableViewCell()
+        }
     }
 }

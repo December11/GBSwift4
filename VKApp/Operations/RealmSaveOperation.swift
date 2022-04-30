@@ -32,6 +32,7 @@ final class RealmSaveOperation: AsyncOperation {
     }
     
     // MARK: - Private methods
+    
     private func loadFetchedData() {
         if let groups = savingGroups {
             fetchedData.append(contentsOf: groups)
@@ -52,14 +53,12 @@ final class RealmSaveOperation: AsyncOperation {
     }
     
     private func saveToRealm(_ realmGroups: [RealmGroup]) {
-//        DispatchQueue.main.async {
-            do {
-                try RealmService.save(items: realmGroups)
-                self.updateRealmAppInfo()
-            } catch {
-                print("## Error. can't load groups from Realm: ", error)
-            }
-//        }
+        do {
+            try RealmService.save(items: realmGroups)
+            self.updateRealmAppInfo()
+        } catch {
+            print("## Error. can't load groups from Realm: ", error)
+        }
     }
     
     private func updateRealmAppInfo() {
@@ -68,26 +67,22 @@ final class RealmSaveOperation: AsyncOperation {
             groupsUpdateDate: realmUpdateDate,
             friendsUpdateDate: AppDataInfo.shared.friendsUpdateDate
         )
-//        DispatchQueue.main.async {
-            do {
-                try RealmService.save(items: [updateDate])
-            } catch {
-                print("## Error. can't save date of updating groups to Realm: ", error)
-            }
-//        }
+        do {
+            try RealmService.save(items: [updateDate])
+        } catch {
+            print("## Error. can't save date of updating groups to Realm: ", error)
+        }
     }
     
     private func reloadRealmResults() {
         let updateInterval: TimeInterval = 60 * 60
         let needToBeUpdatedDate = Date(timeIntervalSinceNow: -updateInterval)
         if self.realmUpdateDate >= needToBeUpdatedDate || self.realmResults == nil {
-//            DispatchQueue.main.async {
-                do {
-                    self.realmResults = try RealmService.load(typeOf: RealmGroup.self)
-                } catch {
-                    print("## Error. Data is not loaded from Realm")
-                }
-//            }
+            do {
+                self.realmResults = try RealmService.load(typeOf: RealmGroup.self)
+            } catch {
+                print("## Error. Data is not loaded from Realm")
+            }
         }
     }
 }

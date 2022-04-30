@@ -5,7 +5,6 @@
 //  Created by Alla Shkolnik on 17.04.2022.
 //
 
-import Foundation
 import UIKit
 
 final class GetImageDataOperation: AsyncOperation {

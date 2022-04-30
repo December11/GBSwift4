@@ -9,12 +9,12 @@ import RealmSwift
 import UIKit
 import WebKit
 
-class FriendsTableViewController: UITableViewController {
+final class FriendsTableViewController: UITableViewController {
     
     private let helper = UserHelper()
     private let userService = UsersService.instance
     private var friendsToken: NotificationToken?
-    var friends = [User]()
+    private var friends = [User]()
     
     // MARK: - Данные для экрана Фото
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -44,8 +44,7 @@ class FriendsTableViewController: UITableViewController {
     }
     
     @IBAction func dismiss(_ sender: Any) {
-        VKWVLoginViewController.keychain.delete("accessToken")
-        VKWVLoginViewController.keychain.delete("userID")
+        AuthService.shared.deleteAuthData()
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         guard let view = storyboard.instantiateViewController(withIdentifier: "VKWVLoginViewController")
@@ -68,6 +67,7 @@ class FriendsTableViewController: UITableViewController {
     }
     
     // MARK: - Private methods
+    
     private func realmNotify() {
         friendsToken = userService.realmResults?.observe({ [weak self] friendChanges in
             guard let self = self else { return }
@@ -104,6 +104,7 @@ class FriendsTableViewController: UITableViewController {
     }
 
     // MARK: - Секции и вывод строк
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         helper.getSortedKeyArray(for: friends).count
     }
@@ -120,8 +121,6 @@ class FriendsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: ImageCell = tableView.dequeueReusableCell(for: indexPath)
         let currentFriend = getCurrentUser(for: indexPath)
-        if indexPath.row <= 2 {
-        }
     
         cell.configureCell(
             label: currentFriend.firstName,
