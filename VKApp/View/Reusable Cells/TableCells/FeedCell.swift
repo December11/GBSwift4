@@ -14,9 +14,8 @@ final class FeedCell: UITableViewCell {
     var feed: Feed?
     
     func configureFeedCell(feed: Feed) {
-        
         self.feed = feed
-        showMoreButton.isHidden = feed.messageText?.count ?? 0 >= 200
+        showMoreButton.isHidden = feed.messageText?.count ?? 0 <= 200
         print("## showMoreButton.isHidden is \(showMoreButton.isHidden)")
         if !showMoreButton.isHidden { 
             showMoreButton.setTitle("Показать больше", for: .init())

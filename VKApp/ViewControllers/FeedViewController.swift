@@ -40,12 +40,11 @@ final class FeedViewController: UIViewController {
         tableView.register(for: FeedFooterView.self)
         loadingDotes()
         
-        _ = Timer(timeInterval: 60 * 1, repeats: false) { [weak self] _ in
-            guard let self = self else { return }
-            if self.feedNews.count == 0 {
-                self.feedNews = self.getDemoData()
-                print("## Oh, I don't receive any data, so I get you my demo data")
-            }
+        if self.feedNews.count == 0 {
+            self.feedNews = self.getDemoData()
+            print("## Oh, I don't receive any data, so I get you my demo data")
+            self.tableView.reloadData()
+            self.animatedView.isHidden = true
         }
         
         feedService.getFeeds { [weak self] in
