@@ -18,6 +18,8 @@ final class FeedViewController: UIViewController {
     private let shortDuration = 0.5
     private let feedService = FeedsService.instance
     private var lastFeedDateString: String?
+    fileprivate var nextFrom = ""
+    fileprivate var isLoading = false
     fileprivate var feedNews = [Feed]()
 
     @IBOutlet weak var tableView: UITableView!
@@ -32,6 +34,7 @@ final class FeedViewController: UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.prefetchDataSource = self
         
         tableView.sectionHeaderTopPadding = 16.0
         tableView.register(for: FeedFooterView.self)
@@ -40,6 +43,7 @@ final class FeedViewController: UIViewController {
         feedService.getFeeds { [weak self] in
             guard let feedNews = self?.feedService.feedNews else { return }
             self?.feedNews = feedNews
+            self?.nextFrom = self?.feedService.nextFrom ?? ""
             DispatchQueue.main.async {
                 self?.tableView.reloadData()
                 self?.animatedView.isHidden = true
@@ -59,15 +63,15 @@ final class FeedViewController: UIViewController {
     @objc private func refreshNews() {
         tableView.refreshControl?.beginRefreshing()
         print("## Start refreshing")
-        let date1 = feedNews.first?.date.timeIntervalSince1970
-        lastFeedDateString = date1?.description
+        if let date1 = feedNews.first?.date.timeIntervalSince1970 {
+            lastFeedDateString = (date1+1).description
+        }
         print("## feedNews.first?.date = \(String(describing: feedNews.first?.date))")
         print("## feedNews.first?.date.timeinterval... = \(lastFeedDateString ?? "")")
         guard let date = lastFeedDateString else {
             self.tableView.refreshControl?.endRefreshing()
             return
         }
-        let nextFrom = feedService.nextFrom
         print("## feedVC nextFrom = \(nextFrom)")
         feedService.getFeeds(by: date, nextFrom: nextFrom) { [weak self] feeds in
             print("## new feeds.count = \(feeds.count)")
@@ -75,9 +79,8 @@ final class FeedViewController: UIViewController {
             self.tableView.refreshControl?.endRefreshing()
             guard feeds.count > 0 else { return }
             print("## before inserting: feedNews.count = \(self.feedNews.count)")
-            let indexSet = IndexSet(integersIn: self.feedNews.count..<self.feedNews.count + feeds.count)
             self.feedNews.insert(contentsOf: feeds, at: 0)
-            self.tableView.insertSections(indexSet, with: .automatic)
+            self.tableView.reloadData()
             print("## after inserting: feedNews.count = \(self.feedNews.count)")
             self.lastFeedDateString = self.feedNews.first?.date.timeIntervalSince1970.description
         }
@@ -194,4 +197,31 @@ extension FeedViewController: UITableViewDataSource {
             return UITableViewCell()
         }
     }
+}
+
+// MARK: - UITableViewDelegate
+
+extension FeedViewController: UITableViewDataSourcePrefetching {
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        guard let maxSections = indexPaths.map({ $0.section }).max() else {
+            print("## Error. No max sections")
+            return
+        }
+        if maxSections > feedNews.count - 3 {
+            if !isLoading {
+                isLoading = true
+                if let date = self.feedNews.last?.date.timeIntervalSince1970.description {
+                    feedService.getFeeds(by: date, nextFrom: nextFrom) { [weak self] feeds in
+                        self?.feedNews.append(contentsOf: feeds)
+                        self?.tableView.reloadData()
+                        self?.isLoading = false
+                    }
+                }
+            }
+        }
+    }
+    
+//    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+//        <#code#>
+//    }
 }
