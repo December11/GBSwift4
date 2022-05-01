@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ZgU-dq-ygR">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ZgU-dq-ygR">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -304,13 +304,13 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FeedCell" id="QQ7-Vd-BNo" customClass="FeedCell" customModule="VKApp" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="49.5" width="414" height="52.5"/>
+                                        <rect key="frame" x="0.0" y="49.5" width="414" height="99.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="QQ7-Vd-BNo" id="ZvR-Ec-jn1">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="52.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="99.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="249" verticalHuggingPriority="249" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rkn-Ag-1RK">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="249" verticalHuggingPriority="249" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rkn-Ag-1RK">
                                                     <rect key="frame" x="16" y="16" width="382" height="20.5"/>
                                                     <color key="backgroundColor" name="background"/>
                                                     <color key="tintColor" name="mainText"/>
@@ -318,23 +318,37 @@
                                                     <color key="textColor" name="mainText"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TxO-mJ-3eW">
+                                                    <rect key="frame" x="16" y="52.5" width="382" height="31"/>
+                                                    <color key="backgroundColor" name="background"/>
+                                                    <color key="tintColor" name="AccentColor"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                                    <connections>
+                                                        <action selector="showMore:" destination="QQ7-Vd-BNo" eventType="touchUpInside" id="tWn-8b-siE"/>
+                                                    </connections>
+                                                </button>
                                             </subviews>
                                             <color key="backgroundColor" name="background"/>
                                             <color key="tintColor" name="AccentColor"/>
                                             <constraints>
-                                                <constraint firstAttribute="bottom" secondItem="rkn-Ag-1RK" secondAttribute="bottom" constant="16" id="91L-zi-6Fk"/>
+                                                <constraint firstAttribute="trailing" secondItem="TxO-mJ-3eW" secondAttribute="trailing" constant="16" id="H9k-7Y-03G"/>
+                                                <constraint firstItem="TxO-mJ-3eW" firstAttribute="leading" secondItem="ZvR-Ec-jn1" secondAttribute="leading" constant="16" id="Mi6-Zv-4K4"/>
+                                                <constraint firstAttribute="bottom" secondItem="TxO-mJ-3eW" secondAttribute="bottom" constant="16" id="WMb-3y-XrJ"/>
                                                 <constraint firstItem="rkn-Ag-1RK" firstAttribute="leading" secondItem="ZvR-Ec-jn1" secondAttribute="leading" constant="16" id="bbE-8u-peQ"/>
                                                 <constraint firstAttribute="trailing" secondItem="rkn-Ag-1RK" secondAttribute="trailing" constant="16" id="mOv-9V-4EN"/>
+                                                <constraint firstItem="TxO-mJ-3eW" firstAttribute="top" secondItem="rkn-Ag-1RK" secondAttribute="bottom" constant="16" id="p7J-H3-hzl"/>
                                                 <constraint firstItem="rkn-Ag-1RK" firstAttribute="top" secondItem="ZvR-Ec-jn1" secondAttribute="top" constant="16" id="rxR-Ka-2nH"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <gestureRecognizers/>
                                         <connections>
                                             <outlet property="feedMessage" destination="rkn-Ag-1RK" id="cLy-Vo-h2q"/>
+                                            <outlet property="showMoreButton" destination="TxO-mJ-3eW" id="MUw-oD-BZD"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FeedImagesCell" id="cuc-JT-6H9" customClass="FeedImagesCell" customModule="VKApp" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="102" width="414" height="430"/>
+                                        <rect key="frame" x="0.0" y="149" width="414" height="430"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="cuc-JT-6H9" id="7Ak-vC-6Yi">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="430"/>
@@ -471,6 +485,11 @@
                                 <color key="value" systemColor="systemBackgroundColor"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="Ymq-xH-ASN"/>
+                            </mask>
+                        </variation>
                     </view>
                     <tabBarItem key="tabBarItem" title="Feed" id="yDp-DC-sH3"/>
                     <navigationItem key="navigationItem" title="Feed news" id="arz-qE-d6N">

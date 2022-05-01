@@ -10,12 +10,16 @@ import UIKit
 
 final class FeedCell: UITableViewCell {
     @IBOutlet weak var feedMessage: UILabel!
+    @IBOutlet weak var showMoreButton: UIButton!
     var feed: Feed?
     
     func configureFeedCell(feed: Feed) {
         
         self.feed = feed
-        
+        showMoreButton.isHidden = feed.messageText?.count ?? 0 >= 200
+        if !showMoreButton.isHidden {
+            showMoreButton.setTitle("Показать больше", for: .init())
+        }
         feedMessage.isHidden = feed.messageText == nil
         feedMessage.text = feed.messageText
     }
@@ -27,5 +31,8 @@ final class FeedCell: UITableViewCell {
             array.append(message)
         }
         return !feed.photos.isEmpty ? feed.photos : array
+    }
+    
+    @IBAction func showMore(_ sender: Any) {
     }
 }

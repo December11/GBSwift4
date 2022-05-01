@@ -125,6 +125,23 @@ extension FeedViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: false)
     }
     
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        switch indexPath.row {
+        case 2:
+            let tableViewWidth = tableView.bounds.width
+            let currentFeed = feedNews[indexPath.section]
+            // TODO: найти aspectRatio неск. фоток
+            if currentFeed.photos.count == 1 {
+                let cellHeight = tableViewWidth * (currentFeed.photos.first?.aspectRatio ?? 1.0)
+                return cellHeight
+            } else {
+                return 414.0
+            }
+        default:
+            return UITableView.automaticDimension
+        }
+    }
+    
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         64
     }

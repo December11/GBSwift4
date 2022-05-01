@@ -36,7 +36,13 @@ final class PhotoService {
                 fetchedPhotos.forEach { photo in
                     photo.photos?.forEach { info in
                         if info.sizeType == "x" {
-                            self?.userPhotos.append(Photo(imageURLString: info.url))
+                            self?.userPhotos.append(
+                                Photo(
+                                    imageURLString: info.url,
+                                    width: info.width ?? 0,
+                                    heigth: info.heigth ?? 0
+                                )
+                            )
                         }
                     }
                 }
