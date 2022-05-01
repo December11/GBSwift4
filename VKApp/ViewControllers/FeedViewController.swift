@@ -40,6 +40,14 @@ final class FeedViewController: UIViewController {
         tableView.register(for: FeedFooterView.self)
         loadingDotes()
         
+        _ = Timer(timeInterval: 60 * 1, repeats: false) { [weak self] _ in
+            guard let self = self else { return }
+            if self.feedNews.count == 0 {
+                self.feedNews = self.getDemoData()
+                print("## Oh, I don't receive any data, so I get you my demo data")
+            }
+        }
+        
         feedService.getFeeds { [weak self] in
             guard let feedNews = self?.feedService.feedNews else { return }
             self?.feedNews = feedNews
@@ -133,11 +141,14 @@ extension FeedViewController: UITableViewDelegate {
             // TODO: найти aspectRatio неск. фоток
             if currentFeed.photos.count == 1 {
                 let cellHeight = tableViewWidth * (currentFeed.photos.first?.aspectRatio ?? 1.0)
+                print("## высота ячейки равна  \(cellHeight)")
                 return cellHeight
             } else {
+                print("## высота ячейки равна  414")
                 return 414.0
             }
         default:
+            print("## высота ячейки равна  \(UITableView.automaticDimension)")
             return UITableView.automaticDimension
         }
     }
@@ -178,6 +189,48 @@ extension FeedViewController: UITableViewDelegate {
         
         let activityView = UIActivityViewController(activityItems: sharedItem, applicationActivities: nil)
         self.present(activityView, animated: true, completion: nil)
+    }
+    
+    private func getDemoData() -> [Feed] {
+        let demoFeeds = [
+            Feed(
+                group: Group(id: 0, title: "Demo group 1", imageURL: nil),
+                messageText: """
+Some long text: newsfeed.get: Возвращает данные, необходимые для показа списка новостей для текущего пользователя.
+filters - string: Перечисленные через запятую названия списков новостей, которые необходимо получить.
+В данный момент поддерживаются следующие списки новостей:
+• post — новые записи со стен;
+• photo — новые фотографии;
+• photo_tag — новые отметки на фотографиях;
+• wall_photo — новые фотографии на стенах;
+• friend — новые друзья;
+• note — новые заметки;
+• audio — записи сообществ и друзей, содержащие аудиозаписи, а также новые аудиозаписи, добавленные ими;
+• video — новые видеозаписи.
+Если параметр не задан, то будут получены все возможные списки новостей.
+""",
+                photos: nil,
+                date: Date()
+            ),
+            Feed(
+                group: Group(id: 1, title: "Demo group 2", imageURL: nil),
+                messageText: """
+                1. short message: 0123456789,
+                2. short message: 0123456789,
+                3. short message: 0123456789,
+                4. short message: 0123456789
+""",
+                photos: nil,
+                date: Date()
+            ),
+            Feed(
+                group: Group(id: 3, title: "Demo group 3", imageURL: nil),
+                messageText: "Oh, I'm a really short message <3",
+                photos: nil,
+                date: Date()
+            )
+        ]
+        return demoFeeds
     }
 }
 
