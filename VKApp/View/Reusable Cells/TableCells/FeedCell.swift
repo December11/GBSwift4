@@ -15,13 +15,17 @@ final class FeedCell: UITableViewCell {
     
     func configureFeedCell(feed: Feed) {
         self.feed = feed
-        showMoreButton.isHidden = feed.messageText?.count ?? 0 <= 200
+        showMoreButton.isHidden = feed.messageText?.count ?? 0 <= 100
         print("## showMoreButton.isHidden is \(showMoreButton.isHidden)")
         if !showMoreButton.isHidden { 
             showMoreButton.setTitle("Показать больше", for: .init())
         }
         feedMessage.isHidden = feed.messageText == nil
         feedMessage.text = feed.messageText
+    }
+    
+    override func awakeFromNib() {
+        showMoreButton.configuration?.background.backgroundColor = .clear
     }
     
     // MARK: - Private functions
@@ -33,6 +37,10 @@ final class FeedCell: UITableViewCell {
         return !feed.photos.isEmpty ? feed.photos : array
     }
     
-    @IBAction func showMore(_ sender: Any) {
+    @IBAction func showMore(_ sender: UIButton) {
+        sender.isSelected.toggle()
+        let title = showMoreButton.isSelected ? "Скрыть" : "Показать больше"
+        print("## Is button pressed? -\(showMoreButton.isSelected)")
+        showMoreButton.setTitle(title, for: .normal)
     }
 }

@@ -319,7 +319,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TxO-mJ-3eW">
-                                                    <rect key="frame" x="0.0" y="44.5" width="398" height="31"/>
+                                                    <rect key="frame" x="4" y="44.5" width="394" height="31"/>
                                                     <color key="backgroundColor" name="background"/>
                                                     <color key="tintColor" name="AccentColor"/>
                                                     <state key="normal" title="Button"/>
@@ -333,7 +333,7 @@
                                             <color key="tintColor" name="AccentColor"/>
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="TxO-mJ-3eW" secondAttribute="trailing" constant="16" id="H9k-7Y-03G"/>
-                                                <constraint firstItem="TxO-mJ-3eW" firstAttribute="leading" secondItem="ZvR-Ec-jn1" secondAttribute="leading" id="Mi6-Zv-4K4"/>
+                                                <constraint firstItem="TxO-mJ-3eW" firstAttribute="leading" secondItem="ZvR-Ec-jn1" secondAttribute="leading" constant="4" id="Mi6-Zv-4K4"/>
                                                 <constraint firstAttribute="bottom" secondItem="TxO-mJ-3eW" secondAttribute="bottom" constant="16" id="WMb-3y-XrJ"/>
                                                 <constraint firstItem="rkn-Ag-1RK" firstAttribute="leading" secondItem="ZvR-Ec-jn1" secondAttribute="leading" constant="16" id="bbE-8u-peQ"/>
                                                 <constraint firstAttribute="trailing" secondItem="rkn-Ag-1RK" secondAttribute="trailing" constant="16" id="mOv-9V-4EN"/>

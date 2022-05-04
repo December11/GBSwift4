@@ -83,10 +83,14 @@ final class FeedViewController: UIViewController {
         feedService.getFeeds(by: date, nextFrom: nextFrom) { [weak self] feeds in
             print("## new feeds.count = \(feeds.count)")
             guard let self = self else { return }
+            var newFeeds = feeds
+            if feeds.count == 0 {
+                newFeeds = self.getMoreNewData()
+            }
             self.tableView.refreshControl?.endRefreshing()
-            guard feeds.count > 0 else { return }
+            guard newFeeds.count > 0 else { return }
             print("## before inserting: feedNews.count = \(self.feedNews.count)")
-            self.feedNews.insert(contentsOf: feeds, at: 0)
+            self.feedNews.insert(contentsOf: newFeeds, at: 0)
             self.tableView.reloadData()
             print("## after inserting: feedNews.count = \(self.feedNews.count)")
             self.lastFeedDateString = self.feedNews.first?.date.timeIntervalSince1970.description
@@ -190,6 +194,16 @@ extension FeedViewController: UITableViewDelegate {
         self.present(activityView, animated: true, completion: nil)
     }
     
+    private func getMoreNewData() -> [Feed] {
+        return [
+            Feed(
+                group: Group(id: 0, title: "Demo group + \(String(Int.random(in: 0...10)))", imageURL: nil),
+                messageText: "demo message # \(String(Int.random(in: 0...10)))",
+                photos: nil,
+                date: Date())
+        ]
+    }
+    
     private func getDemoData() -> [Feed] {
         let demoFeeds = [
             Feed(
@@ -281,9 +295,14 @@ extension FeedViewController: UITableViewDataSourcePrefetching {
                 isLoading = true
                 if let date = self.feedNews.last?.date.timeIntervalSince1970.description {
                     feedService.getFeeds(by: date, nextFrom: nextFrom) { [weak self] feeds in
-                        self?.feedNews.append(contentsOf: feeds)
-                        self?.tableView.reloadData()
-                        self?.isLoading = false
+                        guard let self = self else { return }
+                        var newFeeds = feeds
+                        if feeds.count == 0 {
+                            newFeeds = self.getMoreNewData()
+                        }
+                        self.feedNews.append(contentsOf: newFeeds)
+                        self.tableView.reloadData()
+                        self.isLoading = false
                     }
                 }
             }
