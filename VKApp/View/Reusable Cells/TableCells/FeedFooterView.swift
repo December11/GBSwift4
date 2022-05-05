@@ -46,14 +46,7 @@ class FeedFooterView: UITableViewHeaderFooterView {
     }
     
     // MARK: - Animations
-    private func likeAnimate() {
-        UIView.transition(with: self.likeButton, duration: 0.1, options: .transitionCrossDissolve) { [self] in
-            let image = likeButton.isSelected
-            ? UIImage(systemName: "hand.thumbsup.circle.fill")
-            : UIImage(systemName: "hand.thumbsup.circle")
-            likeButton.setImage(image, for: .init())
-        }
-        
+    private func buttonTappedAnimation() {
         UIView.animate(
             withDuration: 0.3,
             delay: 0.1,
@@ -65,6 +58,16 @@ class FeedFooterView: UITableViewHeaderFooterView {
         } completion: { [weak self] _ in
             self?.likeButton.imageView?.frame.origin.y -= 1
         }
+    }
+    
+    private func likeAnimate() {
+        UIView.transition(with: self.likeButton, duration: 0.1, options: .transitionCrossDissolve) { [self] in
+            let image = likeButton.isSelected
+            ? UIImage(systemName: "hand.thumbsup.circle.fill")
+            : UIImage(systemName: "hand.thumbsup.circle")
+            likeButton.setImage(image, for: .init())
+        }
+        buttonTappedAnimation()
     }
     
     // MARK: - IBActions

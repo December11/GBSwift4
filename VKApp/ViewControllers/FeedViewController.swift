@@ -144,14 +144,14 @@ extension FeedViewController: UITableViewDelegate {
             // TODO: найти aspectRatio неск. фоток
             if currentFeed.photos.count == 1 {
                 let cellHeight = tableViewWidth * (currentFeed.photos.first?.aspectRatio ?? 1.0)
-                print("## высота ячейки равна  \(cellHeight)")
+                // print("## высота ячейки равна  \(cellHeight)")
                 return cellHeight
             } else {
-                print("## высота ячейки равна  414")
+                // print("## высота ячейки равна  414")
                 return 414.0
             }
         default:
-            print("## высота ячейки равна  \(UITableView.automaticDimension)")
+            // print("## высота ячейки равна \(UITableView.automaticDimension)")
             return UITableView.automaticDimension
         }
     }
@@ -270,7 +270,9 @@ extension FeedViewController: UITableViewDataSource {
         switch indexPath.row {
         case CellType.messageText.rawValue:
             let cell: FeedCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.configureFeedCell(feed: currentFeed)
+            cell.configureFeedCell(feed: currentFeed, handler: {
+                self.tableView.reloadData()
+            })
             return cell
         case CellType.images.rawValue:
             let cell: FeedImagesCell = tableView.dequeueReusableCell(for: indexPath)

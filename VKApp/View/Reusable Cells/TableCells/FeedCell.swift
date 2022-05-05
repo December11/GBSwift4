@@ -11,14 +11,19 @@ import UIKit
 final class FeedCell: UITableViewCell {
     @IBOutlet weak var feedMessage: UILabel!
     @IBOutlet weak var showMoreButton: UIButton!
+    @IBOutlet weak var messageBottomConstaint: NSLayoutConstraint!
     var feed: Feed?
+    var showMoreHandler: () -> () = {}
     
-    func configureFeedCell(feed: Feed) {
+    func configureFeedCell(feed: Feed, handler: @escaping () -> ()) {
         self.feed = feed
+        self.showMoreHandler = handler
         showMoreButton.isHidden = feed.messageText?.count ?? 0 <= 100
-        print("## showMoreButton.isHidden is \(showMoreButton.isHidden)")
-        if !showMoreButton.isHidden { 
+        if !showMoreButton.isHidden {
+            showMoreButton.isSelected = false
             showMoreButton.setTitle("Показать больше", for: .init())
+        } else {
+             messageBottomConstaint.constant = -32
         }
         feedMessage.isHidden = feed.messageText == nil
         feedMessage.text = feed.messageText
@@ -38,9 +43,16 @@ final class FeedCell: UITableViewCell {
     }
     
     @IBAction func showMore(_ sender: UIButton) {
+        print("## button is selected? \(sender.isSelected)")
         sender.isSelected.toggle()
-        let title = showMoreButton.isSelected ? "Скрыть" : "Показать больше"
-        print("## Is button pressed? -\(showMoreButton.isSelected)")
-        showMoreButton.setTitle(title, for: .normal)
+        print("## and now - button is selected? \(sender.isSelected)")
+        if showMoreButton.isSelected {
+            showMoreButton.setTitle("Скрыть", for: .normal)
+            feedMessage.numberOfLines = 0
+        } else {
+            showMoreButton.setTitle("Показать больше", for: .normal)
+            feedMessage.numberOfLines = 4
+        }
+        showMoreHandler()
     }
 }
