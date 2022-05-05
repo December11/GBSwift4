@@ -12,21 +12,25 @@ final class FeedCell: UITableViewCell {
     @IBOutlet weak var feedMessage: UILabel!
     @IBOutlet weak var showMoreButton: UIButton!
     @IBOutlet weak var messageBottomConstaint: NSLayoutConstraint!
+    private let maxLines = 4
     var feed: Feed?
+    var isPressed = false
     var showMoreHandler: () -> () = {}
     
     func configureFeedCell(feed: Feed, handler: @escaping () -> ()) {
         self.feed = feed
         self.showMoreHandler = handler
-        showMoreButton.isHidden = feed.messageText?.count ?? 0 <= 100
-        if !showMoreButton.isHidden {
-            showMoreButton.isSelected = false
-            showMoreButton.setTitle("Показать больше", for: .init())
-        } else {
-             messageBottomConstaint.constant = -32
-        }
+        
         feedMessage.isHidden = feed.messageText == nil
         feedMessage.text = feed.messageText
+        showMoreButton.isHidden = feedMessage.linesCount <= maxLines
+        if !showMoreButton.isHidden {
+            showMoreButton.setTitle("Показать больше", for: .init())
+            messageBottomConstaint.constant = 8
+        } else {
+            messageBottomConstaint.constant = -32
+        }
+        self.layoutIfNeeded()
     }
     
     override func awakeFromNib() {
@@ -43,16 +47,12 @@ final class FeedCell: UITableViewCell {
     }
     
     @IBAction func showMore(_ sender: UIButton) {
+        let unlimited = 0
+        self.isPressed.toggle()
+        sender.isSelected = self.isPressed
         print("## button is selected? \(sender.isSelected)")
-        sender.isSelected.toggle()
-        print("## and now - button is selected? \(sender.isSelected)")
-        if showMoreButton.isSelected {
-            showMoreButton.setTitle("Скрыть", for: .normal)
-            feedMessage.numberOfLines = 0
-        } else {
-            showMoreButton.setTitle("Показать больше", for: .normal)
-            feedMessage.numberOfLines = 4
-        }
+        showMoreButton.setTitle("Скрыть", for: .selected)
+        feedMessage.numberOfLines = showMoreButton.isSelected ? unlimited : maxLines
         showMoreHandler()
     }
 }

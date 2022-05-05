@@ -69,19 +69,14 @@ final class FeedViewController: UIViewController {
     
     @objc private func refreshNews() {
         tableView.refreshControl?.beginRefreshing()
-        print("## Start refreshing")
         if let date1 = feedNews.first?.date.timeIntervalSince1970 {
             lastFeedDateString = (date1+1).description
         }
-        print("## feedNews.first?.date = \(String(describing: feedNews.first?.date))")
-        print("## feedNews.first?.date.timeinterval... = \(lastFeedDateString ?? "")")
         guard let date = lastFeedDateString else {
             self.tableView.refreshControl?.endRefreshing()
             return
         }
-        print("## feedVC nextFrom = \(nextFrom)")
         feedService.getFeeds(by: date, nextFrom: nextFrom) { [weak self] feeds in
-            print("## new feeds.count = \(feeds.count)")
             guard let self = self else { return }
             var newFeeds = feeds
             if feeds.count == 0 {
@@ -89,10 +84,8 @@ final class FeedViewController: UIViewController {
             }
             self.tableView.refreshControl?.endRefreshing()
             guard newFeeds.count > 0 else { return }
-            print("## before inserting: feedNews.count = \(self.feedNews.count)")
             self.feedNews.insert(contentsOf: newFeeds, at: 0)
             self.tableView.reloadData()
-            print("## after inserting: feedNews.count = \(self.feedNews.count)")
             self.lastFeedDateString = self.feedNews.first?.date.timeIntervalSince1970.description
         }
     }
@@ -144,14 +137,11 @@ extension FeedViewController: UITableViewDelegate {
             // TODO: найти aspectRatio неск. фоток
             if currentFeed.photos.count == 1 {
                 let cellHeight = tableViewWidth * (currentFeed.photos.first?.aspectRatio ?? 1.0)
-                // print("## высота ячейки равна  \(cellHeight)")
                 return cellHeight
             } else {
-                // print("## высота ячейки равна  414")
                 return 414.0
             }
         default:
-            // print("## высота ячейки равна \(UITableView.automaticDimension)")
             return UITableView.automaticDimension
         }
     }
@@ -198,7 +188,7 @@ extension FeedViewController: UITableViewDelegate {
         return [
             Feed(
                 group: Group(id: 0, title: "Demo group + \(String(Int.random(in: 0...10)))", imageURL: nil),
-                messageText: "demo message # \(String(Int.random(in: 0...10)))",
+                messageText: String().rand,
                 photos: nil,
                 date: Date())
         ]
@@ -310,8 +300,4 @@ extension FeedViewController: UITableViewDataSourcePrefetching {
             }
         }
     }
-    
-//    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-//        <#code#>
-//    }
 }

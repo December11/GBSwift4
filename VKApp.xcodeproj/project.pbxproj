@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BA02C297282462AD0097C205 /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA02C296282462AD0097C205 /* UILabel.swift */; };
 		BA08979227A1B7A600DBAFFC /* PhotoPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA08979127A1B7A600DBAFFC /* PhotoPreviewViewController.swift */; };
 		BA08979527A46C9F00DBAFFC /* CustomNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA08979427A46C9F00DBAFFC /* CustomNavigationController.swift */; };
 		BA08979B27A589FA00DBAFFC /* PushAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA08979A27A589FA00DBAFFC /* PushAnimation.swift */; };
@@ -83,6 +84,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BA02C296282462AD0097C205 /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 		BA08979127A1B7A600DBAFFC /* PhotoPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPreviewViewController.swift; sourceTree = "<group>"; };
 		BA08979427A46C9F00DBAFFC /* CustomNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationController.swift; sourceTree = "<group>"; };
 		BA08979A27A589FA00DBAFFC /* PushAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushAnimation.swift; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 				BAA3CE0427D7BEB400AB6888 /* UITableView.swift */,
 				BA91B4BE27FB47D4009CBE53 /* UICollectionView.swift */,
 				BAD93B54279218CC00794DC0 /* AllGroupTableVC.swift */,
+				BA02C296282462AD0097C205 /* UILabel.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -550,6 +553,7 @@
 				BA7B7A4B276E402F000506F2 /* FriendsTableViewController.swift in Sources */,
 				BA08979D27A58A3800DBAFFC /* PopAnimation.swift in Sources */,
 				BA9E827C280AD55C008660AF /* CacheService.swift in Sources */,
+				BA02C297282462AD0097C205 /* UILabel.swift in Sources */,
 				BA39E5A127CAC04E008B9F27 /* RealmAppInfo.swift in Sources */,
 				BACF6E7D27C10D4100669EF2 /* ResponseDTO.swift in Sources */,
 				BA097DCB27BC19E700252A0C /* PhotoDTO.swift in Sources */,
