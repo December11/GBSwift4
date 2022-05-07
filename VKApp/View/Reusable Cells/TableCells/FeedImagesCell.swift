@@ -40,15 +40,9 @@ final class FeedImagesCell: UITableViewCell {
         imgScrollView.isHidden = false
         imgView.isHidden = false
         pageControl.isHidden = false
-        imgView.frame = CGRect(
-            x: 0,
-            y: 0,
-            width: Int(UIScreen.main.bounds.width),
-            height: Int(UIScreen.main.bounds.width)
-        )
         imgScrollView.contentSize = CGSize(
-            width: (UIScreen.main.bounds.width - 32) * CGFloat(feed.photos.count),
-            height: UIScreen.main.bounds.width - 32
+            width: (UIScreen.main.bounds.width) * CGFloat(feed.photos.count),
+            height: UIScreen.main.bounds.width
         )
         for index in 0..<feed.photos.count {
             let imageView = UIImageView()
@@ -59,12 +53,12 @@ final class FeedImagesCell: UITableViewCell {
                 imageView.kf.setImage(with: url)
             }
             feedImageViews[index].frame = CGRect(
-                x: (UIScreen.main.bounds.width - 32) * CGFloat(index),
+                x: (UIScreen.main.bounds.width) * CGFloat(index),
                 y: 0,
-                width: UIScreen.main.bounds.width - 32,
-                height: UIScreen.main.bounds.width - 32
+                width: UIScreen.main.bounds.width,
+                height: UIScreen.main.bounds.width
             )
-            feedImageViews[index].contentMode = .scaleAspectFill
+            feedImageViews[index].contentMode = .scaleAspectFit
             imgScrollView.cornerRadius = 8
             imgScrollView.addSubview(feedImageViews[index])
         }
