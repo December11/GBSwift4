@@ -141,9 +141,16 @@ final class FeedsService {
     
     private func loadPhotosFromFeed(_ feed: FeedDTO) -> [Photo]? {
         guard let images = feed.photosURLs else { return nil }
-        let photos = images.compactMap { $0.photo }
-        let photoSizes = photos.map { $0.photos }
-        return photoSizes.map { Photo(imageURLString: $0?.last?.url) }
+        let photosDTO = images.compactMap { $0.photo }
+        let photoSizes = photosDTO.map { $0.photos }
+        let photos = photoSizes.map { Photo(
+                imageURLString: $0?.last?.url,
+                width: $0?.last?.width ?? 0,
+                height: $0?.last?.height ?? 0
+            )
+        }
+        photos.forEach { print("size is \($0.width)x\($0.height)")  }
+        return photos
     }
     
 }

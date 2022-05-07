@@ -41,19 +41,11 @@ final class FeedViewController: UIViewController {
         tableView.register(for: FeedFooterView.self)
         loadingDotes()
         
-//        if self.feedNews.count == 0 {
-//            self.feedNews = self.getDemoData()
-//            print("## Oh, I don't receive any data, so I get you my demo data")
-//            self.tableView.reloadData()
-//            self.animatedView.isHidden = true
-//        }
-        
         feedService.getFeeds { [weak self] in
             guard let feedNews = self?.feedService.feedNews else { return }
             self?.feedNews = feedNews
-            self?.firstFeedDateString = feedNews.first?.date.timeIntervalSince1970.description
-            self?.lastFeedDateString = feedNews.last?.date.timeIntervalSince1970.description
-            print("## first at \(feedNews.first?.date), last at \(feedNews.last?.date)")
+            self?.firstFeedDateString = feedNews.first?.date.unixString
+            self?.lastFeedDateString = feedNews.last?.date.unixString
             self?.nextFrom = self?.feedService.nextFrom ?? ""
             DispatchQueue.main.async {
                 self?.tableView.reloadData()
@@ -73,9 +65,6 @@ final class FeedViewController: UIViewController {
     
     @objc private func refreshNews() {
         tableView.refreshControl?.beginRefreshing()
-        if let date1 = feedNews.first?.date.timeIntervalSince1970 {
-            firstFeedDateString = date1.description
-        }
         guard let date = firstFeedDateString else {
             self.tableView.refreshControl?.endRefreshing()
             return
@@ -88,7 +77,7 @@ final class FeedViewController: UIViewController {
             else { return }
             self.feedNews.insert(contentsOf: feeds, at: 0)
             self.tableView.reloadData()
-            self.firstFeedDateString = self.feedNews.first?.date.timeIntervalSince1970.description
+            self.firstFeedDateString = self.feedNews.first?.date.unixString
             self.nextFrom = self.feedService.nextFrom
         }
     }
@@ -133,20 +122,21 @@ extension FeedViewController: UITableViewDelegate {
     }
     
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch indexPath.row {
-        case 2:
-            let tableViewWidth = tableView.bounds.width
-            let currentFeed = feedNews[indexPath.section]
-            // TODO: найти aspectRatio неск. фоток
-            if currentFeed.photos.count == 1 {
-                let cellHeight = tableViewWidth * (currentFeed.photos.first?.aspectRatio ?? 1.0)
-                return cellHeight
-            } else {
-                return 414.0
-            }
-        default:
+//        switch indexPath.row {
+//        case 2:
+//            let tableViewWidth = tableView.bounds.width
+//            let currentFeed = feedNews[indexPath.section]
+//            // TODO: найти aspectRatio неск. фоток
+//            if currentFeed.photos.count == 1 {
+//                let cellHeight = tableViewWidth / (currentFeed.photos.first?.aspectRatio ?? 1.0)
+//                print("cellHeight = \(cellHeight)")
+//                return cellHeight
+//            } else {
+//                return 414.0
+//            }
+//        default:
             return UITableView.automaticDimension
-        }
+//        }
     }
     
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -257,7 +247,6 @@ extension FeedViewController: UITableViewDataSourcePrefetching {
                     if feeds.count > 0,
                        feeds.first != self.feedNews.last {
                         self.feedNews.append(contentsOf: feeds)
-                        print("## I append \(feeds.count) feeds, last for \(feeds.last?.date)!")
                         self.lastFeedDateString = self.feedNews.last?.date.unixString
                         self.tableView.reloadData()
                     }

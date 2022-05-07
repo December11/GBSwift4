@@ -9,7 +9,7 @@ struct PhotoInfosDTO {
     let sizeType: String?
     let url: String?
     let width: Int?
-    let heigth: Int?
+    let height: Int?
 }
 
 extension PhotoInfosDTO: Decodable {
@@ -17,6 +17,6 @@ extension PhotoInfosDTO: Decodable {
         case url
         case sizeType = "type"
         case width
-        case heigth
+        case height
     }
 }

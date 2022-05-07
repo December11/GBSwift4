@@ -40,7 +40,7 @@ final class PhotoService {
                                 Photo(
                                     imageURLString: info.url,
                                     width: info.width ?? 0,
-                                    heigth: info.heigth ?? 0
+                                    height: info.height ?? 0
                                 )
                             )
                         }

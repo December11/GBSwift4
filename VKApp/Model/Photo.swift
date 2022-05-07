@@ -9,11 +9,16 @@ import UIKit
 
 final class Photo {
     let imageURLString: String?
+    let width: Int
+    let height: Int
+    var aspectRatio: CGFloat {
+        CGFloat(width) / CGFloat(height)
+    }
     var isLiked = false
-    var aspectRatio: CGFloat?
     
-    init(imageURLString: String?, width: Int = 0, heigth: Int = 0) {
+    init(imageURLString: String?, width: Int = 0, height: Int = 0) {
         self.imageURLString = imageURLString
-        self.aspectRatio = CGFloat(heigth) / CGFloat(width)
+        self.height = height
+        self.width = width
     }
 }
