@@ -22,6 +22,7 @@ final class Feed {
             }
         }
     }
+    var isExpanded = false
     var likesCount: Int
     var commentsCount: Int
     var viewsCount: Int

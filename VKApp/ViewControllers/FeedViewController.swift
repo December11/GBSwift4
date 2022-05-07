@@ -211,8 +211,9 @@ extension FeedViewController: UITableViewDataSource {
         switch indexPath.row {
         case CellType.messageText.rawValue:
             let cell: FeedCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.configureFeedCell(feed: currentFeed, handler: {
-                self.tableView.reloadData()
+            cell.configureFeedCell(feed: currentFeed, handler: { [weak self] in
+                print("1")
+                self?.tableView.reloadData()
             })
             return cell
         case CellType.images.rawValue:

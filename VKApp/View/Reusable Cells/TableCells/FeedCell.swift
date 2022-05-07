@@ -14,18 +14,16 @@ final class FeedCell: UITableViewCell {
     @IBOutlet weak var messageBottomConstaint: NSLayoutConstraint!
     private let maxLines = 4
     var feed: Feed?
-    var isPressed = false
     var showMoreHandler: () -> () = {}
     
     func configureFeedCell(feed: Feed, handler: @escaping () -> ()) {
         self.feed = feed
         self.showMoreHandler = handler
-        
+        updateExpanded(feed.isExpanded)
         feedMessage.isHidden = feed.messageText == nil
         feedMessage.text = feed.messageText
         showMoreButton.isHidden = feedMessage.linesCount <= maxLines
         if !showMoreButton.isHidden {
-            showMoreButton.setTitle("Показать больше", for: .init())
             messageBottomConstaint.constant = 8
         } else {
             messageBottomConstaint.constant = -32
@@ -46,12 +44,15 @@ final class FeedCell: UITableViewCell {
         return !feed.photos.isEmpty ? feed.photos : array
     }
     
+    private func updateExpanded(_ isExpaned: Bool) {
+        showMoreButton.isSelected = feed?.isExpanded ?? false
+        feedMessage.numberOfLines = showMoreButton.isSelected ? 0 : maxLines
+        showMoreButton.setTitle(isExpaned ? "Скрыть" : "Показать больше", for: .init())
+    }
+    
     @IBAction func showMore(_ sender: UIButton) {
-        let unlimited = 0
-        self.isPressed.toggle()
-        sender.isSelected = self.isPressed
-        showMoreButton.setTitle("Скрыть", for: .selected)
-        feedMessage.numberOfLines = showMoreButton.isSelected ? unlimited : maxLines
+        feed?.isExpanded.toggle()
+        updateExpanded(feed?.isExpanded ?? false)
         showMoreHandler()
     }
 }

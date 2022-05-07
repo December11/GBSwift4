@@ -27,16 +27,8 @@ final class FeedImagesCell: UITableViewCell {
     private func loadSinglePhoto(_ feed: Feed) {
         feedImageView.isHidden = false
         let photo = feed.photos.first
-        print("## photo \(photo?.width)x\(photo?.height)")
-//        feedImageView.frame = CGRect(
-//            x: 0,
-//            y: 0,
-//            width: Int(UIScreen.main.bounds.width),
-//            height: Int(UIScreen.main.bounds.width) * Int(photo?.aspectRatio ?? 1)
-//        )
         imageHeightConstraint.constant = UIScreen.main.bounds.width / (photo?.aspectRatio ?? 1)
         self.layoutSubviews()
-        print("aspectRatio = \(photo?.aspectRatio)")
         if let imageURLString = photo?.imageURLString,
            let url = URL(string: imageURLString) {
             feedImageView.kf.setImage(with: url)

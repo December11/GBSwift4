@@ -149,7 +149,6 @@ final class FeedsService {
                 height: $0?.last?.height ?? 0
             )
         }
-        photos.forEach { print("size is \($0.width)x\($0.height)")  }
         return photos
     }
     
