@@ -19,4 +19,8 @@ extension Date {
         dateFormatter.dateFormat = dateFormat.rawValue
         return dateFormatter.string(from: self)
     }
+    
+    var unixString: String? {
+        return self.timeIntervalSince1970.description
+    }
 }

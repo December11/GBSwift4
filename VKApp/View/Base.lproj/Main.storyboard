@@ -485,11 +485,6 @@
                                 <color key="value" systemColor="systemBackgroundColor"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
-                        <variation key="default">
-                            <mask key="subviews">
-                                <exclude reference="Ymq-xH-ASN"/>
-                            </mask>
-                        </variation>
                     </view>
                     <tabBarItem key="tabBarItem" title="Feed" id="yDp-DC-sH3"/>
                     <navigationItem key="navigationItem" title="Feed news" id="arz-qE-d6N">

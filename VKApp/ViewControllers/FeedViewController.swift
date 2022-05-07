@@ -17,6 +17,7 @@ final class FeedViewController: UIViewController {
     private let loadDuration = 2.0
     private let shortDuration = 0.5
     private let feedService = FeedsService.instance
+    private var firstFeedDateString: String?
     private var lastFeedDateString: String?
     fileprivate var nextFrom = ""
     fileprivate var isLoading = false
@@ -40,16 +41,19 @@ final class FeedViewController: UIViewController {
         tableView.register(for: FeedFooterView.self)
         loadingDotes()
         
-        if self.feedNews.count == 0 {
-            self.feedNews = self.getDemoData()
-            print("## Oh, I don't receive any data, so I get you my demo data")
-            self.tableView.reloadData()
-            self.animatedView.isHidden = true
-        }
+//        if self.feedNews.count == 0 {
+//            self.feedNews = self.getDemoData()
+//            print("## Oh, I don't receive any data, so I get you my demo data")
+//            self.tableView.reloadData()
+//            self.animatedView.isHidden = true
+//        }
         
         feedService.getFeeds { [weak self] in
             guard let feedNews = self?.feedService.feedNews else { return }
             self?.feedNews = feedNews
+            self?.firstFeedDateString = feedNews.first?.date.timeIntervalSince1970.description
+            self?.lastFeedDateString = feedNews.last?.date.timeIntervalSince1970.description
+            print("## first at \(feedNews.first?.date), last at \(feedNews.last?.date)")
             self?.nextFrom = self?.feedService.nextFrom ?? ""
             DispatchQueue.main.async {
                 self?.tableView.reloadData()
@@ -70,28 +74,27 @@ final class FeedViewController: UIViewController {
     @objc private func refreshNews() {
         tableView.refreshControl?.beginRefreshing()
         if let date1 = feedNews.first?.date.timeIntervalSince1970 {
-            lastFeedDateString = (date1+1).description
+            firstFeedDateString = date1.description
         }
-        guard let date = lastFeedDateString else {
+        guard let date = firstFeedDateString else {
             self.tableView.refreshControl?.endRefreshing()
             return
         }
-        feedService.getFeeds(by: date, nextFrom: nextFrom) { [weak self] feeds in
-            guard let self = self else { return }
-            var newFeeds = feeds
-            if feeds.count == 0 {
-                newFeeds = self.getMoreNewData()
-            }
-            self.tableView.refreshControl?.endRefreshing()
-            guard newFeeds.count > 0 else { return }
-            self.feedNews.insert(contentsOf: newFeeds, at: 0)
+        feedService.getFeeds(after: date, nextFrom: nextFrom) { [weak self] feeds in
+            self?.tableView.refreshControl?.endRefreshing()
+            guard
+                let self = self,
+                feeds.count > 0
+            else { return }
+            self.feedNews.insert(contentsOf: feeds, at: 0)
             self.tableView.reloadData()
-            self.lastFeedDateString = self.feedNews.first?.date.timeIntervalSince1970.description
+            self.firstFeedDateString = self.feedNews.first?.date.timeIntervalSince1970.description
+            self.nextFrom = self.feedService.nextFrom
         }
     }
     
     // MARK: - Animation
-    
+  
     func loadingDotes() {
         UIView.animate(
             withDuration: shortDuration,
@@ -193,48 +196,6 @@ extension FeedViewController: UITableViewDelegate {
                 date: Date())
         ]
     }
-    
-    private func getDemoData() -> [Feed] {
-        let demoFeeds = [
-            Feed(
-                group: Group(id: 0, title: "Demo group 1", imageURL: nil),
-                messageText: """
-Some long text: newsfeed.get: Возвращает данные, необходимые для показа списка новостей для текущего пользователя.
-filters - string: Перечисленные через запятую названия списков новостей, которые необходимо получить.
-В данный момент поддерживаются следующие списки новостей:
-• post — новые записи со стен;
-• photo — новые фотографии;
-• photo_tag — новые отметки на фотографиях;
-• wall_photo — новые фотографии на стенах;
-• friend — новые друзья;
-• note — новые заметки;
-• audio — записи сообществ и друзей, содержащие аудиозаписи, а также новые аудиозаписи, добавленные ими;
-• video — новые видеозаписи.
-Если параметр не задан, то будут получены все возможные списки новостей.
-""",
-                photos: nil,
-                date: Date()
-            ),
-            Feed(
-                group: Group(id: 1, title: "Demo group 2", imageURL: nil),
-                messageText: """
-                1. short message: 0123456789,
-                2. short message: 0123456789,
-                3. short message: 0123456789,
-                4. short message: 0123456789
-""",
-                photos: nil,
-                date: Date()
-            ),
-            Feed(
-                group: Group(id: 3, title: "Demo group 3", imageURL: nil),
-                messageText: "Oh, I'm a really short message <3",
-                photos: nil,
-                date: Date()
-            )
-        ]
-        return demoFeeds
-    }
 }
 
 // MARK: - UITableViewDelegate
@@ -279,23 +240,28 @@ extension FeedViewController: UITableViewDataSource {
 extension FeedViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         guard let maxSections = indexPaths.map({ $0.section }).max() else {
-            print("## Error. No max sections")
+            print("## Error. Can't get max sections")
             return
         }
         if maxSections > feedNews.count - 3 {
-            if !isLoading {
-                isLoading = true
-                if let date = self.feedNews.last?.date.timeIntervalSince1970.description {
-                    feedService.getFeeds(by: date, nextFrom: nextFrom) { [weak self] feeds in
-                        guard let self = self else { return }
-                        var newFeeds = feeds
-                        if feeds.count == 0 {
-                            newFeeds = self.getMoreNewData()
-                        }
-                        self.feedNews.append(contentsOf: newFeeds)
+            loadPreviousFeeds()
+        }
+    }
+    
+    private func loadPreviousFeeds() {
+        if !isLoading {
+            isLoading = true
+            if let dateString = lastFeedDateString {
+                feedService.getFeeds(before: dateString, nextFrom: nextFrom) { [weak self] feeds in
+                    guard let self = self else { return }
+                    if feeds.count > 0,
+                       feeds.first != self.feedNews.last {
+                        self.feedNews.append(contentsOf: feeds)
+                        print("## I append \(feeds.count) feeds, last for \(feeds.last?.date)!")
+                        self.lastFeedDateString = self.feedNews.last?.date.unixString
                         self.tableView.reloadData()
-                        self.isLoading = false
                     }
+                    self.isLoading = false
                 }
             }
         }

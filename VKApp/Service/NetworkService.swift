@@ -40,7 +40,6 @@ final class NetworkService<ItemsType: Decodable> {
                         if let items = json.response.items {
                             if let nextFrom = json.response.nextFrom {
                                 self.nextFrom = nextFrom
-                                print("## NetworkService nextFrom = \(nextFrom)")
                             }
                             completion(.success(items))
                         } else {

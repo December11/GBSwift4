@@ -8,7 +8,7 @@
 import Foundation
 
 final class Feed {
-    let date: Date 
+    var date: Date
     let user: User?
     let group: Group?
     var messageText: String?
@@ -97,6 +97,10 @@ extension Feed: Comparable {
     }
     
     static func == (lhs: Feed, rhs: Feed) -> Bool {
-        lhs.date == rhs.date && lhs.user == rhs.user
+        let isUserEqual = lhs.user == rhs.user
+        let isGroupsEqual = lhs.group == rhs.group
+        let isMessageEqual = lhs.messageText == rhs.messageText
+        let isDatesEqual = lhs.date == rhs.date
+        return isDatesEqual && isUserEqual && isGroupsEqual && isMessageEqual
     }
 }

@@ -21,7 +21,6 @@ final class FetchAnyDataOperation<FetchType: Decodable>: AsyncOperation {
             case .success(let dataDTO):
                 self?.fetchedData = dataDTO.compactMap { $0 }
                 self?.nextFrom = self?.request.nextFrom ?? ""
-                print("## FetchAnyDataOperation nextFrom = \(self?.nextFrom)")
                 self?.state = .finished
             }
         }

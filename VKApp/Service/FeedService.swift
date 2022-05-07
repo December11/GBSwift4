@@ -28,8 +28,8 @@ final class FeedsService {
         }
     }
     
-    func getFeeds(by date: String, nextFrom: String, completion: @escaping ([Feed]) -> Void) {
-        fetchFromJSON(by: date, nextFrom: nextFrom) { feeds in
+    func getFeeds(after date: String, nextFrom: String, completion: @escaping ([Feed]) -> Void) {
+        fetchFromJSON(after: date, nextFrom: nextFrom) { feeds in
             self.feedNews = feeds.filter { $0.messageText != "" }
             DispatchQueue.main.async {
                 completion(self.feedNews)
@@ -37,7 +37,35 @@ final class FeedsService {
         }
     }
     
-    private func fetchFromJSON(by date: String, nextFrom: String, completion: @escaping ([Feed]) -> Void) {
+    func getFeeds(before date: String, nextFrom: String, completion: @escaping ([Feed]) -> Void) {
+        fetchFromJSON(before: date, nextFrom: nextFrom) { feeds in
+            self.feedNews = feeds.filter { $0.messageText != "" }
+            DispatchQueue.main.async {
+                completion(self.feedNews)
+            }
+        }
+    }
+    
+    private func fetchFromJSON(before date: String, nextFrom: String, completion: @escaping ([Feed]) -> Void) {
+        let feedService = NetworkService<FeedDTO>()
+        guard
+            let accessToken = AuthService.shared.keychain.get("accessToken")
+        else { return }
+        
+        feedService.path = "/method/newsfeed.get"
+        feedService.queryItems = [
+            URLQueryItem(name: "filters", value: "post"),
+            URLQueryItem(name: "start_from", value: nextFrom),
+            URLQueryItem(name: "end_time", value: date),
+            URLQueryItem(name: "count", value: "2"),
+            URLQueryItem(name: "access_token", value: accessToken),
+            URLQueryItem(name: "v", value: "5.131")
+        ]
+        
+        parseData(with: feedService, completion: completion)
+    }
+    
+    private func fetchFromJSON(after date: String, nextFrom: String, completion: @escaping ([Feed]) -> Void) {
         let feedService = NetworkService<FeedDTO>()
         guard
             let accessToken = AuthService.shared.keychain.get("accessToken")
@@ -80,7 +108,6 @@ final class FeedsService {
             DispatchQueue.main.async {
                 guard let feedsDTO = fetchOperation.fetchedData else { return }
                 self.nextFrom = fetchOperation.nextFrom
-                print("## feedService nextFrom = \(self.nextFrom)")
                 let feeds = feedsDTO.map { self.getFeed($0, from: $0.sourceID) }
                 completion(feeds)
             }

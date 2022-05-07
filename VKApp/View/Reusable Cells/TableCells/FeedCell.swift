@@ -50,7 +50,6 @@ final class FeedCell: UITableViewCell {
         let unlimited = 0
         self.isPressed.toggle()
         sender.isSelected = self.isPressed
-        print("## button is selected? \(sender.isSelected)")
         showMoreButton.setTitle("Скрыть", for: .selected)
         feedMessage.numberOfLines = showMoreButton.isSelected ? unlimited : maxLines
         showMoreHandler()
