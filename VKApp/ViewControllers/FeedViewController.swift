@@ -188,7 +188,7 @@ extension FeedViewController: UITableViewDelegate {
     }
 }
 
-// MARK: - UITableViewDelegate
+// MARK: - UITableViewDataSource
 
 extension FeedViewController: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -226,7 +226,7 @@ extension FeedViewController: UITableViewDataSource {
     }
 }
 
-// MARK: - UITableViewDelegate
+// MARK: - UITableViewDataSourcePrefetching
 
 extension FeedViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
