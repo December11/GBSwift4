@@ -12,8 +12,9 @@ class FetchDataOperation: AsyncOperation {
     var fetchedData: [GroupDTO]?
     
     override init() {
-        let authService = AuthService.shared
         self.request = NetworkService<GroupDTO>()
+        
+        let authService = AuthService.shared
         guard
             let userID = authService.keychain.get("userID"),
             let accessToken = authService.keychain.get("accessToken")

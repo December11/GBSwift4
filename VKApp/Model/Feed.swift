@@ -8,10 +8,9 @@
 import Foundation
 
 final class Feed {
-    let date: Date 
+    var date: Date
     let user: User?
     let group: Group?
-    
     var messageText: String?
     var photos = [Photo]()
     var isLiked = false {
@@ -23,9 +22,11 @@ final class Feed {
             }
         }
     }
+    var isExpanded = false
     var likesCount: Int
     var commentsCount: Int
     var viewsCount: Int
+    var nextFrom: String?
     
     init(
         user: User?,
@@ -97,6 +98,10 @@ extension Feed: Comparable {
     }
     
     static func == (lhs: Feed, rhs: Feed) -> Bool {
-        lhs.date == rhs.date && lhs.user == rhs.user
+        let isUserEqual = lhs.user == rhs.user
+        let isGroupsEqual = lhs.group == rhs.group
+        let isMessageEqual = lhs.messageText == rhs.messageText
+        let isDatesEqual = lhs.date == rhs.date
+        return isDatesEqual && isUserEqual && isGroupsEqual && isMessageEqual
     }
 }

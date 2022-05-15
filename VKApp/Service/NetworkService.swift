@@ -9,6 +9,8 @@ import UIKit
 
 final class NetworkService<ItemsType: Decodable> {
     
+    var nextFrom = ""
+    
     let session = URLSession.shared
     let scheme = "https"
     let host = "api.vk.com"
@@ -36,6 +38,9 @@ final class NetworkService<ItemsType: Decodable> {
                     let json = try JSONDecoder().decode(ResponseDTO<ItemsType>.self, from: data)
                     DispatchQueue.main.async {
                         if let items = json.response.items {
+                            if let nextFrom = json.response.nextFrom {
+                                self.nextFrom = nextFrom
+                            }
                             completion(.success(items))
                         } else {
                             print("## Error. No items in response")

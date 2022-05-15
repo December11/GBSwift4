@@ -10,7 +10,6 @@ import UIKit
 import WebKit
 
 final class FeedViewController: UIViewController {
-   
     private enum CellType: Int {
         case messageText = 0, images
     }
@@ -18,6 +17,10 @@ final class FeedViewController: UIViewController {
     private let loadDuration = 2.0
     private let shortDuration = 0.5
     private let feedService = FeedsService.instance
+    private var firstFeedDateString: String?
+    private var lastFeedDateString: String?
+    fileprivate var nextFrom = ""
+    fileprivate var isLoading = false
     fileprivate var feedNews = [Feed]()
 
     @IBOutlet weak var tableView: UITableView!
@@ -32,6 +35,7 @@ final class FeedViewController: UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.prefetchDataSource = self
         
         tableView.sectionHeaderTopPadding = 16.0
         tableView.register(for: FeedFooterView.self)
@@ -40,15 +44,46 @@ final class FeedViewController: UIViewController {
         feedService.getFeeds { [weak self] in
             guard let feedNews = self?.feedService.feedNews else { return }
             self?.feedNews = feedNews
+            self?.firstFeedDateString = feedNews.first?.date.unixString
+            self?.lastFeedDateString = feedNews.last?.date.unixString
+            self?.nextFrom = self?.feedService.nextFrom ?? ""
             DispatchQueue.main.async {
                 self?.tableView.reloadData()
                 self?.animatedView.isHidden = true
             }
         }
+        
+        setupRefreshControl()
+    }
+    
+    // MARK: - Pull-to-refresh
+    
+    private func setupRefreshControl() {
+        tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl?.addTarget(self, action: #selector(refreshNews), for: .valueChanged)
+    }
+    
+    @objc private func refreshNews() {
+        tableView.refreshControl?.beginRefreshing()
+        guard let date = firstFeedDateString else {
+            self.tableView.refreshControl?.endRefreshing()
+            return
+        }
+        feedService.getFeeds(after: date, nextFrom: nextFrom) { [weak self] feeds in
+            self?.tableView.refreshControl?.endRefreshing()
+            guard
+                let self = self,
+                feeds.count > 0
+            else { return }
+            self.feedNews.insert(contentsOf: feeds, at: 0)
+            self.tableView.reloadData()
+            self.firstFeedDateString = self.feedNews.first?.date.unixString
+            self.nextFrom = self.feedService.nextFrom
+        }
     }
     
     // MARK: - Animation
-    
+  
     func loadingDotes() {
         UIView.animate(
             withDuration: shortDuration,
@@ -74,43 +109,7 @@ final class FeedViewController: UIViewController {
     }
     
     @IBAction func logout(_ sender: Any) {
-        AuthService.shared.deleteAuthData()
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let view = storyboard.instantiateViewController(withIdentifier: "VKWVLoginViewController")
-                as? VKWVLoginViewController else { return }
-        view.loadView()
-        let dataStore = WKWebsiteDataStore.default()
-        dataStore.fetchDataRecords( ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
-            records.forEach {
-                if $0.displayName.contains("vk") {
-                    dataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: [$0]) {
-                        var urlComponents: URLComponents {
-                            var components = URLComponents()
-                            components.scheme = "https"
-                            components.host = "oauth.vk.com"
-                            components.path = "/authorize"
-                            components.queryItems = [
-                                URLQueryItem(name: "client_id", value: "8077898"),
-                                URLQueryItem(name: "display", value: "mobile"),
-                                URLQueryItem(name: "redirect_uri", value: "https://oauth.vk.com/blank.html"),
-                                URLQueryItem(name: "scope", value: "336918"),
-                                URLQueryItem(name: "response_type", value: "token"),
-                                URLQueryItem(name: "v", value: "5.131"),
-                                URLQueryItem(name: "revoke", value: "1")
-                            ]
-                            return components
-                        }
-
-                        guard
-                            let url = view.urlComponents.url
-                        else { return }
-
-                        view.webView.load(URLRequest(url: url))
-                    }
-                }
-            }
-        }
+        VKWVLoginViewController.logout()
         dismiss(animated: true, completion: nil)
     }
 }
@@ -120,6 +119,24 @@ final class FeedViewController: UIViewController {
 extension FeedViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
+    }
+    
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        switch indexPath.row {
+//        case 2:
+//            let tableViewWidth = tableView.bounds.width
+//            let currentFeed = feedNews[indexPath.section]
+//            // TODO: найти aspectRatio неск. фоток
+//            if currentFeed.photos.count == 1 {
+//                let cellHeight = tableViewWidth / (currentFeed.photos.first?.aspectRatio ?? 1.0)
+//                print("cellHeight = \(cellHeight)")
+//                return cellHeight
+//            } else {
+//                return 414.0
+//            }
+//        default:
+            return UITableView.automaticDimension
+//        }
     }
     
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -159,9 +176,19 @@ extension FeedViewController: UITableViewDelegate {
         let activityView = UIActivityViewController(activityItems: sharedItem, applicationActivities: nil)
         self.present(activityView, animated: true, completion: nil)
     }
+    
+    private func getMoreNewData() -> [Feed] {
+        return [
+            Feed(
+                group: Group(id: 0, title: "Demo group + \(String(Int.random(in: 0...10)))", imageURL: nil),
+                messageText: String().rand,
+                photos: nil,
+                date: Date())
+        ]
+    }
 }
 
-// MARK: - UITableViewDelegate
+// MARK: - UITableViewDataSource
 
 extension FeedViewController: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -184,7 +211,10 @@ extension FeedViewController: UITableViewDataSource {
         switch indexPath.row {
         case CellType.messageText.rawValue:
             let cell: FeedCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.configureFeedCell(feed: currentFeed)
+            cell.configureFeedCell(feed: currentFeed, handler: { [weak self] in
+                print("1")
+                self?.tableView.reloadData()
+            })
             return cell
         case CellType.images.rawValue:
             let cell: FeedImagesCell = tableView.dequeueReusableCell(for: indexPath)
@@ -192,6 +222,38 @@ extension FeedViewController: UITableViewDataSource {
             return cell
         default:
             return UITableViewCell()
+        }
+    }
+}
+
+// MARK: - UITableViewDataSourcePrefetching
+
+extension FeedViewController: UITableViewDataSourcePrefetching {
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        guard let maxSections = indexPaths.map({ $0.section }).max() else {
+            print("## Error. Can't get max sections")
+            return
+        }
+        if maxSections > feedNews.count - 3 {
+            loadPreviousFeeds()
+        }
+    }
+    
+    private func loadPreviousFeeds() {
+        if !isLoading {
+            isLoading = true
+            if let dateString = lastFeedDateString {
+                feedService.getFeeds(before: dateString, nextFrom: nextFrom) { [weak self] feeds in
+                    guard let self = self else { return }
+                    if feeds.count > 0,
+                       feeds.first != self.feedNews.last {
+                        self.feedNews.append(contentsOf: feeds)
+                        self.lastFeedDateString = self.feedNews.last?.date.unixString
+                        self.tableView.reloadData()
+                    }
+                    self.isLoading = false
+                }
+            }
         }
     }
 }

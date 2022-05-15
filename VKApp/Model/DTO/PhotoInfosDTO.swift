@@ -8,11 +8,15 @@
 struct PhotoInfosDTO {
     let sizeType: String?
     let url: String?
+    let width: Int?
+    let height: Int?
 }
 
 extension PhotoInfosDTO: Decodable {
     enum CodingKeys: String, CodingKey {
         case url
         case sizeType = "type"
+        case width
+        case height
     }
 }

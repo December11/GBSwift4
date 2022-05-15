@@ -58,6 +58,7 @@ final class GroupsService {
     }
     
     func getGroups() throws -> [Group]? {
+        loadDataIfNeeded()
         if let realmGroups = self.realmResults {
             return self.fetchFromRealm(realmGroups.map { $0 })
         }

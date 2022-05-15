@@ -47,16 +47,8 @@ final class GroupsTableViewController: UITableViewController {
             switch groupChanges {
             case .initial:
                 self.tableView.reloadData()
-            case .update(_, deletions: let deletions, insertions: let insertions, modifications: let modifications):
-                print(deletions, insertions, modifications)
-                self.tableView.beginUpdates()
-                let deletionIndexPath = deletions.map { IndexPath(row: $0, section: 0) }
-                let insertionIndexPath = insertions.map { IndexPath(row: $0, section: 0) }
-                let modificateIndexPath = modifications.map { IndexPath(row: $0, section: 0) }
-                self.tableView.deleteRows(at: deletionIndexPath, with: .fade)
-                self.tableView.insertRows(at: insertionIndexPath, with: .automatic)
-                self.tableView.reloadRows(at: modificateIndexPath, with: .automatic)
-                self.tableView.endUpdates()
+            case .update:
+                self.tableView.reloadData()
             case .error(let error):
                 print("## Error. Can't reload groups tableView", error)
             }

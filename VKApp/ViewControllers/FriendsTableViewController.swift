@@ -44,25 +44,7 @@ final class FriendsTableViewController: UITableViewController {
     }
     
     @IBAction func dismiss(_ sender: Any) {
-        AuthService.shared.deleteAuthData()
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let view = storyboard.instantiateViewController(withIdentifier: "VKWVLoginViewController")
-                as? VKWVLoginViewController else { return }
-        view.loadView()
-        let dataStore = WKWebsiteDataStore.default()
-        dataStore.fetchDataRecords( ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
-            records.forEach {
-                if $0.displayName.contains("vk") {
-                    dataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: [$0]) {
-                        guard
-                            let url = view.urlComponents.url
-                        else { return }
-                        view.webView.load(URLRequest(url: url))
-                    }
-                }
-            }
-        }
+        VKWVLoginViewController.logout()
         dismiss(animated: true, completion: nil)
     }
     
